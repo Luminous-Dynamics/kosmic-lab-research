@@ -22,6 +22,8 @@
           pytest
           pip
           black
+          matplotlib
+          seaborn
         ]);
         runTestsScript = pkgs.writeShellApplication {
           name = "kosmic-run-tests";
@@ -45,7 +47,7 @@
             pythonEnv
             pkgs.poetry
             pkgs.git
-            pkgs.texlive.combined.scheme-full
+            pkgs.texlive.combined.scheme-medium  # sufficient for papers, smaller than scheme-full
           ];
           shellHook = ''
             export PYTHONUNBUFFERED=1
