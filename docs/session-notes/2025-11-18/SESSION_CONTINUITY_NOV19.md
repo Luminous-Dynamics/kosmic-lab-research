@@ -3,10 +3,11 @@
 ## Quick Resume
 
 **Paper 3 Status**: Ready for submission review
-**Paper 4 Evidence**: Strong package assembled (causal, robustness, generalization)
+**Paper 4 Status**: Complete with 30 experiments, 7 figures, expanded methodology
 **Central Finding**: Temporal scaling law - Required Steps ≈ 150 + (Team Size - 4) × 25
 **Major Discovery**: Flexibility matters for discovery, not execution (boundary condition)
-**GitHub**: All work pushed to main
+**Supplementary**: Power analysis (99.2%), algorithm comparison (A2C > REINFORCE > PPO), ablations (robust)
+**GitHub**: All work pushed to main (13 commits this session)
 
 ---
 
@@ -107,6 +108,18 @@
 
 **Critical finding from Track B**: The NEGATIVE correlation shows flexibility enables adaptation to *learned partners*, not arbitrary coordination.
 
+### Supplementary Experiments (NEW)
+
+| Experiment | Result | Key Insight |
+|------------|--------|-------------|
+| Large n=50 | r = +0.726***, CI [0.56, 0.84] | Tighter confidence interval |
+| Algorithms | A2C +0.88***, REINFORCE +0.71***, PPO +0.34 | Generalizes to value-based |
+| Ablations | All *** significant | Robust to hyperparameters |
+| Temporal | Ep10 → final: r = +0.69*** | Early prediction works |
+| Power | 99.2% power with n=30 | Study adequately powered |
+
+**Key insights**: A2C shows strongest effect (value baseline helps); PPO weakest (clipping limits); higher noise strengthens effect; early flexibility predicts final performance.
+
 ---
 
 ## Experiments Completed
@@ -127,7 +140,7 @@
 9. `track_e_developmental_dynamics.py` - Full version (timeout)
 10. `track_e_quick.py` - Quick version, key findings
 
-### Paper 4 Experiments (NEW)
+### Paper 4 Experiments
 11. `track_f1_flexibility_regularization.py` - λ=0.2 gives +6.9%
 12. `track_g3_quick.py` - r > 0.93*** under perturbation
 13. `track_f1_curriculum.py` - No curriculum benefit
@@ -143,6 +156,13 @@
 23. `track_a_metric_comparison_v2.py` - Fixed, entropy constant
 24. `track_b_zeroshot_coordination.py` - r = -0.50* (negative!)
 25. `track_c_discovery_execution.py` - Transition experiment
+
+### Supplementary Experiments (NEW)
+26. `supplementary_large_n.py` - n=50, r = +0.726***, CI [0.56, 0.84]
+27. `supplementary_algorithms.py` - A2C +0.88, REINFORCE +0.71, PPO +0.34
+28. `supplementary_ablations.py` - Robust to history, message, noise
+29. `supplementary_temporal.py` - Ep10 predicts final (r = +0.69***)
+30. `supplementary_power.py` - 99.2% power with n=30
 
 ---
 
@@ -201,7 +221,7 @@ git log --oneline -5
 
 ---
 
-## Commits This Session
+## Commits This Session (13 total)
 
 ```
 3f8b3b3 📊 Paper 3 polish + Track E developmental dynamics
@@ -216,6 +236,9 @@ d2ff67a 🔬 Extended experiments: J1 extended, G3 quick, F1 curriculum
 22e4770 🔬 Metric comparison, zero-shot, transition
 92fc522 📝 Paper 4 draft
 701c8f3 🔬 Metric comparison v2: entropy is constant
+9e0a414 📊 Generate 7 publication figures for Paper 4
+c871ac8 📝 Expand Paper 4 with detailed methodology
+0dfb35d 🔬 Supplementary experiments: power, algorithms, ablations, temporal
 ```
 
 ---
