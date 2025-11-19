@@ -40,6 +40,11 @@
 **Pros**: Gets validated work published quickly, builds credibility
 **Cons**: Some prior work remains unpublished
 
+**Implementation Details**:
+- In Paper 6's related work, add: "Building on exploratory studies [1-5] that examined behavioral metrics without full performance validation."
+- Archive Papers 1, 2, 4 as a unified tech report bundle: "K-Index Explorations: Technical Reports" on arXiv/OSF with DOIs
+- This makes them citeable as a set while being transparent about limitations
+
 #### Option C: New Direction (Bold)
 1. Submit Paper 6 (O/R Index) to ICML 2026
 2. Treat Papers 1-5 as exploration that led to O/R Index discovery
@@ -128,8 +133,22 @@ Paper 6 is ready and properly validated. Submit it immediately. The older papers
 | Communication Analysis | MEDIUM | MEDIUM | 2 weeks | Paper 6 supp |
 | Competitive Settings | MEDIUM | MEDIUM | 3 weeks | Paper 7 |
 | Transfer Learning | HIGH | HIGH | 4 weeks | Paper 8 |
-| O/R Curriculum | MEDIUM | LOW | 1 week | Paper 6/7 |
+| O/R Curriculum | HIGH | LOW | 1 week | Paper 6/7 |
 | Theoretical | HIGH | HIGH | 6 weeks | Paper 9 |
+| LLM-Agent Hybrids | HIGH | MEDIUM | 2 weeks | Paper 6/7 supp |
+| Ethical Dilemmas | MEDIUM | LOW | 1 week | Paper 7 |
+
+### Rebuttal Preparation
+
+Prepare responses to common reviewer critiques:
+- **"Why O/R over MI?"** - Show supp data where MI=0 for all teams while O/R varies
+- **"Toy environment"** - MPE/SMAC validation addresses this
+- **"Causal claim weak"** - Regularization experiment with multiple λ values
+- **"Generalization?"** - Show robustness across algorithms, hyperparameters
+
+### Risk Mitigation
+- If validations underperform (e.g., low r in SMAC), frame as boundary condition (like sparse rewards)
+- If TeXLive stalls, use Overleaf for quick PDF generation
 
 ---
 
