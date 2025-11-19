@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Generate Supplementary Figures for Paper 4
+Generate Supplementary Figures for Paper 6
 
 Create publication-quality visualizations of supplementary findings.
 
@@ -34,7 +34,7 @@ def figure_s1_algorithm_comparison():
     ax.text(2, 0.37, 'ns', ha='center', fontsize=10, style='italic')
 
     ax.set_ylabel('Correlation with Performance (r)')
-    ax.set_title('Figure S1: K-Index Generalizes Across Algorithms')
+    ax.set_title('Figure S1: O/R Index Generalizes Across Algorithms')
     ax.set_ylim(0, 1.05)
 
     # Add baseline reference
@@ -48,18 +48,18 @@ def figure_s1_algorithm_comparison():
 
 
 def figure_s2_temporal_dynamics():
-    """Line plot showing K-Index evolution during training."""
+    """Line plot showing O/R Index evolution during training."""
     episodes = [0, 5, 10, 20, 30, 40, 49]
     kindex = [-0.41, -1.05, -1.07, -1.07, -1.07, -1.07, -1.07]
     correlation = [0.59, 0.89, 0.73, 0.75, 0.73, 0.73, 0.69]
 
     fig, ax1 = plt.subplots(figsize=(10, 5))
 
-    # K-Index evolution
+    # O/R Index evolution
     color1 = '#3498db'
     ax1.set_xlabel('Training Episode')
-    ax1.set_ylabel('Mean K-Index', color=color1)
-    line1 = ax1.plot(episodes, kindex, 'o-', color=color1, linewidth=2, markersize=8, label='K-Index')
+    ax1.set_ylabel('Mean O/R Index', color=color1)
+    line1 = ax1.plot(episodes, kindex, 'o-', color=color1, linewidth=2, markersize=8, label='O/R Index')
     ax1.tick_params(axis='y', labelcolor=color1)
     ax1.set_ylim(-1.2, 0)
 
@@ -76,7 +76,7 @@ def figure_s2_temporal_dynamics():
     labels = [l.get_label() for l in lines]
     ax1.legend(lines, labels, loc='center right')
 
-    ax1.set_title('Figure S2: K-Index Evolution During Training')
+    ax1.set_title('Figure S2: O/R Index Evolution During Training')
 
     plt.tight_layout()
     plt.savefig('figure_s2_temporal.png', dpi=300, bbox_inches='tight')
@@ -122,7 +122,7 @@ def figure_s3_ablations():
     for i in range(4):
         ax.text(i, r_vals[i] + 0.01, '***', ha='center', fontsize=10)
 
-    fig.suptitle('Figure S3: K-Index Robust to Hyperparameters', fontsize=16, y=1.02)
+    fig.suptitle('Figure S3: O/R Index Robust to Hyperparameters', fontsize=16, y=1.02)
 
     plt.tight_layout()
     plt.savefig('figure_s3_ablations.png', dpi=300, bbox_inches='tight')
@@ -186,7 +186,7 @@ def figure_s5_summary():
 
     # 1. Main effect
     ax1 = fig.add_subplot(gs[0, 0])
-    metrics = ['K-Index', 'Diversity', 'Entropy']
+    metrics = ['O/R Index', 'Diversity', 'Entropy']
     r_vals = [0.69, 0.17, 0.0]
     colors = ['#2ecc71', '#95a5a6', '#bdc3c7']
     ax1.bar(metrics, r_vals, color=colors, edgecolor='black')
@@ -245,7 +245,7 @@ def figure_s5_summary():
     ax6.set_ylabel('r')
     ax6.set_ylim(0, 1.0)
 
-    fig.suptitle('Figure S5: Summary of K-Index Findings', fontsize=18, y=1.02)
+    fig.suptitle('Figure S5: Summary of O/R Index Findings', fontsize=18, y=1.02)
 
     plt.tight_layout()
     plt.savefig('figure_s5_summary.png', dpi=300, bbox_inches='tight')

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Generate Figures for Paper 4
+Generate Figures for Paper 6 - O/R Index Validation
 
 Create publication-quality visualizations of key findings.
 
@@ -22,19 +22,19 @@ plt.rcParams['figure.figsize'] = (10, 6)
 
 
 def figure_1_metric_comparison():
-    """Bar chart comparing K-Index to other metrics."""
-    metrics = ['K-Index', 'Diversity', 'Entropy*', 'MI*']
-    correlations = [0.69, 0.17, 0.0, 0.0]
+    """Bar chart comparing O/R Index to other metrics."""
+    metrics = ['O/R Index', 'Diversity', 'Entropy*', 'MI*']
+    correlations = [0.70, 0.17, 0.0, 0.0]
     colors = ['#2ecc71', '#95a5a6', '#bdc3c7', '#bdc3c7']
 
     fig, ax = plt.subplots(figsize=(8, 5))
     bars = ax.bar(metrics, correlations, color=colors, edgecolor='black', linewidth=1.5)
 
     # Add significance stars
-    ax.text(0, 0.72, '***', ha='center', fontsize=14, fontweight='bold')
+    ax.text(0, 0.73, '***', ha='center', fontsize=14, fontweight='bold')
 
     ax.set_ylabel('Correlation with Performance (r)')
-    ax.set_title('Figure 1: K-Index Outperforms Established Metrics')
+    ax.set_title('Figure 1: O/R Index Outperforms Established Metrics')
     ax.set_ylim(0, 0.85)
 
     # Add note
@@ -66,7 +66,7 @@ def figure_2_generalization():
 
     ax.axhline(y=0, color='black', linewidth=0.5)
     ax.set_ylabel('Correlation with Performance (r)')
-    ax.set_title('Figure 2: K-Index Generalizes Across Conditions\n(Sparse Reward Reverses!)')
+    ax.set_title('Figure 2: O/R Index Generalizes Across Conditions\n(Sparse Reward Reverses!)')
     ax.set_ylim(-1.1, 1.1)
 
     plt.tight_layout()
@@ -115,7 +115,7 @@ def figure_4_robustness():
         ax.text(i, correlations[i] + 0.02, '***', ha='center', fontsize=12, fontweight='bold')
 
     ax.set_ylabel('Correlation with Performance (r)')
-    ax.set_title('Figure 4: K-Index Robust Under Perturbation')
+    ax.set_title('Figure 4: O/R Index Robust Under Perturbation')
     ax.set_ylim(0, 1.1)
 
     # Add note
@@ -174,7 +174,7 @@ def figure_6_discovery_execution():
 
 
 def figure_7_theoretical_framework():
-    """Visual summary of when K-Index applies."""
+    """Visual summary of when O/R Index applies."""
     fig, ax = plt.subplots(figsize=(10, 6))
 
     # Create 2x2 grid
@@ -199,13 +199,13 @@ def figure_7_theoretical_framework():
     # Labels
     ax.text(0.5, 2.2, 'Task Type', ha='center', fontsize=14, fontweight='bold')
     ax.text(1.5, 2.2, 'Reward Type', ha='center', fontsize=14, fontweight='bold')
-    ax.text(-0.2, 1.5, 'K-Index\nApplies', ha='center', va='center', fontsize=12, rotation=90)
-    ax.text(-0.2, 0.5, 'K-Index\nFails', ha='center', va='center', fontsize=12, rotation=90)
+    ax.text(-0.2, 1.5, 'O/R Index\nApplies', ha='center', va='center', fontsize=12, rotation=90)
+    ax.text(-0.2, 0.5, 'O/R Index\nFails', ha='center', va='center', fontsize=12, rotation=90)
 
     ax.set_xlim(-0.5, 2.5)
     ax.set_ylim(-0.2, 2.5)
     ax.axis('off')
-    ax.set_title('Figure 7: Theoretical Framework - When K-Index Applies', fontsize=16, pad=20)
+    ax.set_title('Figure 7: Theoretical Framework - When O/R Index Applies', fontsize=16, pad=20)
 
     plt.tight_layout()
     plt.savefig('figure_7_theoretical_framework.png', dpi=300, bbox_inches='tight')
@@ -215,7 +215,7 @@ def figure_7_theoretical_framework():
 
 def main():
     print("\n" + "=" * 70)
-    print("GENERATING FIGURES FOR PAPER 4")
+    print("GENERATING FIGURES FOR PAPER 6 - O/R INDEX")
     print("=" * 70 + "\n")
 
     print("Creating figures...")
