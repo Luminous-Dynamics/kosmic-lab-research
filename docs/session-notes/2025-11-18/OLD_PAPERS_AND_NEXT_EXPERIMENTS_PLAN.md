@@ -143,13 +143,13 @@ Paper 6 is ready and properly validated. Submit it immediately. The older papers
    - Double-check all numbers
 
 2. **Run MPE Validation**
-   - Install PettingZoo/MPE
+   - Install PettingZoo/MPE (confirm gym>=0.26)
    - Test O/R Index in simple_spread
    - Add results to supplementary
 
-3. **Generate Final Figures**
-   - Regenerate all with O/R Index labels
-   - Ensure publication quality
+3. **Generate Final Figures** ✅
+   - Regenerated all with O/R Index labels
+   - Publication quality confirmed
 
 ### Next Week (Nov 27 - Dec 3)
 
@@ -158,28 +158,38 @@ Paper 6 is ready and properly validated. Submit it immediately. The older papers
    - Check statistical claims
    - Verify code matches text
 
-5. **SMAC Validation** (if time permits)
-   - Test in 2-3 SMAC scenarios
-   - Add to supplementary
+5. **SMAC Validation**
+   - Test in 2-3 SMAC scenarios (e.g., 3m map)
+   - Use cloud compute (AWS) if local is slow
+   - Aim for n=50+ per condition
+
+6. **External Beta Read**
+   - Post to arXiv as preprint
+   - Solicit feedback from MARL community
 
 ### December (Dec 4-31)
 
-6. **Polish and Format**
-   - ICML template compliance
+7. **Polish and Format**
+   - ICML 2026 template compliance
    - Reference formatting
    - Figure placement
 
-7. **Code Repository**
+8. **Code Repository**
    - Clean up experiment scripts
    - Add documentation
-   - Prepare for release
+   - Release O/R-eval repo with MPE/SMAC wrappers
 
-### January (Jan 1-29)
+9. **Additional Experiments (if time)**
+   - LLM-Agent Hybrids: Test Grok-like LLMs for decision-making in MPE
+   - Ethical Dilemmas (quick supp): O/R in cooperative games with fairness penalties
 
-8. **Final Submission Prep**
-   - Abstract submission: Jan 24
-   - Paper submission: Jan 29
-   - Supplementary materials
+### January (Jan 1-28)
+
+10. **Final Submission Prep**
+    - Abstract submission: **Jan 23, 2026** (AoE/UTC-0)
+    - Paper submission: **Jan 28-29, 2026**
+    - Supplementary materials
+    - Prepare rebuttal materials (ICML has rebuttals)
 
 ---
 
