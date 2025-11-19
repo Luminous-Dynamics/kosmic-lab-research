@@ -95,6 +95,18 @@
 
 **Theoretical insight**: Flexibility matters for DISCOVERY tasks, not EXECUTION tasks
 
+### Final Experiments (Tracks A, B, C)
+
+| Experiment | Result | Key Insight |
+|------------|--------|-------------|
+| A: Metric Comparison | K-Index r = +0.69***, entropy = constant | K-Index captures variance entropy misses |
+| B: Zero-Shot | r = -0.50* (NEGATIVE) | Flexibility without conventions = chaos |
+| C: Transition | Discovery r = +0.89, Execution r = +0.85 | Both phases need flexibility |
+
+**Critical finding from Track A**: Policy entropy is CONSTANT across all trained teams. K-Index measures behavioral responsiveness that entropy cannot capture.
+
+**Critical finding from Track B**: The NEGATIVE correlation shows flexibility enables adaptation to *learned partners*, not arbitrary coordination.
+
 ---
 
 ## Experiments Completed
@@ -127,6 +139,10 @@
 19. `track_j1_trained_teams.py` - Proper training methodology
 20. `track_j2_predator_prey.py` - Non-trivial spatial test
 21. `track_c_varied_abstract.py` - 5 condition generalization
+22. `track_a_metric_comparison.py` - K-Index vs entropy/MI
+23. `track_a_metric_comparison_v2.py` - Fixed, entropy constant
+24. `track_b_zeroshot_coordination.py` - r = -0.50* (negative!)
+25. `track_c_discovery_execution.py` - Transition experiment
 
 ---
 
@@ -196,7 +212,10 @@ d2ff67a 🔬 Extended experiments: J1 extended, G3 quick, F1 curriculum
 010f5a3 🔬 MPE inversion investigation + G3 bug fix
 50103f1 🔬 MPE spatial metrics exploration
 185989d 🔬 MPE trained teams: boundary condition identified
-[pending] 🔬 Track C varied abstract + J2 predator-prey
+905b762 🔬 Track C varied abstract + J2 predator-prey
+22e4770 🔬 Metric comparison, zero-shot, transition
+92fc522 📝 Paper 4 draft
+701c8f3 🔬 Metric comparison v2: entropy is constant
 ```
 
 ---
