@@ -128,6 +128,18 @@ def train_team(n_agents=4, n_episodes=50, n_steps=150):
         for a in agents:
             a.update()
 
+    # Run one more episode to collect history for flexibility measurement
+    state = env.reset()
+    for a in agents:
+        a.obs_history = []
+        a.action_history = []
+    for step in range(n_steps):
+        observations = [state + np.random.randn(10) * 0.1 for _ in range(n_agents)]
+        messages = [a.create_message(o) for a, o in zip(agents, observations)]
+        received = network.exchange(messages)
+        actions = [a.act(o, m) for a, o, m in zip(agents, observations, received)]
+        state, reward = env.step(actions)
+
     flexibility = np.mean([a.get_flexibility() for a in agents])
     return agents, flexibility
 
