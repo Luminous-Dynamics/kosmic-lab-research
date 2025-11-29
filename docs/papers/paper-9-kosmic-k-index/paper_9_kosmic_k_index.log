@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/nixos.org) (preloaded format=pdflatex 1980.1.1)  29 NOV 2025 11:04
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/nixos.org) (preloaded format=pdflatex 1980.1.1)  29 NOV 2025 11:41
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -430,7 +430,7 @@ See the natbib package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.54 ...mand\NAT@force@numbers{}\NAT@force@numbers
+l.60 ...mand\NAT@force@numbers{}\NAT@force@numbers
                                                   
 Check the bibliography entries for non-compliant syntax,
 or select author-year BibTeX style, e.g. plainnat
@@ -595,7 +595,45 @@ pdfTeX warning (ext4): destination with the same identifier (name{table.7}) has
                                                   \__shipout_drop_firstpage_...
 l.322 \paragraph
                 {H4: Normative alignment matters (NEW)} \textbf{Strongly con...
-] [8] [9] (./paper_9_kosmic_k_index.aux)
+]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 326.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 326.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 326.
+
+
+Overfull \hbox (60.11844pt too wide) in paragraph at lines 332--345
+ [][] 
+ []
+
+[8
+pdfTeX warning (ext4): destination with the same identifier (name{table.8}) has
+ been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.359     \item T
+                 he Commons environment reveals that high $\kr$ without norm...
+]
+Overfull \hbox (21.86125pt too wide) in paragraph at lines 387--388
+\T1/cmr/m/n/10.95 that high re-ac-tiv-ity ($\OML/cmm/m/it/10.95 K[]$\T1/cmr/m/n
+/10.95 ) \T1/cmr/m/it/10.95 neg-a-tively \T1/cmr/m/n/10.95 cor-re-lates with re
+-ward in sustainability-
+ []
+
+[9]
+Overfull \hbox (14.77144pt too wide) in paragraph at lines 391--392
+[]\T1/cmr/bx/n/10.95 Temporal depth dif-fer-en-ti-a-tion\T1/cmr/m/n/10.95 : Re-
+cur-rent agents con-sis-tently achieve
+ []
+
+[10] [11] (./paper_9_kosmic_k_index.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
@@ -610,14 +648,14 @@ Package rerunfilecheck Warning: File `paper_9_kosmic_k_index.out' has changed.
 (rerunfilecheck)                or use package `bookmark'.
 
 Package rerunfilecheck Info: Checksums for `paper_9_kosmic_k_index.out':
-(rerunfilecheck)             Before: 3DAA98B87EBD92B6DE2B4EA3E566638E;2803
-(rerunfilecheck)             After:  3940F645ED6DFC5A22472A48A2C35EF6;3109.
+(rerunfilecheck)             Before: D4446BE69BDC30A20B07A2189385A803;3555
+(rerunfilecheck)             After:  D21E9C0E80FB27734308BA0F42AE0E31;3788.
  ) 
 Here is how much of TeX's memory you used:
- 11209 strings out of 474116
- 175841 string characters out of 5717523
+ 11226 strings out of 474116
+ 176046 string characters out of 5717523
  1945187 words of memory out of 5000000
- 33327 multiletter control sequences out of 15000+600000
+ 33332 multiletter control sequences out of 15000+600000
  578385 words of font info for 89 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,11n,79p,1409b,531s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -658,10 +696,10 @@ ti1000.pfb></nix/store/pmgqv45x7z36cdlfvmf79wl0mj2fk7hl-texlive-combined-full-2
 e1/public/cm-super/sftt1000.pfb></nix/store/pmgqv45x7z36cdlfvmf79wl0mj2fk7hl-te
 xlive-combined-full-2023-final-texmfdist/fonts/type1/public/cm-super/sftt1095.p
 fb>
-Output written on paper_9_kosmic_k_index.pdf (9 pages, 397083 bytes).
+Output written on paper_9_kosmic_k_index.pdf (11 pages, 404941 bytes).
 PDF statistics:
- 311 PDF objects out of 1000 (max. 8388607)
- 250 compressed objects within 3 object streams
- 75 named destinations out of 1000 (max. 500000)
- 153 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 343 PDF objects out of 1000 (max. 8388607)
+ 280 compressed objects within 3 object streams
+ 87 named destinations out of 1000 (max. 500000)
+ 185 words of extra memory for PDF output out of 10000 (max. 10000000)
 
