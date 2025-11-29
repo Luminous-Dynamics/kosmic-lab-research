@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/nixos.org) (preloaded format=pdflatex 1980.1.1)  29 NOV 2025 10:01
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/nixos.org) (preloaded format=pdflatex 1980.1.1)  29 NOV 2025 10:21
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -419,7 +419,23 @@ File: l3backend-pdftex.def 2024-02-20 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count297
 \l__pdf_internal_box=\box55
 )
-(./paper_9_kosmic_k_index.aux)
+(./paper_9_kosmic_k_index.aux
+
+! Package natbib Error: Bibliography not compatible with author-year citations.
+
+(natbib)                Press <return> to continue in numerical citation style.
+
+
+See the natbib package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.52 ...mand\NAT@force@numbers{}\NAT@force@numbers
+                                                  
+Check the bibliography entries for non-compliant syntax,
+or select author-year BibTeX style, e.g. plainnat
+
+)
 \openout1 = `paper_9_kosmic_k_index.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 35.
@@ -494,8 +510,8 @@ exmfdist/tex/latex/base/t1cmtt.fd
 File: t1cmtt.fd 2023/04/13 v2.5m Standard LaTeX font definitions
 )
 
-Package natbib Warning: Citation `paper6' on page 1 undefined on input line 45.
-
+Package natbib Warning: Author undefined for citation`paper6' 
+(natbib)                on page 1 on input line 45.
 
 [1
 
@@ -504,10 +520,6 @@ hare/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/nix/store/pmgqv45x7z36cdlfv
 mf79wl0mj2fk7hl-texlive-combined-full-2023-final-texmfdist/fonts/enc/dvips/cm-s
 uper/cm-super-t1.enc}{/nix/store/pmgqv45x7z36cdlfvmf79wl0mj2fk7hl-texlive-combi
 ned-full-2023-final-texmfdist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]
-
-Package natbib Warning: Citation `kosmic-theory' on page 2 undefined on input l
-ine 53.
-
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
@@ -529,15 +541,15 @@ pdfTeX warning (ext4): destination with the same identifier (name{table.2}) has
  been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.265 
+l.268 
       
 pdfTeX warning (ext4): destination with the same identifier (name{table.3}) has
  been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.265 
+l.268 
       ]
-Overfull \hbox (8.00824pt too wide) in paragraph at lines 270--280
+Overfull \hbox (8.00824pt too wide) in paragraph at lines 273--283
  [][] 
  []
 
@@ -546,66 +558,40 @@ pdfTeX warning (ext4): destination with the same identifier (name{table.4}) has
  been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.289 
+l.290 
       
 pdfTeX warning (ext4): destination with the same identifier (name{table.5}) has
  been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.289 
+l.290 
       
 pdfTeX warning (ext4): destination with the same identifier (name{table.6}) has
  been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.289 
-      ] [7]
-
-Package natbib Warning: There were undefined citations.
-
-[8] (./paper_9_kosmic_k_index.aux
-
-Package natbib Warning: Citation(s) may have changed.
-(natbib)                Rerun to get citations correct.
-
-
-! Package natbib Error: Bibliography not compatible with author-year citations.
-
-(natbib)                Press <return> to continue in numerical citation style.
-
-
-See the natbib package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.52 ...mand\NAT@force@numbers{}\NAT@force@numbers
-                                                  
-Check the bibliography entries for non-compliant syntax,
-or select author-year BibTeX style, e.g. plainnat
-
-)
+l.290 
+      ] [7] [8] (./paper_9_kosmic_k_index.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
  ***********
 
 
-Package rerunfilecheck Warning: File `paper_9_kosmic_k_index.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
-Package rerunfilecheck Info: Checksums for `paper_9_kosmic_k_index.out':
-(rerunfilecheck)             Before: 458D7E3B69241692B207848B9D3B15B5;2265
-(rerunfilecheck)             After:  3DAA98B87EBD92B6DE2B4EA3E566638E;2803.
+Package rerunfilecheck Info: File `paper_9_kosmic_k_index.out' has not changed.
+
+(rerunfilecheck)             Checksum: 3DAA98B87EBD92B6DE2B4EA3E566638E;2803.
  ) 
 Here is how much of TeX's memory you used:
- 11195 strings out of 474116
- 175669 string characters out of 5717523
- 1943187 words of memory out of 5000000
- 33320 multiletter control sequences out of 15000+600000
+ 11202 strings out of 474116
+ 175757 string characters out of 5717523
+ 1944187 words of memory out of 5000000
+ 33325 multiletter control sequences out of 15000+600000
  577699 words of font info for 88 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,11n,79p,1176b,452s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,11n,79p,1176b,531s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </nix/store/pmgqv45x7z36cdlfvmf79wl0mj2fk7hl-texlive-combined-full-2023-final
 -texmfdist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></nix/store/pmgqv45x7z36cd
 lfvmf79wl0mj2fk7hl-texlive-combined-full-2023-final-texmfdist/fonts/type1/publi
@@ -641,10 +627,10 @@ ti1095.pfb></nix/store/pmgqv45x7z36cdlfvmf79wl0mj2fk7hl-texlive-combined-full-2
 023-final-texmfdist/fonts/type1/public/cm-super/sftt1000.pfb></nix/store/pmgqv4
 5x7z36cdlfvmf79wl0mj2fk7hl-texlive-combined-full-2023-final-texmfdist/fonts/typ
 e1/public/cm-super/sftt1095.pfb>
-Output written on paper_9_kosmic_k_index.pdf (8 pages, 377779 bytes).
+Output written on paper_9_kosmic_k_index.pdf (8 pages, 379257 bytes).
 PDF statistics:
- 278 PDF objects out of 1000 (max. 8388607)
- 220 compressed objects within 3 object streams
- 69 named destinations out of 1000 (max. 500000)
- 113 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 297 PDF objects out of 1000 (max. 8388607)
+ 239 compressed objects within 3 object streams
+ 71 named destinations out of 1000 (max. 500000)
+ 153 words of extra memory for PDF output out of 10000 (max. 10000000)
 
