@@ -4,7 +4,7 @@ import argparse
 from pathlib import Path
 
 from core.config import load_yaml_config
-from core.kpass import KPassportWriter
+from core.kcodex import KCodexWriter
 from fre.simulate import simulate_phase1
 
 
@@ -24,8 +24,8 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     config_bundle = load_yaml_config(args.config)
-    schema_path = Path("schemas/k_passport.json")
-    passport = KPassportWriter(schema_path=schema_path)
+    schema_path = Path("schemas/k_codex.json")
+    passport = KCodexWriter(schema_path=schema_path)
 
     te_cfg = config_bundle.payload.get("te", {})
     iit_cfg = config_bundle.payload.get("iit", {})
@@ -56,7 +56,7 @@ def main() -> None:
         )
         passport.write(record, output_dir)
 
-    print(f"[FRE] Completed {len(runs)} runs. Passports saved to {output_dir}")
+    print(f"[FRE] Completed {len(runs)} runs. K-Codices saved to {output_dir}")
 
 
 if __name__ == "__main__":

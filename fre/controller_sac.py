@@ -7,8 +7,8 @@ that can be filled in with PyTorch or another deep learning framework.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import random
+from dataclasses import dataclass
 from typing import Dict, List, Sequence, Tuple
 
 import numpy as np
@@ -82,24 +82,38 @@ class SACController:
         self.actor = GaussianActor(state_dim, action_dim, hidden_layers).to(self.device)
         self.critic_1 = QNetwork(state_dim, action_dim, hidden_layers).to(self.device)
         self.critic_2 = QNetwork(state_dim, action_dim, hidden_layers).to(self.device)
-        self.target_critic_1 = QNetwork(state_dim, action_dim, hidden_layers).to(self.device)
-        self.target_critic_2 = QNetwork(state_dim, action_dim, hidden_layers).to(self.device)
+        self.target_critic_1 = QNetwork(state_dim, action_dim, hidden_layers).to(
+            self.device
+        )
+        self.target_critic_2 = QNetwork(state_dim, action_dim, hidden_layers).to(
+            self.device
+        )
 
         self.target_critic_1.load_state_dict(self.critic_1.state_dict())
         self.target_critic_2.load_state_dict(self.critic_2.state_dict())
 
         self.actor_opt = optim.Adam(self.actor.parameters(), lr=actor_lr)
-        critic_params = list(self.critic_1.parameters()) + list(self.critic_2.parameters())
+        critic_params = list(self.critic_1.parameters()) + list(
+            self.critic_2.parameters()
+        )
         self.critic_opt = optim.Adam(critic_params, lr=critic_lr)
 
-        self.log_alpha = torch.tensor(np.log(init_temperature), device=self.device, requires_grad=True)
+        self.log_alpha = torch.tensor(
+            np.log(init_temperature), device=self.device, requires_grad=True
+        )
         self.alpha_opt = optim.Adam([self.log_alpha], lr=alpha_lr)
-        self.actor_clip_norm = float(actor_clip_norm) if actor_clip_norm is not None else None
-        self.critic_clip_norm = float(critic_clip_norm) if critic_clip_norm is not None else None
+        self.actor_clip_norm = (
+            float(actor_clip_norm) if actor_clip_norm is not None else None
+        )
+        self.critic_clip_norm = (
+            float(critic_clip_norm) if critic_clip_norm is not None else None
+        )
 
     def select_action(self, state: List[float], evaluate: bool = False) -> List[float]:
         self.actor.eval()
-        state_tensor = torch.as_tensor(state, dtype=torch.float32, device=self.device).unsqueeze(0)
+        state_tensor = torch.as_tensor(
+            state, dtype=torch.float32, device=self.device
+        ).unsqueeze(0)
         with torch.no_grad():
             action, _, deterministic = self.actor.sample(state_tensor)
         self.actor.train()
@@ -111,11 +125,21 @@ class SACController:
             return {}
 
         batch = self.replay_buffer.sample(batch_size)
-        states = torch.as_tensor([t.state for t in batch], dtype=torch.float32, device=self.device)
-        actions = torch.as_tensor([t.action for t in batch], dtype=torch.float32, device=self.device)
-        rewards = torch.as_tensor([t.reward for t in batch], dtype=torch.float32, device=self.device).unsqueeze(-1)
-        next_states = torch.as_tensor([t.next_state for t in batch], dtype=torch.float32, device=self.device)
-        dones = torch.as_tensor([float(t.done) for t in batch], dtype=torch.float32, device=self.device).unsqueeze(-1)
+        states = torch.as_tensor(
+            [t.state for t in batch], dtype=torch.float32, device=self.device
+        )
+        actions = torch.as_tensor(
+            [t.action for t in batch], dtype=torch.float32, device=self.device
+        )
+        rewards = torch.as_tensor(
+            [t.reward for t in batch], dtype=torch.float32, device=self.device
+        ).unsqueeze(-1)
+        next_states = torch.as_tensor(
+            [t.next_state for t in batch], dtype=torch.float32, device=self.device
+        )
+        dones = torch.as_tensor(
+            [float(t.done) for t in batch], dtype=torch.float32, device=self.device
+        ).unsqueeze(-1)
 
         with torch.no_grad():
             next_action, next_log_prob, _ = self.actor.sample(next_states)
@@ -127,12 +151,18 @@ class SACController:
         # critic update
         current_q1 = self.critic_1(states, actions)
         current_q2 = self.critic_2(states, actions)
-        critic_loss = nn.functional.mse_loss(current_q1, target_value) + nn.functional.mse_loss(current_q2, target_value)
+        critic_loss = nn.functional.mse_loss(
+            current_q1, target_value
+        ) + nn.functional.mse_loss(current_q2, target_value)
         self.critic_opt.zero_grad(set_to_none=True)
         critic_loss.backward()
         if self.critic_clip_norm is not None and self.critic_clip_norm > 0.0:
-            torch.nn.utils.clip_grad_norm_(self.critic_1.parameters(), max_norm=self.critic_clip_norm)
-            torch.nn.utils.clip_grad_norm_(self.critic_2.parameters(), max_norm=self.critic_clip_norm)
+            torch.nn.utils.clip_grad_norm_(
+                self.critic_1.parameters(), max_norm=self.critic_clip_norm
+            )
+            torch.nn.utils.clip_grad_norm_(
+                self.critic_2.parameters(), max_norm=self.critic_clip_norm
+            )
         self.critic_opt.step()
 
         # actor update
@@ -143,11 +173,15 @@ class SACController:
         self.actor_opt.zero_grad(set_to_none=True)
         actor_loss.backward()
         if self.actor_clip_norm is not None and self.actor_clip_norm > 0.0:
-            torch.nn.utils.clip_grad_norm_(self.actor.parameters(), max_norm=self.actor_clip_norm)
+            torch.nn.utils.clip_grad_norm_(
+                self.actor.parameters(), max_norm=self.actor_clip_norm
+            )
         self.actor_opt.step()
 
         # temperature (entropy coefficient) update
-        alpha_loss = -(self.log_alpha * (log_prob + self.target_entropy).detach()).mean()
+        alpha_loss = -(
+            self.log_alpha * (log_prob + self.target_entropy).detach()
+        ).mean()
         self.alpha_opt.zero_grad(set_to_none=True)
         alpha_loss.backward()
         self.alpha_opt.step()
@@ -171,13 +205,17 @@ class SACController:
 
     def _soft_update(self, target: nn.Module, source: nn.Module) -> None:
         with torch.no_grad():
-            for target_param, param in zip(target.parameters(), source.parameters(), strict=True):
+            for target_param, param in zip(
+                target.parameters(), source.parameters(), strict=True
+            ):
                 target_param.data.mul_(1.0 - self.tau)
                 target_param.data.add_(self.tau * param.data)
 
 
 class GaussianActor(nn.Module):
-    def __init__(self, state_dim: int, action_dim: int, hidden_layers: Sequence[int]) -> None:
+    def __init__(
+        self, state_dim: int, action_dim: int, hidden_layers: Sequence[int]
+    ) -> None:
         super().__init__()
         layers: List[nn.Module] = []
         prev_dim = state_dim
@@ -195,7 +233,9 @@ class GaussianActor(nn.Module):
     def forward(self, state: Tensor) -> Tuple[Tensor, Tensor]:
         features = self.backbone(state) if len(self.backbone) > 0 else state
         mean = self.mean_head(features)
-        log_std = torch.clamp(self.log_std_head(features), self.log_std_min, self.log_std_max)
+        log_std = torch.clamp(
+            self.log_std_head(features), self.log_std_min, self.log_std_max
+        )
         return mean, log_std
 
     def sample(self, state: Tensor) -> Tuple[Tensor, Tensor, Tensor]:
@@ -211,7 +251,9 @@ class GaussianActor(nn.Module):
 
 
 class QNetwork(nn.Module):
-    def __init__(self, state_dim: int, action_dim: int, hidden_layers: Sequence[int]) -> None:
+    def __init__(
+        self, state_dim: int, action_dim: int, hidden_layers: Sequence[int]
+    ) -> None:
         super().__init__()
         layers: List[nn.Module] = []
         prev_dim = state_dim + action_dim

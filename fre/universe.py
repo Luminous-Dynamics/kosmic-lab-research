@@ -7,7 +7,7 @@ import numpy as np
 
 
 def _gaussian_closeness(value: float, center: float, width: float) -> float:
-    return float(np.exp(-((value - center) ** 2) / (2 * width ** 2)))
+    return float(np.exp(-((value - center) ** 2) / (2 * width**2)))
 
 
 @dataclass
@@ -44,13 +44,19 @@ class UniverseSimulator:
         }
 
         cohesion = np.mean(
-            [closeness["energy_gradient"], closeness["communication_cost"], closeness["plasticity_rate"]]
+            [
+                closeness["energy_gradient"],
+                closeness["communication_cost"],
+                closeness["plasticity_rate"],
+            ]
         )
         reciprocity = closeness["noise_spectrum_alpha"]
         playfulness = closeness["stimulus_jitter"]
 
         phi = float(np.clip(2.5 * cohesion + rng.normal(0, self.noise_sigma), 0.0, 3.0))
-        te_mutual = float(np.clip(1.2 * cohesion + rng.normal(0, self.noise_sigma), 0.0, 2.0))
+        te_mutual = float(
+            np.clip(1.2 * cohesion + rng.normal(0, self.noise_sigma), 0.0, 2.0)
+        )
         te_symmetry = float(np.clip((cohesion + reciprocity) / 2.0, 0.0, 1.0))
 
         # Compose K from harmonies (simplified weights)

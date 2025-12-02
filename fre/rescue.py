@@ -18,11 +18,11 @@ v2 → v3: Discovered v2 interferes with natural dynamics (rescue worse than bas
 
 from __future__ import annotations
 
-from typing import Dict, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict
 
 import numpy as np
 
-from core.bioelectric import compute_iou
+# from core.bioelectric import compute_iou  # unused in current module
 
 if TYPE_CHECKING:
     from core.bioelectric import BioelectricGrid
@@ -43,7 +43,7 @@ def fep_to_bioelectric(agent, timestep: int) -> None:
         return
 
     # Initialize momentum if first time
-    if not hasattr(agent, '_voltage_momentum'):
+    if not hasattr(agent, "_voltage_momentum"):
         agent._voltage_momentum = 0.0
 
     # Pull voltage toward resting potential (-70mV) with stronger correction
@@ -63,7 +63,7 @@ def fep_to_bioelectric(agent, timestep: int) -> None:
         agent.gap_junctions[neighbor_id] *= 1.1
 
 
-def fep_to_bioelectric_v3(agent, grid: 'BioelectricGrid', timestep: int) -> None:
+def fep_to_bioelectric_v3(agent, grid: "BioelectricGrid", timestep: int) -> None:
     """V3: Attractor-based rescue - modifies grid physics to create stable equilibria.
 
     KEY INSIGHT FROM V2 FAILURE:
@@ -90,18 +90,20 @@ def fep_to_bioelectric_v3(agent, grid: 'BioelectricGrid', timestep: int) -> None
 
     # Modify leak reversal to create stable attractor at target
     # Gradually shift leak reversal toward target (smooth transition)
-    if not hasattr(agent, '_leak_reversal_momentum'):
+    if not hasattr(agent, "_leak_reversal_momentum"):
         agent._leak_reversal_momentum = 0.0
 
     # Optimal shift rate from v3 (validation showed 0.6 is worse)
     target_shift = (target_voltage - grid.leak_reversal) * error * 0.3
-    agent._leak_reversal_momentum = 0.8 * agent._leak_reversal_momentum + 0.2 * target_shift
+    agent._leak_reversal_momentum = (
+        0.8 * agent._leak_reversal_momentum + 0.2 * target_shift
+    )
     grid.leak_reversal += agent._leak_reversal_momentum
     grid.leak_reversal = np.clip(grid.leak_reversal, -70.0, 0.0)
 
     # Also temporarily increase leak conductance to accelerate convergence
     # Store original if first time
-    if not hasattr(grid, '_original_g'):
+    if not hasattr(grid, "_original_g"):
         grid._original_g = grid.g
 
     # Increase leak proportional to error (higher error = faster convergence)
@@ -114,7 +116,9 @@ def fep_to_bioelectric_v3(agent, grid: 'BioelectricGrid', timestep: int) -> None
         agent.gap_junctions[neighbor_id] *= 1.1
 
 
-def fep_to_bioelectric_v4_adaptive(agent, grid: 'BioelectricGrid', timestep: int) -> None:
+def fep_to_bioelectric_v4_adaptive(
+    agent, grid: "BioelectricGrid", timestep: int
+) -> None:
     """V4: Adaptive target voltage - matches intervention strength to damage severity.
 
     INSIGHT FROM VALIDATION TEST:
@@ -150,18 +154,20 @@ def fep_to_bioelectric_v4_adaptive(agent, grid: 'BioelectricGrid', timestep: int
 
     # Modify leak reversal to create stable attractor at adaptive target
     # Gradually shift leak reversal toward target (smooth transition)
-    if not hasattr(agent, '_leak_reversal_momentum'):
+    if not hasattr(agent, "_leak_reversal_momentum"):
         agent._leak_reversal_momentum = 0.0
 
     # Use v3's optimal shift rate (validation showed 0.3 is best)
     target_shift = (target_voltage - grid.leak_reversal) * error * 0.3
-    agent._leak_reversal_momentum = 0.8 * agent._leak_reversal_momentum + 0.2 * target_shift
+    agent._leak_reversal_momentum = (
+        0.8 * agent._leak_reversal_momentum + 0.2 * target_shift
+    )
     grid.leak_reversal += agent._leak_reversal_momentum
     grid.leak_reversal = np.clip(grid.leak_reversal, -100.0, 0.0)
 
     # Also temporarily increase leak conductance to accelerate convergence
     # Store original if first time
-    if not hasattr(grid, '_original_g'):
+    if not hasattr(grid, "_original_g"):
         grid._original_g = grid.g
 
     # Increase leak proportional to error (higher error = faster convergence)
@@ -181,7 +187,7 @@ def bioelectric_to_autopoiesis(agent, target_morphology: Dict[str, float]) -> No
     to allow autopoiesis activation during rescue process.
     """
     target_voltage = target_morphology.get("voltage", -70.0)
-    
+
     # Relaxed threshold: Allow activation when voltage is moving toward target
     if abs(agent.voltage - target_voltage) >= 20.0:
         return
@@ -189,6 +195,8 @@ def bioelectric_to_autopoiesis(agent, target_morphology: Dict[str, float]) -> No
         return
 
     repair = 0.01 * (1.0 - agent.boundary_integrity)
-    agent.internal_state["membrane"] = agent.internal_state.get("membrane", 0.0) + repair
+    agent.internal_state["membrane"] = (
+        agent.internal_state.get("membrane", 0.0) + repair
+    )
     agent.boundary_integrity += repair * 0.5
     agent.internal_state["ATP"] = agent.internal_state.get("ATP", 0.0) - repair * 0.1

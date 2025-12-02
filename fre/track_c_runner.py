@@ -16,25 +16,26 @@ import argparse
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 import numpy as np
 import yaml
 from tqdm import tqdm
 
 from core.bioelectric import BioelectricGrid, compute_iou, mask_from_voltage
-from fre import rescue
 from core.kcodex import KCodexWriter
+from fre import rescue
 from fre.detailed_logging_patch import (
-    should_enable_detailed_logging,
     log_detailed_track_c_step,
     save_track_c_detailed_npz,
+    should_enable_detailed_logging,
 )
 
 
 @dataclass
 class AgentState:
     """Simplified agent for rescue experiments."""
+
     voltage: float = -70.0
     boundary_integrity: float = 1.0
     internal_state: Dict[str, float] = None
@@ -53,6 +54,7 @@ class AgentState:
 @dataclass
 class EpisodeSummary:
     """Results from a single rescue episode."""
+
     mode: str
     initial_iou: float
     final_iou: float
@@ -84,7 +86,9 @@ class TrackCRunner:
         self.target_iou = self.config.get("target_iou", 0.85)
 
         # Damage parameters
-        self.initial_boundary_integrity = self.config.get("initial_boundary_integrity", 0.3)
+        self.initial_boundary_integrity = self.config.get(
+            "initial_boundary_integrity", 0.3
+        )
         self.damage_probability = self.config.get("damage_probability", 0.5)
 
         # Target morphology
@@ -117,7 +121,7 @@ class TrackCRunner:
         center = np.array(self.grid_shape) / 2
         radius = min(self.grid_shape) / 4
 
-        dist = np.sqrt((y - center[0])**2 + (x - center[1])**2)
+        dist = np.sqrt((y - center[0]) ** 2 + (x - center[1]) ** 2)
         return dist <= radius
 
     def _create_damaged_morphology(self, seed: int) -> np.ndarray:
@@ -139,10 +143,7 @@ class TrackCRunner:
         np.clip(self.grid.V, -100, 0, out=self.grid.V)
 
     def run_episode(
-        self,
-        mode: str,
-        seed: int,
-        rescue_enabled: bool = True
+        self, mode: str, seed: int, rescue_enabled: bool = True
     ) -> EpisodeSummary:
         """Run a single rescue episode."""
         # Initialize damaged morphology
@@ -178,7 +179,9 @@ class TrackCRunner:
             # Old: threshold = abs(self.target_voltage) * 0.5 = 35.0 mV
             # New: threshold = abs(self.target_voltage) * 0.3 = 21.0 mV
             # This allows detection at voltage ranges achievable during rescue
-            current_mask = mask_from_voltage(self.grid.V, threshold=abs(self.target_voltage) * 0.3)
+            current_mask = mask_from_voltage(
+                self.grid.V, threshold=abs(self.target_voltage) * 0.3
+            )
             current_iou = compute_iou(self.target_mask, current_mask)
             agent.prediction_errors["sensory"] = 1.0 - current_iou  # Error = 1 - match
 
@@ -199,22 +202,26 @@ class TrackCRunner:
 
             # Record diagnostics
             iou_history.append(current_iou)
-            self.diagnostics.append({
-                "mode": mode,
-                "seed": seed,
-                "timestep": t,
-                "iou": current_iou,
-                "voltage": agent.voltage,
-                "boundary_integrity": agent.boundary_integrity,
-                "atp": agent.internal_state["ATP"],
-                "rescue_triggers_cumulative": rescue_triggers,
-                "prediction_error": agent.prediction_errors["sensory"],
-            })
+            self.diagnostics.append(
+                {
+                    "mode": mode,
+                    "seed": seed,
+                    "timestep": t,
+                    "iou": current_iou,
+                    "voltage": agent.voltage,
+                    "boundary_integrity": agent.boundary_integrity,
+                    "atp": agent.internal_state["ATP"],
+                    "rescue_triggers_cumulative": rescue_triggers,
+                    "prediction_error": agent.prediction_errors["sensory"],
+                }
+            )
 
             # Add detailed logging if enabled
             if self.enable_detailed:
                 # Rescue action is approximated from rescue_triggers count changes
-                rescue_action = 1.0 if rescue_enabled and len(self.diagnostics) > 0 else 0.0
+                rescue_action = (
+                    1.0 if rescue_enabled and len(self.diagnostics) > 0 else 0.0
+                )
                 enhanced = log_detailed_track_c_step(
                     diag_record=self.diagnostics[-1].copy(),
                     grid_voltage=self.grid.V,
@@ -286,27 +293,47 @@ class TrackCRunner:
             results["episodes"].append(summary.__dict__)
 
         # Compute aggregates
-        no_rescue_episodes = [ep for ep in results["episodes"] if ep["mode"] == "no_rescue"]
+        no_rescue_episodes = [
+            ep for ep in results["episodes"] if ep["mode"] == "no_rescue"
+        ]
         rescue_episodes = [ep for ep in results["episodes"] if ep["mode"] == "rescue"]
 
         results["aggregates"] = {
-            "no_rescue_success_rate": sum(ep["success"] for ep in no_rescue_episodes) / len(no_rescue_episodes),
-            "rescue_success_rate": sum(ep["success"] for ep in rescue_episodes) / len(rescue_episodes),
-            "no_rescue_avg_final_iou": np.mean([ep["final_iou"] for ep in no_rescue_episodes]),
-            "rescue_avg_final_iou": np.mean([ep["final_iou"] for ep in rescue_episodes]),
-            "avg_rescue_triggers": np.mean([ep["rescue_triggers"] for ep in rescue_episodes]),
+            "no_rescue_success_rate": sum(ep["success"] for ep in no_rescue_episodes)
+            / len(no_rescue_episodes),
+            "rescue_success_rate": sum(ep["success"] for ep in rescue_episodes)
+            / len(rescue_episodes),
+            "no_rescue_avg_final_iou": np.mean(
+                [ep["final_iou"] for ep in no_rescue_episodes]
+            ),
+            "rescue_avg_final_iou": np.mean(
+                [ep["final_iou"] for ep in rescue_episodes]
+            ),
+            "avg_rescue_triggers": np.mean(
+                [ep["rescue_triggers"] for ep in rescue_episodes]
+            ),
             "avg_atp_consumed": np.mean([ep["atp_consumed"] for ep in rescue_episodes]),
-            "avg_boundary_recovery": np.mean([ep["boundary_recovery"] for ep in rescue_episodes]),
+            "avg_boundary_recovery": np.mean(
+                [ep["boundary_recovery"] for ep in rescue_episodes]
+            ),
         }
 
         print("\n" + "=" * 60)
         print("Results Summary")
         print("=" * 60)
-        print(f"Baseline success rate: {results['aggregates']['no_rescue_success_rate']:.1%}")
-        print(f"Rescue success rate: {results['aggregates']['rescue_success_rate']:.1%}")
-        print(f"Baseline avg IoU: {results['aggregates']['no_rescue_avg_final_iou']:.3f}")
+        print(
+            f"Baseline success rate: {results['aggregates']['no_rescue_success_rate']:.1%}"
+        )
+        print(
+            f"Rescue success rate: {results['aggregates']['rescue_success_rate']:.1%}"
+        )
+        print(
+            f"Baseline avg IoU: {results['aggregates']['no_rescue_avg_final_iou']:.3f}"
+        )
         print(f"Rescue avg IoU: {results['aggregates']['rescue_avg_final_iou']:.3f}")
-        print(f"Avg rescue triggers: {results['aggregates']['avg_rescue_triggers']:.1f}")
+        print(
+            f"Avg rescue triggers: {results['aggregates']['avg_rescue_triggers']:.1f}"
+        )
         print(f"Avg ATP consumed: {results['aggregates']['avg_atp_consumed']:.3f}")
         print()
 
@@ -325,6 +352,7 @@ class TrackCRunner:
 
         # Save diagnostics CSV
         import pandas as pd
+
         diagnostics_df = pd.DataFrame(self.diagnostics)
         diagnostics_path = output_dir / "fre_track_c_diagnostics.csv"
         diagnostics_df.to_csv(diagnostics_path, index=False)
@@ -341,14 +369,16 @@ class TrackCRunner:
                 "results": results["aggregates"],
             }
             codex.write(codex_data, output_dir / "track_c_kcodex.json")
-            print(f"✅ K-Codex record saved")
+            print("✅ K-Codex record saved")
         except TypeError:
-            print(f"⚠️  K-Codex save skipped (schema_path argument needed)")
+            print("⚠️  K-Codex save skipped (schema_path argument needed)")
 
 
 def main():
     """CLI entry point."""
-    parser = argparse.ArgumentParser(description="Run Track C bioelectric rescue experiments")
+    parser = argparse.ArgumentParser(
+        description="Run Track C bioelectric rescue experiments"
+    )
     parser.add_argument(
         "--config",
         type=Path,

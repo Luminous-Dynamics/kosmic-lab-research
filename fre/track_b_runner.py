@@ -5,20 +5,19 @@ import csv
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Sequence, Tuple
+from typing import Any, Dict, Iterable, List, Tuple
 
 import numpy as np
 
-from core.config import ConfigBundle, load_yaml_config
+from core.config import load_yaml_config
 from fre.controller_sac import SACController, Transition
-from fre.simulate import compute_metrics, expand_parameter_grid
-from fre.universe import UniverseSimulator
 from fre.detailed_logging_patch import (
-    should_enable_detailed_logging,
     log_detailed_track_b_step,
     save_track_b_detailed_npz,
+    should_enable_detailed_logging,
 )
-
+from fre.simulate import compute_metrics, expand_parameter_grid
+from fre.universe import UniverseSimulator
 
 HARMONY_KEYS = [
     "H1_Coherence",
@@ -58,7 +57,9 @@ class TrackBRunner:
         self.control_bundle = load_yaml_config(config_path)
         self.control_config = self.control_bundle.payload
         experiment_cfg = self.control_config.get("experiment", {})
-        base_config_path = Path(experiment_cfg.get("base_config", "fre/configs/k_config.yaml"))
+        base_config_path = Path(
+            experiment_cfg.get("base_config", "fre/configs/k_config.yaml")
+        )
         self.base_bundle = load_yaml_config(base_config_path)
         self.base_config = self.base_bundle.payload
 
@@ -74,11 +75,15 @@ class TrackBRunner:
 
         self.control_params = list(self.control_config.get("parameters", {}).keys())
         if not self.control_params:
-            raise ValueError("Track B configuration must specify at least one controllable parameter.")
+            raise ValueError(
+                "Track B configuration must specify at least one controllable parameter."
+            )
 
         self.param_bounds = self._build_param_bounds()
         self.base_params = self._build_base_params()
-        self.param_grid = expand_parameter_grid(self.control_config.get("parameters", {}))
+        self.param_grid = expand_parameter_grid(
+            self.control_config.get("parameters", {})
+        )
         self.seed_base = int(self.base_config.get("seed_base", 44))
         self.threshold = float(self.base_config.get("corridor_threshold", 1.0))
         self.weights = self._weights_from_config(self.base_config.get("k_weights", {}))
@@ -132,7 +137,9 @@ class TrackBRunner:
                     results_dir = Path(self.control_config.get("results_dir", "logs"))
                     results_dir.mkdir(parents=True, exist_ok=True)
                     episode_num = len(summaries) + 1
-                    npz_path = results_dir / f"track_b_ep{episode_num:03d}_{summary.mode}.npz"
+                    npz_path = (
+                        results_dir / f"track_b_ep{episode_num:03d}_{summary.mode}.npz"
+                    )
                     try:
                         save_track_b_detailed_npz(self.detailed_records, npz_path)
                         print(f"  💾 Saved detailed log: {npz_path}")
@@ -155,7 +162,9 @@ class TrackBRunner:
                     results_dir = Path(self.control_config.get("results_dir", "logs"))
                     results_dir.mkdir(parents=True, exist_ok=True)
                     episode_num = len(summaries) + 1
-                    npz_path = results_dir / f"track_b_ep{episode_num:03d}_{summary.mode}.npz"
+                    npz_path = (
+                        results_dir / f"track_b_ep{episode_num:03d}_{summary.mode}.npz"
+                    )
                     try:
                         save_track_b_detailed_npz(self.detailed_records, npz_path)
                         print(f"  💾 Saved detailed log: {npz_path}")
@@ -178,7 +187,9 @@ class TrackBRunner:
                     results_dir = Path(self.control_config.get("results_dir", "logs"))
                     results_dir.mkdir(parents=True, exist_ok=True)
                     episode_num = len(summaries) + 1
-                    npz_path = results_dir / f"track_b_ep{episode_num:03d}_{summary.mode}.npz"
+                    npz_path = (
+                        results_dir / f"track_b_ep{episode_num:03d}_{summary.mode}.npz"
+                    )
                     try:
                         save_track_b_detailed_npz(self.detailed_records, npz_path)
                         print(f"  💾 Saved detailed log: {npz_path}")
@@ -222,14 +233,21 @@ class TrackBRunner:
             if mode == "open_loop":
                 raw_action = np.zeros_like(raw_action)
             elif step % self.action_interval == 0:
-                raw_action = np.asarray(self.controller.select_action(state.tolist(), evaluate=evaluate), dtype=float)
+                raw_action = np.asarray(
+                    self.controller.select_action(state.tolist(), evaluate=evaluate),
+                    dtype=float,
+                )
 
             applied_deltas = self._apply_action(raw_action, current_params)
-            next_metrics = compute_metrics(current_params, next_seed, self.simulator, self.weights)
+            next_metrics = compute_metrics(
+                current_params, next_seed, self.simulator, self.weights
+            )
             next_k = float(next_metrics["K"])
             delta_k = next_k - last_k
             reward = next_k + self.reward_beta * delta_k
-            next_state = self._build_state(next_metrics, current_params, delta_k=delta_k)
+            next_state = self._build_state(
+                next_metrics, current_params, delta_k=delta_k
+            )
             done = step == self.horizon - 1
 
             if train:
@@ -257,7 +275,9 @@ class TrackBRunner:
                 "K": next_k,
                 "delta_k": delta_k,
                 "reward": reward,
-                "params": {name: float(current_params[name]) for name in self.control_params},
+                "params": {
+                    name: float(current_params[name]) for name in self.control_params
+                },
             }
             for idx, name in enumerate(self.control_params):
                 step_record[f"action_{name}"] = float(raw_action[idx])
@@ -278,7 +298,9 @@ class TrackBRunner:
             last_k = next_k
             next_seed += 1
 
-        average_k = float(np.mean([row["K"] for row in step_history])) if step_history else 0.0
+        average_k = (
+            float(np.mean([row["K"] for row in step_history])) if step_history else 0.0
+        )
         corridor_rate = float(corridor_hits / max(1, len(step_history)))
         summary = EpisodeSummary(
             mode=mode,
@@ -301,14 +323,20 @@ class TrackBRunner:
         delta_k: float,
     ) -> np.ndarray:
         features: List[float] = [float(metrics.get(key, 0.0)) for key in HARMONY_KEYS]
-        features.append(float(metrics.get("TE_macro_micro", metrics.get("te_mutual", 0.0))))
-        features.append(float(metrics.get("TE_symmetry", metrics.get("te_symmetry", 0.0))))
+        features.append(
+            float(metrics.get("TE_macro_micro", metrics.get("te_mutual", 0.0)))
+        )
+        features.append(
+            float(metrics.get("TE_symmetry", metrics.get("te_symmetry", 0.0)))
+        )
         features.append(float(delta_k))
         for name in self.control_params:
             features.append(float(params.get(name, 0.0)))
         return np.asarray(features, dtype=np.float32)
 
-    def _apply_action(self, raw_action: np.ndarray, params: Dict[str, float]) -> List[float]:
+    def _apply_action(
+        self, raw_action: np.ndarray, params: Dict[str, float]
+    ) -> List[float]:
         deltas: List[float] = []
         for idx, name in enumerate(self.control_params):
             scale = self.action_scales[idx]
@@ -364,10 +392,14 @@ class TrackBRunner:
             "sacred_reciprocity",
             "evolutionary_progression",
         ]
-        weights = np.array([float(weights_cfg.get(key, 1.0)) for key in order], dtype=float)
+        weights = np.array(
+            [float(weights_cfg.get(key, 1.0)) for key in order], dtype=float
+        )
         total = float(weights.sum())
         if not np.isfinite(total) or abs(total) < 1e-12:
-            raise ValueError("Invalid K-weight configuration; sum must be finite and non-zero.")
+            raise ValueError(
+                "Invalid K-weight configuration; sum must be finite and non-zero."
+            )
         return weights / total
 
     def _build_action_scales(self, controller_cfg: Dict[str, Any]) -> List[float]:
@@ -396,7 +428,12 @@ class TrackBRunner:
 
     def _build_summary_payload(self, summaries: List[EpisodeSummary]) -> Dict[str, Any]:
         open_loop = [s for s in summaries if s.mode.startswith("open_loop")]
-        controller = [s for s in summaries if s.mode.startswith("controller_train") or s.mode.startswith("controller_eval")]
+        controller = [
+            s
+            for s in summaries
+            if s.mode.startswith("controller_train")
+            or s.mode.startswith("controller_eval")
+        ]
 
         payload = {
             "control_config_sha": self.control_bundle.sha256,
@@ -407,10 +444,26 @@ class TrackBRunner:
                 "alpha": self.controller.alpha,
             },
             "aggregates": {
-                "open_loop_avg_k": float(np.mean([s.average_k for s in open_loop])) if open_loop else 0.0,
-                "controller_avg_k": float(np.mean([s.average_k for s in controller])) if controller else 0.0,
-                "open_loop_corridor": float(np.mean([s.corridor_rate for s in open_loop])) if open_loop else 0.0,
-                "controller_corridor": float(np.mean([s.corridor_rate for s in controller])) if controller else 0.0,
+                "open_loop_avg_k": (
+                    float(np.mean([s.average_k for s in open_loop]))
+                    if open_loop
+                    else 0.0
+                ),
+                "controller_avg_k": (
+                    float(np.mean([s.average_k for s in controller]))
+                    if controller
+                    else 0.0
+                ),
+                "open_loop_corridor": (
+                    float(np.mean([s.corridor_rate for s in open_loop]))
+                    if open_loop
+                    else 0.0
+                ),
+                "controller_corridor": (
+                    float(np.mean([s.corridor_rate for s in controller]))
+                    if controller
+                    else 0.0
+                ),
             },
         }
         return payload
@@ -418,8 +471,12 @@ class TrackBRunner:
     def write_outputs(self, summary: Dict[str, Any]) -> None:
         output_cfg = self.control_config.get("output", {})
         summary_path = Path(output_cfg.get("summary_json", "logs/track_b_summary.json"))
-        diagnostics_path = Path(output_cfg.get("diagnostics_csv", "logs/track_b_diagnostics.csv"))
-        training_path = Path(output_cfg.get("training_csv", "logs/track_b_training.csv"))
+        diagnostics_path = Path(
+            output_cfg.get("diagnostics_csv", "logs/track_b_diagnostics.csv")
+        )
+        training_path = Path(
+            output_cfg.get("training_csv", "logs/track_b_training.csv")
+        )
 
         summary_path.parent.mkdir(parents=True, exist_ok=True)
         diagnostics_path.parent.mkdir(parents=True, exist_ok=True)
@@ -436,7 +493,9 @@ class TrackBRunner:
                     writer.writerow(row)
 
         if self.training_metrics:
-            fieldnames = sorted({key for row in self.training_metrics for key in row.keys()})
+            fieldnames = sorted(
+                {key for row in self.training_metrics for key in row.keys()}
+            )
             with training_path.open("w", newline="", encoding="utf-8") as fh:
                 writer = csv.DictWriter(fh, fieldnames=fieldnames)
                 writer.writeheader()
@@ -445,7 +504,9 @@ class TrackBRunner:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run Track B SAC controller experiments.")
+    parser = argparse.ArgumentParser(
+        description="Run Track B SAC controller experiments."
+    )
     parser.add_argument(
         "--config",
         type=Path,
@@ -460,7 +521,9 @@ def main() -> None:
     runner = TrackBRunner(args.config)
     summary = runner.run()
     runner.write_outputs(summary)
-    print(f"[Track B] Completed {len(summary['episodes'])} episodes. Summary stored at configured output path.")
+    print(
+        f"[Track B] Completed {len(summary['episodes'])} episodes. Summary stored at configured output path."
+    )
 
 
 if __name__ == "__main__":

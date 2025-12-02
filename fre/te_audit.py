@@ -1,4 +1,5 @@
 """Audit utility for comparing corridor sets against a reference."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -8,7 +9,9 @@ import pandas as pd
 
 def load_corridor(path: Path) -> set[tuple[float, ...]]:
     df = pd.read_csv(path)
-    param_cols = [c for c in df.columns if c not in {"run_id", "seed", "K", "TAT", "Recovery"}]
+    param_cols = [
+        c for c in df.columns if c not in {"run_id", "seed", "K", "TAT", "Recovery"}
+    ]
     tuples = [tuple(df[col].iloc[i] for col in param_cols) for i in range(len(df))]
     return set(tuples)
 

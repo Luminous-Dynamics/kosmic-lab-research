@@ -34,7 +34,9 @@ class Phase4Coordinator:
         critic_cfg: CriticConfig,
         trainer_cfg: TrainerConfig,
     ) -> None:
-        self.buffer = SharedReplayBuffer(capacity=buffer_cfg.capacity, seed=buffer_cfg.seed)
+        self.buffer = SharedReplayBuffer(
+            capacity=buffer_cfg.capacity, seed=buffer_cfg.seed
+        )
         self.batch_size = buffer_cfg.batch_size
         self.critic = CentralCritic(critic_cfg)
         self.trainer_cfg = trainer_cfg
@@ -60,7 +62,9 @@ class Phase4Coordinator:
         )
         self.buffer.push(exp)
 
-    def maybe_train(self) -> Tuple[Optional[float], Dict[int, Tuple[np.ndarray, np.ndarray, np.ndarray]]]:
+    def maybe_train(
+        self,
+    ) -> Tuple[Optional[float], Dict[int, Tuple[np.ndarray, np.ndarray, np.ndarray]]]:
         self.step_count += 1
         if len(self.buffer) < self.trainer_cfg.warmup_steps:
             return None, {}
@@ -85,6 +89,9 @@ class Phase4Coordinator:
         if losses:
             self.last_loss = float(np.mean(losses))
         log_loss = None
-        if self.trainer_cfg.log_interval and self.step_count % self.trainer_cfg.log_interval == 0:
+        if (
+            self.trainer_cfg.log_interval
+            and self.step_count % self.trainer_cfg.log_interval == 0
+        ):
             log_loss = self.last_loss
         return log_loss, actor_batches

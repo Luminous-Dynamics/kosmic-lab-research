@@ -35,14 +35,18 @@ def run_scaling(config_path: Path) -> pd.DataFrame:
 
     coupling_cfg = config.get("coupling", {})
     coupling_mode = coupling_cfg.get("mode", config.get("coupling_mode", "rpc")).lower()
-    coupling_strength = float(coupling_cfg.get("strength", config.get("coupling_strength", 0.1)))
+    coupling_strength = float(
+        coupling_cfg.get("strength", config.get("coupling_strength", 0.1))
+    )
     te_cfg = coupling_cfg.get("te_bridge", config.get("te_bridge", {}))
     rpc_cfg = coupling_cfg.get("rpc", {})
     phase4_cfg = config.get("phase4", {})
 
     rows = []
     for count in universe_counts:
-        seeds = [int(config.get("seed_base", 44)) + 100 * count + i for i in range(count)]
+        seeds = [
+            int(config.get("seed_base", 44)) + 100 * count + i for i in range(count)
+        ]
         simulator = MultiUniverseSimulator(
             universe_count=count,
             base_params=base_params,
@@ -59,16 +63,20 @@ def run_scaling(config_path: Path) -> pd.DataFrame:
         if simulator.phase4_loss_log:
             avg_loss = float(np.mean([loss for _, loss in simulator.phase4_loss_log]))
             last_step, last_loss = simulator.phase4_loss_log[-1]
-            print(f"Phase4 critic loss (avg): {avg_loss:.4f}, last step {last_step} loss {last_loss:.4f}")
+            print(
+                f"Phase4 critic loss (avg): {avg_loss:.4f}, last step {last_step} loss {last_loss:.4f}"
+            )
         mean_k = []
         for hist in histories.values():
             k_vals = [scores.kosmic_signature(weights=weights) for scores in hist]
             mean_k.append(float(np.mean(k_vals)))
-        rows.append({
-            "universe_count": count,
-            "mean_K": float(np.mean(mean_k)),
-            "sum_K": float(np.sum(mean_k)),
-        })
+        rows.append(
+            {
+                "universe_count": count,
+                "mean_K": float(np.mean(mean_k)),
+                "sum_K": float(np.sum(mean_k)),
+            }
+        )
 
     return pd.DataFrame(rows)
 

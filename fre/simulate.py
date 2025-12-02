@@ -1,4 +1,5 @@
 """Structured FRE Phase 1 simulation hooks."""
+
 from __future__ import annotations
 
 from itertools import product
@@ -8,7 +9,6 @@ import numpy as np
 
 from fre.universe import UniverseSimulator
 from harmonics_module import HarmonyCalculator
-
 
 CALCULATOR = HarmonyCalculator()
 GLOBAL_TIMESTEP = 0
@@ -85,7 +85,9 @@ def compute_metrics(
     simulator = simulator or UniverseSimulator()
     sim_metrics = simulator.run(params, seed)
     GLOBAL_TIMESTEP += 1
-    harmony_inputs = _synthetic_harmony_inputs(sim_metrics, params, seed, GLOBAL_TIMESTEP)
+    harmony_inputs = _synthetic_harmony_inputs(
+        sim_metrics, params, seed, GLOBAL_TIMESTEP
+    )
     scores = CALCULATOR.compute_all(**harmony_inputs)
     weights = weights if weights is not None else np.ones(7) / 7.0
     k_value = float(np.clip(scores.kosmic_signature(weights=weights) * 1.2, 0.0, 2.5))
@@ -122,11 +124,15 @@ def _synthetic_harmony_inputs(
     type_probs = type_probs / type_probs.sum()
     agent_states: List[Dict[str, Any]] = []
     for _ in range(alive_agents):
-        agent_states.append({"alive": True, "type": rng.choice(agent_types, p=type_probs)})
+        agent_states.append(
+            {"alive": True, "type": rng.choice(agent_types, p=type_probs)}
+        )
     for _ in range(dead_agents):
         agent_states.append({"alive": False, "type": rng.choice(agent_types)})
 
-    te_matrix = rng.normal(loc=sim_metrics["te_mutual"], scale=0.05, size=(agent_count, agent_count))
+    te_matrix = rng.normal(
+        loc=sim_metrics["te_mutual"], scale=0.05, size=(agent_count, agent_count)
+    )
     te_matrix = np.clip(te_matrix, 0.0, None)
     np.fill_diagonal(te_matrix, 0.0)
 

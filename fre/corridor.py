@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Tuple
+from typing import Dict, List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -35,13 +35,20 @@ class CorridorSummary:
         }
 
 
-def compute_corridor_metrics(df: pd.DataFrame, threshold: float, param_columns: List[str]) -> CorridorSummary:
+def compute_corridor_metrics(
+    df: pd.DataFrame, threshold: float, param_columns: List[str]
+) -> CorridorSummary:
     total = len(df)
     corridor_df = df[df["in_corridor"]]
     hits = len(corridor_df)
     rate = hits / total if total else 0.0
-    centroid = {col: float(corridor_df[col].mean()) if hits else float(df[col].mean()) for col in param_columns}
-    bounds = {col: (float(df[col].min()), float(df[col].max())) for col in param_columns}
+    centroid = {
+        col: float(corridor_df[col].mean()) if hits else float(df[col].mean())
+        for col in param_columns
+    }
+    bounds = {
+        col: (float(df[col].min()), float(df[col].max())) for col in param_columns
+    }
     return CorridorSummary(
         total_runs=total,
         corridor_hits=hits,
@@ -55,7 +62,9 @@ def compute_corridor_metrics(df: pd.DataFrame, threshold: float, param_columns: 
     )
 
 
-def discretize_corridor(df: pd.DataFrame, param_columns: List[str], bins: int = 12) -> List[Tuple[int, ...]]:
+def discretize_corridor(
+    df: pd.DataFrame, param_columns: List[str], bins: int = 12
+) -> List[Tuple[int, ...]]:
     if df.empty:
         return []
     grids = []
@@ -79,7 +88,13 @@ def compare_to_baseline(
         baseline_df["in_corridor"] = True
     else:
         if baseline_df["in_corridor"].dtype != bool:
-            baseline_df["in_corridor"] = baseline_df["in_corridor"].astype(str).str.lower().map({"true": True, "false": False}).fillna(False)
+            baseline_df["in_corridor"] = (
+                baseline_df["in_corridor"]
+                .astype(str)
+                .str.lower()
+                .map({"true": True, "false": False})
+                .fillna(False)
+            )
 
     current_hits = current_df[current_df["in_corridor"]]
     baseline_hits = baseline_df[baseline_df["in_corridor"]]
@@ -91,7 +106,11 @@ def compare_to_baseline(
             "centroid_shift": float("nan"),
         }
 
-    available_cols = [col for col in param_columns if col in current_hits.columns and col in baseline_hits.columns]
+    available_cols = [
+        col
+        for col in param_columns
+        if col in current_hits.columns and col in baseline_hits.columns
+    ]
     if not available_cols:
         return {
             "baseline_path": str(baseline_path),
@@ -102,9 +121,11 @@ def compare_to_baseline(
 
     combined = pd.concat([current_hits[available_cols], baseline_hits[available_cols]])
     bin_edges = {
-        col: np.linspace(combined[col].min(), combined[col].max(), bins + 1)
-        if combined[col].min() != combined[col].max()
-        else np.array([combined[col].min(), combined[col].min() + 1e-6])
+        col: (
+            np.linspace(combined[col].min(), combined[col].max(), bins + 1)
+            if combined[col].min() != combined[col].max()
+            else np.array([combined[col].min(), combined[col].min() + 1e-6])
+        )
         for col in available_cols
     }
 
@@ -137,7 +158,9 @@ def compare_to_baseline(
     }
 
 
-def save_summary(summary: CorridorSummary, path: Path, extra: Dict[str, object] | None = None) -> None:
+def save_summary(
+    summary: CorridorSummary, path: Path, extra: Dict[str, object] | None = None
+) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     data = summary.to_dict()
     if extra:

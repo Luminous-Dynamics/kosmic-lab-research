@@ -3,11 +3,16 @@
 from __future__ import annotations
 
 import argparse
+import json
+import random
+import subprocess
 from pathlib import Path
 
+import numpy as np
 import yaml
 from stable_baselines3 import SAC
 from stable_baselines3.common.callbacks import EvalCallback
+from stable_baselines3.common.utils import set_random_seed
 
 from fre.sac_env import make_env
 
@@ -17,15 +22,46 @@ def load_config(path: Path) -> dict:
         return yaml.safe_load(fh)
 
 
+def _compute_config_hash(path: Path) -> str:
+    import hashlib
+
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _git_commit_sha() -> str:
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        return result.stdout.strip()
+    except Exception:
+        return "unknown"
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Train SAC for Track C rescue")
     parser.add_argument("--config", type=Path, default=Path("configs/track_c_sac.yaml"))
     parser.add_argument("--timesteps", type=int, default=100_000)
     parser.add_argument("--output", type=Path, default=Path("artifacts/sac_track_c"))
+    parser.add_argument("--seed", type=int, default=None, help="RNG seed for reproducibility")
     args = parser.parse_args()
 
     cfg = load_config(args.config)
+    seed = args.seed if args.seed is not None else cfg.get("seed")
+    if seed is not None:
+        set_random_seed(int(seed))
+        random.seed(int(seed))
+        np.random.seed(int(seed))
+
     env = make_env(cfg)
+    if seed is not None:
+        try:
+            env.reset(seed=int(seed))
+        except Exception:
+            pass
 
     sac_kwargs = cfg.get("sac", {})
     policy_kwargs = {
@@ -45,6 +81,11 @@ def main() -> None:
     )
 
     eval_env = make_env(cfg)
+    if seed is not None:
+        try:
+            eval_env.reset(seed=int(seed) + 1)
+        except Exception:
+            pass
     eval_callback = EvalCallback(
         eval_env,
         best_model_save_path=str(args.output),
@@ -57,6 +98,15 @@ def main() -> None:
     model.learn(total_timesteps=args.timesteps, callback=eval_callback)
     args.output.mkdir(parents=True, exist_ok=True)
     model.save(str(args.output / "sac_track_c"))
+    # Record provenance
+    meta = {
+        "seed": seed,
+        "config": str(args.config),
+        "config_sha256": _compute_config_hash(args.config),
+        "git_commit": _git_commit_sha(),
+        "timesteps": args.timesteps,
+    }
+    (args.output / "metadata.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
 
 
 if __name__ == "__main__":

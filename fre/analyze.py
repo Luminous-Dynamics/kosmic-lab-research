@@ -69,8 +69,12 @@ def load_passports(logdir: Path) -> pd.DataFrame:
     return pd.DataFrame(records)
 
 
-def compute_summary(df: pd.DataFrame, param_columns: List[str], threshold: float) -> CorridorSummary:
-    return compute_corridor_metrics(df, threshold=threshold, param_columns=param_columns)
+def compute_summary(
+    df: pd.DataFrame, param_columns: List[str], threshold: float
+) -> CorridorSummary:
+    return compute_corridor_metrics(
+        df, threshold=threshold, param_columns=param_columns
+    )
 
 
 def create_plots(df: pd.DataFrame, param_columns: List[str], outdir: Path) -> None:
@@ -111,7 +115,9 @@ def main() -> None:
 
     extras: Dict[str, object] = {}
     if args.baseline:
-        extras["baseline_comparison"] = compare_to_baseline(df, args.baseline, stripped_cols)
+        extras["baseline_comparison"] = compare_to_baseline(
+            df, args.baseline, stripped_cols
+        )
 
     save_summary(summary, args.output, extras if extras else None)
 

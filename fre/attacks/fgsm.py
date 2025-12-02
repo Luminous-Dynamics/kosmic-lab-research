@@ -6,9 +6,11 @@ FGSM: x' = x + ε * sign(∇_x L(x,y))
 Gradients are taken w.r.t. observation tensor, NOT K-Index.
 K-Index is never backpropagated through.
 """
+
+from typing import Tuple
+
 import torch
 import torch.nn as nn
-from typing import Tuple
 
 
 def fgsm_observation(
@@ -16,7 +18,7 @@ def fgsm_observation(
     obs: torch.Tensor,
     target: torch.Tensor,
     loss_fn: nn.Module,
-    eps: float
+    eps: float,
 ) -> torch.Tensor:
     """
     Apply FGSM adversarial perturbation to observations.
@@ -61,7 +63,7 @@ def sanity_check_loss_increases(
     obs: torch.Tensor,
     target: torch.Tensor,
     loss_fn: nn.Module,
-    eps: float
+    eps: float,
 ) -> Tuple[float, float]:
     """
     Verify FGSM perturbation increases task loss.
@@ -109,7 +111,7 @@ def fgsm_batch(
     target_batch: torch.Tensor,
     loss_fn: nn.Module,
     eps: float,
-    verify: bool = True
+    verify: bool = True,
 ) -> torch.Tensor:
     """
     Apply FGSM to a batch with optional sanity check.
@@ -133,8 +135,7 @@ def fgsm_batch(
             model, obs_batch, target_batch, loss_fn, eps
         )
         assert adv >= base, (
-            f"FGSM sanity check failed: "
-            f"adv loss {adv:.4f} < base loss {base:.4f}"
+            f"FGSM sanity check failed: " f"adv loss {adv:.4f} < base loss {base:.4f}"
         )
 
     return fgsm_observation(model, obs_batch, target_batch, loss_fn, eps)
