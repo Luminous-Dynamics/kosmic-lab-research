@@ -1,13 +1,10 @@
 from __future__ import annotations
 
-from pathlib import Path
-
 import json
 
 import pytest
 
-from scripts import config_registry
-from scripts import validate_registry
+from scripts import config_registry, validate_registry
 
 
 def test_register_and_lookup(tmp_path, monkeypatch) -> None:

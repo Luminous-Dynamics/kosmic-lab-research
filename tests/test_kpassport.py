@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import jsonschema
 import pytest
 
 from core.config import ConfigBundle

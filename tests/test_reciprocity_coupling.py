@@ -12,11 +12,15 @@ from core.reciprocity_coupling import (
 def make_snapshot(value: float, energy: float = 0.0) -> PolicySnapshot:
     grad = np.array([value], dtype=float)
     params = np.array([0.0], dtype=float)
-    return PolicySnapshot(params={"actor": params.copy()}, grads={"actor": grad}, energy=energy)
+    return PolicySnapshot(
+        params={"actor": params.copy()}, grads={"actor": grad}, energy=energy
+    )
 
 
 def test_reciprocity_positive_coupling() -> None:
-    cfg = CouplerConfig(window=10, eta_min=0.0, eta_max=0.05, te_weight=1.0, k_neighbors=3)
+    cfg = CouplerConfig(
+        window=10, eta_min=0.0, eta_max=0.05, te_weight=1.0, k_neighbors=3
+    )
     coupler = ReciprocityCoupler(cfg)
 
     prev_g1 = 0.0
@@ -58,8 +62,12 @@ def test_energy_gate_blocks_updates() -> None:
 def test_mismatched_shapes_raise_error() -> None:
     cfg = CouplerConfig(window=5)
     coupler = ReciprocityCoupler(cfg)
-    snap1 = PolicySnapshot(params={"actor": np.zeros((2,))}, grads={"actor": np.ones((2,))}, energy=0.0)
-    snap2 = PolicySnapshot(params={"actor": np.zeros((3,))}, grads={"actor": np.ones((3,))}, energy=0.0)
+    snap1 = PolicySnapshot(
+        params={"actor": np.zeros((2,))}, grads={"actor": np.ones((2,))}, energy=0.0
+    )
+    snap2 = PolicySnapshot(
+        params={"actor": np.zeros((3,))}, grads={"actor": np.ones((3,))}, energy=0.0
+    )
     coupler.register_universe("X", snap1)
     coupler.register_universe("Y", snap2)
     coupler.update_snapshot("X", snap1)

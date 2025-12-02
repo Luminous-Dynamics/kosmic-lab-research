@@ -5,7 +5,9 @@ from scripts import log_tool
 
 def test_validate_file_pass(tmp_path) -> None:
     log_path = tmp_path / "log.jsonl"
-    log_path.write_text('{"phase": "G2", "episode_index": 1, "k_index": 0.5}\n', encoding="utf-8")
+    log_path.write_text(
+        '{"phase": "G2", "episode_index": 1, "k_index": 0.5}\n', encoding="utf-8"
+    )
     log_tool.validate_file(log_path)
 
 

@@ -1,23 +1,40 @@
 """Property-Based Tests using Hypothesis"""
+
 from __future__ import annotations
 
 import pytest
 
 try:
-    from hypothesis import given, strategies as st, settings
-    from hypothesis import assume
+    from hypothesis import given, settings
+    from hypothesis import strategies as st
+
     HYPOTHESIS_AVAILABLE = True
 except ImportError:
     HYPOTHESIS_AVAILABLE = False
+
     # Create dummy decorators if hypothesis not available
-    given = lambda *args, **kwargs: lambda f: f
-    settings = lambda *args, **kwargs: lambda f: f
+    def given(*args, **kwargs):  # type: ignore
+        def _decorator(func):
+            return func
+
+        return _decorator
+
+    def settings(*args, **kwargs):  # type: ignore
+        def _decorator(func):
+            return func
+
+        return _decorator
+
     class DummySt:
         @staticmethod
-        def floats(*args, **kwargs): return None
+        def floats(*args, **kwargs):
+            return None
+
         @staticmethod
-        def integers(*args, **kwargs): return None
-    st = DummySt()
+        def integers(*args, **kwargs):
+            return None
+
+    st = DummySt()  # type: ignore
 
 from fre.universe import UniverseSimulator
 
@@ -27,9 +44,7 @@ class TestUniverseProperties:
     """Property-based tests for universe simulator."""
 
     @given(
-        energy=st.floats(0, 1),
-        comm_cost=st.floats(0, 1),
-        seed=st.integers(0, 100000)
+        energy=st.floats(0, 1), comm_cost=st.floats(0, 1), seed=st.integers(0, 100000)
     )
     @settings(max_examples=200)
     def test_k_always_bounded(self, energy, comm_cost, seed):
@@ -38,7 +53,7 @@ class TestUniverseProperties:
         params = {"energy_gradient": energy, "communication_cost": comm_cost}
 
         result = sim.run(params, seed)
-        assert 0 <= result['K'] <= 2.5
+        assert 0 <= result["K"] <= 2.5
 
     @given(seed=st.integers(0, 10000))
     @settings(max_examples=100)
@@ -50,4 +65,4 @@ class TestUniverseProperties:
         result1 = sim.run(params, seed)
         result2 = sim.run(params, seed)
 
-        assert result1['K'] == result2['K']
+        assert result1["K"] == result2["K"]

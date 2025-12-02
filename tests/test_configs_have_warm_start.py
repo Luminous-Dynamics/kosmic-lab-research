@@ -4,7 +4,6 @@ from pathlib import Path
 
 import yaml
 
-
 CONFIG_EXPECTATIONS = [
     ("fre/configs/track_g_phase_g2.yaml", ("phase_g2", "warm_start")),
     ("fre/configs/track_g_phase_g3.yaml", ("phase_g3", "warm_start")),

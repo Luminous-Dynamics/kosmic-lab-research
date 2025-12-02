@@ -4,12 +4,13 @@ import json
 from pathlib import Path
 
 import numpy as np
-
 import pytest
 
 from fre import track_g_runner
 from fre.track_h_runner import (  # type: ignore[attr-defined]
     _apply_track_h_warm_start_overrides,
+    _maybe_save_agent as _track_h_maybe_save_agent,
+    _select_seed as _track_h_select_seed,
     _validate_track_h_config,
 )
 
@@ -75,7 +76,10 @@ def test_validate_phase_config_checks_files(tmp_path) -> None:
     temp.write_text("{}", encoding="utf-8")
     cfg = {
         "phase_g2": {
-            "warm_start": {"load_path": str(temp), "save_path": str(tmp_path / "out.json")},
+            "warm_start": {
+                "load_path": str(temp),
+                "save_path": str(tmp_path / "out.json"),
+            },
         }
     }
     track_g_runner._validate_phase_config(cfg, "g2")  # type: ignore[attr-defined]
@@ -102,7 +106,10 @@ def test_validate_track_h_config_checks_paths(tmp_path) -> None:
         "track_h": {
             "warm_start": {"load_path": str(ckpt), "save_path": None},
             "memory_architectures": [
-                {"type": "lstm", "warm_start": {"save_path": str(tmp_path / "lstm.json")}}
+                {
+                    "type": "lstm",
+                    "warm_start": {"save_path": str(tmp_path / "lstm.json")},
+                }
             ],
         }
     }
@@ -121,7 +128,9 @@ def test_validate_track_h_config_missing_file(tmp_path) -> None:
     except FileNotFoundError:
         pass
     else:
-        raise AssertionError("Expected FileNotFoundError for missing Track H checkpoint")
+        raise AssertionError(
+            "Expected FileNotFoundError for missing Track H checkpoint"
+        )
 
 
 def test_episode_logger_writes_json(tmp_path) -> None:
@@ -138,18 +147,22 @@ def test_checkpoint_metadata_includes_config_hash(tmp_path, monkeypatch) -> None
     warm_cfg = {"save_path": str(tmp_path / "ckpt.json")}
     old_config = track_g_runner._CURRENT_CONFIG_METADATA  # type: ignore[attr-defined]
     old_commit = track_g_runner._CURRENT_GIT_COMMIT  # type: ignore[attr-defined]
+    old_seed = track_g_runner._CURRENT_SEED  # type: ignore[attr-defined]
     track_g_runner._CURRENT_CONFIG_METADATA = {"path": "cfg.yaml", "sha256": "abc123"}  # type: ignore[attr-defined]
     track_g_runner._CURRENT_GIT_COMMIT = "deadbeef"  # type: ignore[attr-defined]
+    track_g_runner._CURRENT_SEED = 99  # type: ignore[attr-defined]
     try:
         track_g_runner._maybe_save_agent(agent, warm_cfg, "G2", extra_metadata={"episodes_completed": 1})  # type: ignore[attr-defined]
     finally:
         track_g_runner._CURRENT_CONFIG_METADATA = old_config  # type: ignore[attr-defined]
         track_g_runner._CURRENT_GIT_COMMIT = old_commit  # type: ignore[attr-defined]
+        track_g_runner._CURRENT_SEED = old_seed  # type: ignore[attr-defined]
     data = json.loads((tmp_path / "ckpt.json").read_text(encoding="utf-8"))
     meta = data["metadata"]
     assert meta["config"]["path"] == "cfg.yaml"
     assert meta["config"]["sha256"] == "abc123"
     assert meta["git_commit"] == "deadbeef"
+    assert meta["seed"] == 99
 
 
 def _write_checkpoint(tmp_path, config_hash: str) -> Path:
@@ -204,3 +217,98 @@ def test_checkpoint_contains_config_snapshot(tmp_path) -> None:
         track_g_runner._CURRENT_CONFIG_TEXT = old_text  # type: ignore[attr-defined]
     data = json.loads((tmp_path / "ckpt.json").read_text(encoding="utf-8"))
     assert data["metadata"]["config_snapshot"] == "alpha: 1\n"
+
+
+def test_global_allow_mismatch_flag(tmp_path) -> None:
+    ckpt = _write_checkpoint(tmp_path, "abc123")
+    warm_cfg = {"load_path": str(ckpt)}
+    agent = track_g_runner.SimpleAgent(obs_dim=2, action_dim=1)
+    old_meta = track_g_runner._CURRENT_CONFIG_METADATA  # type: ignore[attr-defined]
+    old_flag = track_g_runner._WARM_START_ALLOW_MISMATCH  # type: ignore[attr-defined]
+    track_g_runner._CURRENT_CONFIG_METADATA = {"sha256": "zzz999"}  # type: ignore[attr-defined]
+    track_g_runner._WARM_START_ALLOW_MISMATCH = True  # type: ignore[attr-defined]
+    try:
+        track_g_runner._maybe_load_agent(agent, warm_cfg, "G2")  # type: ignore[attr-defined]
+    finally:
+        track_g_runner._CURRENT_CONFIG_METADATA = old_meta  # type: ignore[attr-defined]
+        track_g_runner._WARM_START_ALLOW_MISMATCH = old_flag  # type: ignore[attr-defined]
+
+
+def test_select_seed_prefers_override_and_repro_block() -> None:
+    config = {
+        "reproducibility": {"random_seeds": [7, 8]},
+        "phase_g2": {"random_seed": 21},
+    }
+    assert track_g_runner._select_seed(config, None, "g2") == 7  # type: ignore[attr-defined]
+    assert track_g_runner._select_seed(config, 99, "g2") == 99  # type: ignore[attr-defined]
+    assert track_g_runner._select_seed({"phase_g3": {"random_seeds": [5]}}, None, "g3") == 5  # type: ignore[attr-defined]
+
+
+def test_track_h_select_seed_prefers_override() -> None:
+    cfg = {"reproducibility": {"random_seed": 11}, "track_h": {"training": {"random_seed": 5}}}
+    assert _track_h_select_seed(cfg, None) == 11
+    assert _track_h_select_seed(cfg, 77) == 77
+
+
+def test_track_h_checkpoint_metadata_includes_seed_and_config(tmp_path, monkeypatch) -> None:
+    agent = track_g_runner.SimpleAgent(obs_dim=2, action_dim=1)  # reuse simple agent
+    warm_cfg = {"save_path": str(tmp_path / "ckpt_h.json"), "metadata": {"note": "h"}}
+    import fre.track_h_runner as thr
+
+    old_meta = thr._CURRENT_CONFIG_METADATA  # type: ignore[attr-defined]
+    old_text = thr._CURRENT_CONFIG_TEXT  # type: ignore[attr-defined]
+    old_commit = thr._CURRENT_GIT_COMMIT  # type: ignore[attr-defined]
+    old_seed = thr._CURRENT_SEED  # type: ignore[attr-defined]
+    thr._CURRENT_CONFIG_METADATA = {"sha256": "abc", "path": "h.yaml"}  # type: ignore[attr-defined]
+    thr._CURRENT_CONFIG_TEXT = "foo: 1\n"  # type: ignore[attr-defined]
+    thr._CURRENT_GIT_COMMIT = "deadbeef"  # type: ignore[attr-defined]
+    thr._CURRENT_SEED = 123  # type: ignore[attr-defined]
+    try:
+        _track_h_maybe_save_agent(agent, warm_cfg, "Track H (test)")  # type: ignore[attr-defined]
+    finally:
+        thr._CURRENT_CONFIG_METADATA = old_meta  # type: ignore[attr-defined]
+        thr._CURRENT_CONFIG_TEXT = old_text  # type: ignore[attr-defined]
+        thr._CURRENT_GIT_COMMIT = old_commit  # type: ignore[attr-defined]
+        thr._CURRENT_SEED = old_seed  # type: ignore[attr-defined]
+
+    data = json.loads((tmp_path / "ckpt_h.json").read_text(encoding="utf-8"))
+    meta = data["metadata"]
+    assert meta["config"]["sha256"] == "abc"
+    assert meta["config_snapshot"] == "foo: 1\n"
+    assert meta["git_commit"] == "deadbeef"
+    assert meta["seed"] == 123
+
+
+def test_track_h_config_hash_mismatch_guard(tmp_path) -> None:
+    import fre.track_h_runner as thr
+
+    ckpt = _write_checkpoint(tmp_path, "abc123")
+    warm_cfg = {"load_path": str(ckpt)}
+    agent = track_g_runner.SimpleAgent(obs_dim=2, action_dim=1)
+    old_meta = thr._CURRENT_CONFIG_METADATA  # type: ignore[attr-defined]
+    old_flag = thr._WARM_START_ALLOW_MISMATCH  # type: ignore[attr-defined]
+    thr._CURRENT_CONFIG_METADATA = {"sha256": "zzz999"}  # type: ignore[attr-defined]
+    thr._WARM_START_ALLOW_MISMATCH = False  # type: ignore[attr-defined]
+    try:
+        with pytest.raises(RuntimeError):
+            thr._maybe_load_agent(agent, warm_cfg, "H")  # type: ignore[attr-defined]
+    finally:
+        thr._CURRENT_CONFIG_METADATA = old_meta  # type: ignore[attr-defined]
+        thr._WARM_START_ALLOW_MISMATCH = old_flag  # type: ignore[attr-defined]
+
+
+def test_track_h_config_hash_override(tmp_path) -> None:
+    import fre.track_h_runner as thr
+
+    ckpt = _write_checkpoint(tmp_path, "abc123")
+    warm_cfg = {"load_path": str(ckpt)}
+    agent = track_g_runner.SimpleAgent(obs_dim=2, action_dim=1)
+    old_meta = thr._CURRENT_CONFIG_METADATA  # type: ignore[attr-defined]
+    old_flag = thr._WARM_START_ALLOW_MISMATCH  # type: ignore[attr-defined]
+    thr._CURRENT_CONFIG_METADATA = {"sha256": "zzz999"}  # type: ignore[attr-defined]
+    thr._WARM_START_ALLOW_MISMATCH = True  # type: ignore[attr-defined]
+    try:
+        thr._maybe_load_agent(agent, warm_cfg, "H")  # type: ignore[attr-defined]
+    finally:
+        thr._CURRENT_CONFIG_METADATA = old_meta  # type: ignore[attr-defined]
+        thr._WARM_START_ALLOW_MISMATCH = old_flag  # type: ignore[attr-defined]

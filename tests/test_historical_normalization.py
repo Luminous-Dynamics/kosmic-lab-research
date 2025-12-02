@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from historical_k.etl import normalize_series, build_harmony_frame, compute_k_series
+from historical_k.etl import build_harmony_frame, compute_k_series, normalize_series
 
 
 def test_normalize_zscore_by_century_means_zero():
@@ -45,7 +45,10 @@ def test_build_harmony_frame_overrides():
     }
     # Use different strategies per harmony
     frame = build_harmony_frame(
-        proxies, years, normalization="zscore_global", normalization_overrides={"H2": "minmax_global"}
+        proxies,
+        years,
+        normalization="zscore_global",
+        normalization_overrides={"H2": "minmax_global"},
     )
     assert set(frame.columns) == {"H1", "H2"}
     assert len(frame) == len(years)

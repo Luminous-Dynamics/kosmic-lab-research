@@ -21,4 +21,3 @@ def test_diffusion_spread() -> None:
     mask = mask_from_voltage(grid.V, threshold=5.0)
     # Should spread beyond the original position
     assert mask.sum() > 1
-

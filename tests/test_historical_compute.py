@@ -3,7 +3,11 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
-from historical_k.compute_k import _bootstrap_mean_ci, _years_from_config, validate_config
+from historical_k.compute_k import (
+    _bootstrap_mean_ci,
+    _years_from_config,
+    validate_config,
+)
 from historical_k.etl import build_harmony_frame, compute_k_series
 
 
@@ -42,5 +46,7 @@ def test_harmony_frame_fallback(tmp_path, monkeypatch) -> None:
 
 def test_bootstrap_mean_ci() -> None:
     series = pd.Series([1.0, 1.2, 0.9, 1.1])
-    low, high = _bootstrap_mean_ci(series, {"bootstrap_samples": 500, "ci": 0.9, "seed": 1})
+    low, high = _bootstrap_mean_ci(
+        series, {"bootstrap_samples": 500, "ci": 0.9, "seed": 1}
+    )
     assert low <= high

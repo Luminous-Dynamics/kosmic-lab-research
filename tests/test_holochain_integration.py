@@ -1,8 +1,10 @@
 """Integration tests for Holochain bridge."""
+
 from __future__ import annotations
 
 import json
 from pathlib import Path
+
 import pytest
 
 from scripts.holochain_bridge import HolochainBridge, HolochainConfig
@@ -24,17 +26,10 @@ def sample_passport(tmp_path: Path) -> Path:
         "config_hash": "789ghi012jkl",
         "seed": 42,
         "experiment": "holochain_integration_test",
-        "params": {
-            "energy_gradient": 0.5,
-            "communication_cost": 0.3
-        },
+        "params": {"energy_gradient": 0.5, "communication_cost": 0.3},
         "estimators": {
             "phi": "empirical",
-            "te": {
-                "estimator": "kraskov",
-                "k": 3,
-                "lag": 1
-            }
+            "te": {"estimator": "kraskov", "k": 3, "lag": 1},
         },
         "metrics": {
             "K": 1.23,
@@ -42,13 +37,13 @@ def sample_passport(tmp_path: Path) -> Path:
             "Recovery": 0.99,
             "phi": 2.5,
             "te_mutual": 1.2,
-            "TE_symmetry": 0.85
+            "TE_symmetry": 0.85,
         },
-        "timestamp": "2025-11-09T12:34:56Z"
+        "timestamp": "2025-11-09T12:34:56Z",
     }
 
     passport_file = tmp_path / "test_passport.json"
-    with passport_file.open('w') as f:
+    with passport_file.open("w") as f:
         json.dump(passport, f, indent=2)
 
     return passport_file
@@ -75,13 +70,16 @@ class TestHolochainBridge:
                 "seed": i,
                 "experiment": "batch_test",
                 "params": {},
-                "estimators": {"phi": "star", "te": {"estimator": "kraskov", "k": 3, "lag": 1}},
+                "estimators": {
+                    "phi": "star",
+                    "te": {"estimator": "kraskov", "k": 3, "lag": 1},
+                },
                 "metrics": {"K": 1.0 + i * 0.1, "TAT": 0.5, "Recovery": 1.0},
-                "timestamp": "2025-11-09T12:00:00Z"
+                "timestamp": "2025-11-09T12:00:00Z",
             }
 
             passport_file = tmp_path / f"passport_{i}.json"
-            with passport_file.open('w') as f:
+            with passport_file.open("w") as f:
                 json.dump(passport, f)
 
         # Publish directory
@@ -99,22 +97,21 @@ class TestHolochainBridge:
             "seed": 99,
             "experiment": "test_experiment",
             "params": {"energy_gradient": 0.7},
-            "estimators": {"phi": "star", "te": {"estimator": "kraskov", "k": 3, "lag": 1}},
-            "metrics": {
-                "K": 1.5,
-                "TAT": 0.75,
-                "Recovery": 0.8
+            "estimators": {
+                "phi": "star",
+                "te": {"estimator": "kraskov", "k": 3, "lag": 1},
             },
-            "timestamp": "2025-11-09T14:00:00Z"
+            "metrics": {"K": 1.5, "TAT": 0.75, "Recovery": 0.8},
+            "timestamp": "2025-11-09T14:00:00Z",
         }
 
         holochain_passport = mock_bridge._transform_passport(kosmic_passport)
 
         # Verify structure
-        assert holochain_passport['run_id'] == "transform-test"
-        assert holochain_passport['metrics']['k_index'] == 1.5
-        assert holochain_passport['metrics']['tat'] == 0.75
-        assert 'researcher_agent' in holochain_passport
+        assert holochain_passport["run_id"] == "transform-test"
+        assert holochain_passport["metrics"]["k_index"] == 1.5
+        assert holochain_passport["metrics"]["tat"] == 0.75
+        assert "researcher_agent" in holochain_passport
 
     def test_missing_required_fields(self, mock_bridge, tmp_path):
         """Test validation of incomplete K-passports."""
@@ -124,17 +121,14 @@ class TestHolochainBridge:
         }
 
         passport_file = tmp_path / "incomplete.json"
-        with passport_file.open('w') as f:
+        with passport_file.open("w") as f:
             json.dump(incomplete_passport, f)
 
         with pytest.raises(ValueError, match="Missing required fields"):
             mock_bridge.publish_passport(passport_file)
 
 
-@pytest.mark.skipif(
-    not Path("/usr/bin/hc").exists(),
-    reason="Holochain not installed"
-)
+@pytest.mark.skipif(not Path("/usr/bin/hc").exists(), reason="Holochain not installed")
 class TestHolochainLiveIntegration:
     """Live integration tests (requires running Holochain conductor)."""
 
@@ -160,10 +154,7 @@ class TestHolochainLiveIntegration:
         passports = live_bridge.query_corridor(min_k=1.0, max_k=1.5)
 
         # Should include our published passport
-        assert any(
-            p['run_id'] == 'test-holochain-001'
-            for p in passports
-        )
+        assert any(p["run_id"] == "test-holochain-001" for p in passports)
 
     def test_live_verify_passport(self, live_bridge):
         """Test passport integrity verification."""
