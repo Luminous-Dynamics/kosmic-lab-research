@@ -3,16 +3,20 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional
-
-import numpy as np
+from typing import Any, Dict, Iterable, List
 
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
 from core.config import load_yaml_config
-from core.kpass import KPassportWriter
-from historical_k.etl import build_harmony_frame, compute_k_series, load_feature_series, normalize_series
-import pandas as pd
+from core.kcodex import KCodexWriter
+from historical_k.etl import (
+    build_harmony_frame,
+    compute_k_series,
+    load_feature_series,
+    normalize_series,
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -71,19 +75,35 @@ def validate_config(payload: Dict[str, Any]) -> None:
 def _years_from_config(payload: Dict[str, Any]) -> List[int]:
     window_cfg = payload.get("windows", {})
     size = window_cfg.get("size", "decade")
-    if size != "decade":
+
+    # Support both decade and year granularity
+    if size not in ("decade", "year"):
         raise ValueError(f"Unsupported window size: {size}")
-    # Default span derived from preregistered events if available.
-    events = payload.get("preregistered_events", {})
-    candidate_years = []
-    for vals in events.values():
-        candidate_years.extend(vals)
-    if candidate_years:
-        start = int(min(candidate_years) // 10 * 10)
-        end = int(max(candidate_years) // 10 * 10)
-    else:
-        start, end = 1800, 2020
-    return list(range(start, end + 10, 10))
+
+    # Get temporal coverage from config
+    temporal = payload.get("temporal_coverage", {})
+    start = temporal.get("start_year", None)
+    end = temporal.get("end_year", None)
+    granularity = temporal.get("granularity", 10 if size == "decade" else 1)
+
+    # If temporal coverage not specified, derive from preregistered events
+    if start is None or end is None:
+        events = payload.get("preregistered_events", {})
+        candidate_years = []
+        for vals in events.values():
+            candidate_years.extend(vals)
+        if candidate_years:
+            if size == "decade":
+                start = int(min(candidate_years) // 10 * 10) if start is None else start
+                end = int(max(candidate_years) // 10 * 10) if end is None else end
+            else:  # year
+                start = int(min(candidate_years)) if start is None else start
+                end = int(max(candidate_years)) if end is None else end
+        else:
+            start = 1800 if start is None else start
+            end = 2020 if end is None else end
+
+    return list(range(start, end + 1, granularity))
 
 
 def _bootstrap_mean_ci(k_series, cfg: Dict[str, Any]) -> tuple[float, float]:
@@ -94,11 +114,15 @@ def _bootstrap_mean_ci(k_series, cfg: Dict[str, Any]) -> tuple[float, float]:
 
     rng = np.random.default_rng(cfg.get("seed", 0))
     data = k_series.to_numpy()
-    resampled_means = [float(rng.choice(data, size=data.size, replace=True).mean()) for _ in range(samples)]
+    resampled_means = [
+        float(rng.choice(data, size=data.size, replace=True).mean())
+        for _ in range(samples)
+    ]
     alpha = 1 - float(cfg.get("ci", 0.95))
     lower = float(np.percentile(resampled_means, 100 * (alpha / 2)))
     upper = float(np.percentile(resampled_means, 100 * (1 - alpha / 2)))
     return lower, upper
+
 
 def _plot_series(
     results_df,
@@ -127,7 +151,9 @@ def _plot_series(
 
     plt.figure(figsize=(7, 4))
     plt.plot(years, k_vals, marker="o", label="K(t)")
-    plt.fill_between(years, ci_low_arr, ci_high_arr, color="orange", alpha=0.2, label="Bootstrap CI")
+    plt.fill_between(
+        years, ci_low_arr, ci_high_arr, color="orange", alpha=0.2, label="Bootstrap CI"
+    )
     if reference_line is not None:
         plt.axhline(reference_line, color="red", linestyle="--", label="Reference")
     plt.xlabel("Year")
@@ -138,7 +164,7 @@ def _plot_series(
     if prereg_events:
         xs = results_df["year"].to_numpy()
         for label in ("troughs", "peaks"):
-            for y in (prereg_events.get(label) or []):
+            for y in prereg_events.get(label) or []:
                 if xs.min() <= y <= xs.max():
                     color = "blue" if label == "troughs" else "green"
                     plt.axvline(y, color=color, linestyle=":", alpha=0.6)
@@ -173,7 +199,9 @@ def _plot_harmonies(results_df, path: Path) -> None:
     plt.close()
 
 
-def _build_feature_mats(proxies: Dict[str, Any], years: list[int], normalization: str) -> Dict[str, pd.DataFrame]:
+def _build_feature_mats(
+    proxies: Dict[str, Any], years: list[int], normalization: str
+) -> Dict[str, pd.DataFrame]:
     """Load all proxy series into per-harmony DataFrames (columns=features).
 
     This enables bootstrap resampling across features within each harmony to
@@ -205,7 +233,9 @@ def _bootstrap_bands_per_year(
         # No bootstrap → return NaNs; caller can fallback to scalar CI
         first = next(iter(feature_mats.values()))
         n = len(first.index)
-        return pd.Series([float("nan")] * n, index=first.index), pd.Series([float("nan")] * n, index=first.index)
+        return pd.Series([float("nan")] * n, index=first.index), pd.Series(
+            [float("nan")] * n, index=first.index
+        )
 
     rng = np.random.default_rng(seed)
     years_index = next(iter(feature_mats.values())).index
@@ -222,7 +252,9 @@ def _bootstrap_bands_per_year(
                 continue
             # Resample feature columns with replacement
             cols = mat.columns.to_list()
-            resampled_cols = [cols[i] for i in rng.integers(0, len(cols), size=len(cols))]
+            resampled_cols = [
+                cols[i] for i in rng.integers(0, len(cols), size=len(cols))
+            ]
             resampled = mat[resampled_cols]
             harmony_series.append(resampled.mean(axis=1))
         # Average harmonies to get K(t)
@@ -245,7 +277,7 @@ def main() -> None:
     windows_cfg = config_bundle.payload.get("windows", {})
     normalization = args.normalization or windows_cfg.get("normalization", "none")
     normalization_overrides = windows_cfg.get("normalization_overrides", {})
-    agg_cfg = (config_bundle.payload.get("aggregation", {}) or {})
+    agg_cfg = config_bundle.payload.get("aggregation", {}) or {}
     feature_aggregation = agg_cfg.get("feature", "mean")
     feature_agg_over = agg_cfg.get("feature_overrides", {})
     harmony_frame = build_harmony_frame(
@@ -256,7 +288,9 @@ def main() -> None:
         feature_aggregation,
         feature_agg_over,
     )
-    weights_cfg = (config_bundle.payload.get("weighting", {}) or {}).get("harmonies", {})
+    weights_cfg = (config_bundle.payload.get("weighting", {}) or {}).get(
+        "harmonies", {}
+    )
     k_series = compute_k_series(harmony_frame, weights=weights_cfg or None)
     results = harmony_frame.copy()
     results["K"] = k_series
@@ -283,8 +317,12 @@ def main() -> None:
     ci = float(uncertainty_cfg.get("ci", 0.95))
     samples = int(uncertainty_cfg.get("bootstrap_samples", 0))
     if per_year and samples > 0:
-        feature_mats = _build_feature_mats(config_bundle.payload.get("proxies", {}), years, normalization)
-        ci_low_year, ci_high_year = _bootstrap_bands_per_year(feature_mats, samples, ci, seed)
+        feature_mats = _build_feature_mats(
+            config_bundle.payload.get("proxies", {}), years, normalization
+        )
+        ci_low_year, ci_high_year = _bootstrap_bands_per_year(
+            feature_mats, samples, ci, seed
+        )
         ci_low_plot, ci_high_plot = ci_low_year, ci_high_year
     else:
         ci_low_year = None
@@ -309,7 +347,11 @@ def main() -> None:
     summary_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
 
     # Choose reference line based on normalization if not specified in config
-    ref_line = 0.0 if str(normalization).startswith("zscore") else (0.5 if str(normalization).startswith("minmax") else 1.0)
+    ref_line = (
+        0.0
+        if str(normalization).startswith("zscore")
+        else (0.5 if str(normalization).startswith("minmax") else 1.0)
+    )
 
     _plot_series(
         results,
@@ -322,17 +364,20 @@ def main() -> None:
 
     _plot_harmonies(results, output_dir / "k_t_harmonies.png")
 
-    schema_path = Path("schemas/k_passport.json")
-    passport = KPassportWriter(schema_path=schema_path)
-    record = passport.build_record(
+    schema_path = Path("schemas/k_codex.json")
+    writer = KCodexWriter(schema_path=schema_path)
+    record = writer.build_record(
         experiment="historical_k_v1",
         params={"years": [years[0], years[-1]]},
-        estimators={"phi": "historical_proxy", "te": {"estimator": "none", "k": 0, "lag": 0}},
+        estimators={
+            "phi": "historical_proxy",
+            "te": {"estimator": "none", "k": 0, "lag": 0},
+        },
         metrics={"K": float(k_series.mean())},
         config=config_bundle,
         ci={"mean_low": ci_low_scalar, "mean_high": ci_high_scalar},
     )
-    passport.write(record, output_dir)
+    writer.write(record, output_dir)
     print(f"[Historical K] Series saved to {output_path}; summary -> {summary_path}")
 
 

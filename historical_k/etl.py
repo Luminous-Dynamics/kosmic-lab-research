@@ -5,6 +5,7 @@ Provides lightweight ETL helpers that look for proxy CSV files under
 historical_k/data/. When files are absent, deterministic fallback series are
 generated so the pipeline remains reproducible.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -15,7 +16,9 @@ import pandas as pd
 DATA_DIR = Path(__file__).resolve().parent / "data"
 
 
-def load_feature_series(feature: str, years: Iterable[int], data_dir: Path = DATA_DIR) -> pd.Series:
+def load_feature_series(
+    feature: str, years: Iterable[int], data_dir: Path = DATA_DIR
+) -> pd.Series:
     """
     Load a single proxy series.
 
@@ -29,12 +32,29 @@ def load_feature_series(feature: str, years: Iterable[int], data_dir: Path = DAT
         df = pd.read_csv(path)
         if "year" not in df.columns or "value" not in df.columns:
             raise ValueError(f"{path} missing required columns 'year' and 'value'.")
-        series = df.set_index("year")["value"].astype(float)
-        series = series.reindex(index).interpolate().ffill().bfill()
+        # Coerce numeric with robust handling
+        df = df.copy()
+        df["year"] = pd.to_numeric(df["year"], errors="coerce")
+        df["value"] = pd.to_numeric(df["value"], errors="coerce")
+        # Drop rows with invalid year and sort
+        df = df.dropna(subset=["year"]).sort_values("year")
+        # De-duplicate years by keeping the last occurrence
+        df = df.drop_duplicates(subset=["year"], keep="last")
+        # Build series and align to requested years
+        s = df.set_index(df["year"].astype(int))["value"].astype(float)
+        series = s.reindex(index)
+        # Interpolate and fill; any remaining NaN -> 0.0 fallback for reproducibility
+        series = (
+            series.interpolate()
+            .ffill()
+            .bfill()
+            .fillna(0.0)
+        )
     else:
         # Deterministic fallback (zeros)
         series = pd.Series([0.0 for _ in years], index=index, name=feature)
     return series
+
 
 def _century_label(year: int) -> int:
     """Map a year to its century anchor (e.g., 1800..1899 -> 1800)."""
@@ -63,7 +83,9 @@ def _minmax_grouped(series: pd.Series, groups: pd.Series) -> pd.Series:
     return series.groupby(groups).transform(_mm)
 
 
-def normalize_series(series: pd.Series, years: Iterable[int], strategy: str = "none") -> pd.Series:
+def normalize_series(
+    series: pd.Series, years: Iterable[int], strategy: str = "none"
+) -> pd.Series:
     """Normalize a feature series according to the requested strategy.
 
     Supported strategies:
@@ -142,7 +164,10 @@ def build_harmony_frame(
         if not features:
             raise ValueError(f"Harmony '{harmony}' has no associated features.")
         strat = overrides.get(harmony, normalization)
-        series_list = [normalize_series(load_feature_series(feature, years), years, strat) for feature in features]
+        series_list = [
+            normalize_series(load_feature_series(feature, years), years, strat)
+            for feature in features
+        ]
         stacked = pd.concat(series_list, axis=1)
         agg = (agg_over.get(harmony, feature_aggregation) or "mean").lower()
         if agg == "median":
@@ -154,26 +179,47 @@ def build_harmony_frame(
     return frame
 
 
-def compute_k_series(harmony_frame: pd.DataFrame, weights: Optional[Dict[str, float]] = None) -> pd.Series:
-    """Compute K-index from harmony frame.
+def compute_k_series(
+    harmony_frame: pd.DataFrame,
+    weights: Optional[Dict[str, float]] = None,
+    method: str = "geometric",
+) -> pd.Series:
+    """Compute K-index from harmony frame using specified aggregation method.
 
-    - If weights provided: use weighted average across harmony columns.
-    - Else: simple mean across harmonies.
+    **Path C Update (2025-11-27)**: Default changed from arithmetic to geometric mean
+    to enforce non-substitutability across harmonies (weakest link coordination).
+
+    Args:
+        harmony_frame: DataFrame with harmony columns (H₁-H₇)
+        weights: Optional dict of harmony weights (must sum to 1.0)
+        method: 'geometric' (default, Path C) or 'arithmetic' (original)
+
+    Returns:
+        pd.Series: K(t) index
+
+    Raises:
+        ValueError: If harmony_frame empty or method unknown
+
+    Example:
+        >>> k_geo = compute_k_series(harmonies, method='geometric')  # Default
+        >>> k_arith = compute_k_series(harmonies, method='arithmetic')  # For comparison
     """
+    # Import aggregation module (lazy to avoid circular imports)
+    from historical_k.aggregation_methods import (
+        compute_k_geometric,
+        compute_k_arithmetic,
+    )
+
     if harmony_frame.empty:
         raise ValueError("Harmony frame is empty.")
-    if not weights:
-        return harmony_frame.mean(axis=1)
-    # Align and normalize weights
-    cols = list(harmony_frame.columns)
-    w = {k: float(v) for k, v in (weights or {}).items() if k in cols}
-    if not w:
-        return harmony_frame.mean(axis=1)
-    w_sum = sum(w.values()) or 1.0
-    w_norm = {k: v / w_sum for k, v in w.items()}
-    # Build matrix multiply
-    # Ensure all columns present; missing weights -> 0
-    weight_vec = [w_norm.get(c, 0.0) for c in cols]
-    arr = harmony_frame.to_numpy()
-    import numpy as _np  # local import to avoid hard dep if unused
-    return pd.Series(arr @ _np.array(weight_vec), index=harmony_frame.index, name="K")
+
+    method = (method or "geometric").lower()
+
+    if method == "geometric":
+        return compute_k_geometric(harmony_frame, weights)
+    elif method == "arithmetic":
+        return compute_k_arithmetic(harmony_frame, weights)
+    else:
+        raise ValueError(
+            f"Unknown aggregation method '{method}'. Use 'geometric' or 'arithmetic'."
+        )

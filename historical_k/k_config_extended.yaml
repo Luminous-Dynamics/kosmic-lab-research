@@ -1,0 +1,260 @@
+# Extended Configuration for Historical K(t) v2.0 (3000 BCE - 2020 CE)
+#
+# Major Enhancements:
+# - Temporal coverage: 5000 years (3000 BCE to 2020 CE)
+# - Seventh harmony: Evolutionary Progression
+# - Ancient data sources: Seshat, HYDE 3.2
+# - 50+ proxy variables across all harmonies
+
+temporal_coverage:
+  start_year: -3000  # 3000 BCE
+  end_year: 2020     # 2020 CE
+  granularity:
+    ancient: 50      # 50-year intervals for -3000 to 500
+    medieval: 25     # 25-year intervals for 500 to 1500
+    early_modern: 10 # 10-year intervals for 1500 to 1800
+    modern: 10       # 10-year intervals for 1800 to 2020
+
+windows:
+  size: adaptive  # Adapts based on data density
+  normalization: minmax_by_epoch  # Separate normalization for ancient/medieval/modern
+
+# Data sources for extended period
+data_sources:
+  ancient:
+    seshat:
+      enabled: true
+      path: data/sources/seshat
+      variables:
+        - social_complexity
+        - population_index
+        - information_systems
+        - economic_complexity
+        - military_technology
+        - administrative_capacity
+    hyde:
+      enabled: true
+      path: data/sources/hyde
+      variables:
+        - global_population
+        - cropland_fraction
+        - pasture_fraction
+        - urban_fraction
+        - population_density
+
+  modern:
+    owid:
+      enabled: true
+      path: data/sources/external
+    world_bank:
+      enabled: true
+      path: data/sources/external
+    custom:
+      enabled: true
+      path: data/sources/external
+
+# Proxy variables by harmony (expanded for 5000-year coverage)
+proxies:
+  # Harmony 1: Resonant Coherence
+  resonant_coherence:
+    ancient:
+      - social_complexity              # From Seshat
+      - administrative_capacity        # From Seshat
+      - information_systems            # From Seshat
+    modern:
+      - network_modularity_inverse
+      - communication_latency_inverse
+
+  # Harmony 2: Universal Interconnectedness
+  interconnection:
+    ancient:
+      - trade_network_proxy           # From archaeological evidence
+      - population_density            # From HYDE
+      - urban_fraction                # From HYDE
+    modern:
+      - trade_network_degree
+      - migration_flux_index
+      - trade_share_gdp
+      - net_migration
+      - global_trade_volume
+      - renewable_energy_share
+      - trade_openness_index
+
+  # Harmony 3: Sacred Reciprocity
+  reciprocity:
+    ancient:
+      - tribute_systems_proxy         # From Seshat polity data
+      - alliance_networks_proxy       # From Seshat warfare data
+    modern:
+      - bilateral_trade_symmetry
+      - alliance_reciprocity_ratio
+      - remittance_inflows
+      - aid_extraction_balance
+      - trust_region_placeholder
+
+  # Harmony 4: Infinite Play
+  play_entropy:
+    ancient:
+      - occupational_diversity        # From Seshat economic data
+      - cultural_innovation_proxy     # From archaeological evidence
+    modern:
+      - occupation_diversity_entropy
+      - innovation_field_entropy
+
+  # Harmony 5: Integral Wisdom
+  wisdom_accuracy:
+    ancient:
+      - writing_systems               # From Seshat
+      - record_keeping                # From Seshat
+      - calendar_sophistication       # From Seshat
+    modern:
+      - forecast_skill_index
+      - error_correction_speed
+      - patent_resident_filings
+      - research_spending_index
+
+  # Harmony 6: Pan-Sentient Flourishing
+  flourishing:
+    ancient:
+      - life_expectancy_estimate      # From demographic models
+      - settlement_size               # From HYDE
+      - agricultural_productivity     # From cropland data
+    modern:
+      - life_expectancy_global
+      - income_fairness_index
+      - education_enrolment_index
+      - environmental_performance_index
+
+  # Harmony 7: Evolutionary Progression (NEW!)
+  evolutionary_progression:
+    ancient:
+      - technological_sophistication
+      - cognitive_complexity
+      - institutional_evolution
+    modern:
+      - technological_sophistication
+      - cognitive_complexity
+      - institutional_evolution
+      - adaptive_capacity
+      - long_term_orientation
+
+# Harmony weights (equal by default, adjustable)
+harmony_weights:
+  resonant_coherence: 0.143
+  interconnection: 0.143
+  reciprocity: 0.143
+  play_entropy: 0.143
+  wisdom_accuracy: 0.143
+  flourishing: 0.143
+  evolutionary_progression: 0.142  # New harmony
+
+# Uncertainty quantification
+uncertainty:
+  bootstrap_samples: 2000
+  ci: 0.95
+  per_year: true
+  seed: 42
+
+# Preregistered events for validation (expanded for 5000-year period)
+preregistered_events:
+  # Ancient troughs
+  ancient_troughs:
+    - -1200  # Bronze Age Collapse
+    - -500   # Greek Dark Ages ending
+    - 200    # Crisis of Third Century
+    - 476    # Fall of Western Rome
+    - 1348   # Black Death
+
+  # Ancient peaks
+  ancient_peaks:
+    - -2500  # Old Kingdom Egypt
+    - -500   # Axial Age
+    - 100    # Pax Romana peak
+    - 1000   # Medieval Warm Period
+    - 1450   # Renaissance begins
+
+  # Modern troughs (from original config)
+  modern_troughs:
+    - 1810
+    - 1915
+    - 1935
+    - 1945
+
+  # Modern peaks (from original config)
+  modern_peaks:
+    - 1890
+    - 1995
+    - 2010
+
+# Data integration settings
+integration:
+  # How to merge ancient and modern datasets
+  merge_strategy: smooth_transition
+  overlap_window: 100  # Years to blend between datasets
+
+  # Handling missing data
+  missing_data:
+    strategy: interpolate  # Options: interpolate, forward_fill, synthetic
+    max_gap: 200          # Max years to interpolate across
+
+  # Normalization approach
+  normalization:
+    method: epoch_aware   # Different scaling for different eras
+    epochs:
+      - name: ancient
+        start: -3000
+        end: 500
+      - name: medieval
+        start: 500
+        end: 1500
+      - name: early_modern
+        start: 1500
+        end: 1800
+      - name: modern
+        start: 1800
+        end: 2020
+
+# Validation settings
+validation:
+  # Cross-validation
+  temporal_cv:
+    enabled: true
+    n_folds: 10
+    min_test_size: 100  # Years in each fold
+
+  # Event validation
+  event_validation:
+    enabled: true
+    window: 50  # Year tolerance for event hits
+
+  # Sensitivity analysis
+  sensitivity:
+    enabled: true
+    method: ablation  # Remove each proxy and measure impact
+
+# Output settings
+output:
+  # Save extended K(t) series
+  k_series:
+    path: logs/historical_k_extended/k_t_series_5000y.csv
+    include_bands: true
+    include_harmonies: true
+
+  # Detailed results
+  detailed:
+    path: logs/historical_k_extended/detailed_results.csv
+    include_proxies: true
+
+  # Visualizations
+  plots:
+    enabled: true
+    output_dir: logs/historical_k_extended/plots
+    formats: [png, pdf]
+    dpi: 300
+
+# Reproducibility
+reproducibility:
+  version: "2.0.0-extended"
+  created: "2025-11-21"
+  data_sources_md5: null  # Computed at runtime
+  config_hash: null       # Computed at runtime

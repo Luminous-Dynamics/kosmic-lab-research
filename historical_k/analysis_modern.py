@@ -6,17 +6,17 @@ Implements:
 - H1.3: Cross-correlation K(t) ~ wisdom_accuracy(t+10)
 - H1.4: Higher pre-shock reciprocity predicts faster recovery
 """
+
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import List, Tuple
 
-import pandas as pd
 import numpy as np
-from scipy.stats import linregress, pearsonr
-import json
+import pandas as pd
 import yaml
-
+from scipy.stats import linregress, pearsonr
 
 DATA_PATH = Path("logs/historical_k/k_t_series.csv")
 CONFIG_PATH = Path("historical_k/k_config.yaml")
@@ -65,7 +65,11 @@ def main() -> None:
     common = sorted(set(k.index).intersection({y - 10 for y in w.index}))
     k_vec = k.loc[common]
     w_lead_vec = w.loc[[y + 10 for y in common]]
-    if len(common) > 2 and (np.std(k_vec.to_numpy()) > 0) and (np.std(w_lead_vec.to_numpy()) > 0):
+    if (
+        len(common) > 2
+        and (np.std(k_vec.to_numpy()) > 0)
+        and (np.std(w_lead_vec.to_numpy()) > 0)
+    ):
         r_kw, p_kw = pearsonr(k_vec.to_numpy(), w_lead_vec.to_numpy())
     else:
         r_kw, p_kw = (np.nan, np.nan)
@@ -94,7 +98,9 @@ def main() -> None:
         tau = time_to_recover(sy)
         if not np.isnan(pre_rec) and not np.isnan(tau):
             rows.append((y0, pre_rec, tau))
-    df_tau = pd.DataFrame(rows, columns=["shock_year", "pre_reciprocity", "tau_recovery_years"]).set_index("shock_year")
+    df_tau = pd.DataFrame(
+        rows, columns=["shock_year", "pre_reciprocity", "tau_recovery_years"]
+    ).set_index("shock_year")
     if not df_tau.empty and len(df_tau) > 1:
         pre_arr = df_tau["pre_reciprocity"].to_numpy()
         neg_tau = (-df_tau["tau_recovery_years"]).to_numpy()
@@ -110,12 +116,16 @@ def main() -> None:
     print("H1.1 Troughs below mean-1σ:")
     for y, kv, ok in trough_results:
         print(f"  {y}: K={kv:.3f} → {'PASS' if ok else 'FAIL'}")
-    print(f"H1.2 Trend 1950–1990: slope={lr.slope:.4f}, p={lr.pvalue:.4g} → {'PASS' if trend_pass else 'FAIL'}")
+    print(
+        f"H1.2 Trend 1950–1990: slope={lr.slope:.4f}, p={lr.pvalue:.4g} → {'PASS' if trend_pass else 'FAIL'}"
+    )
     print(f"H1.3 Corr[K(t), wisdom(t+10)]: r={r_kw:.3f}, p={p_kw:.4g}")
     if not df_tau.empty:
         print("H1.4 Pre-shock reciprocity vs. faster recovery:")
         for y, row in df_tau.iterrows():
-            print(f"  {y}: preR={row['pre_reciprocity']:.3f}, tau={row['tau_recovery_years']:.1f}y")
+            print(
+                f"  {y}: preR={row['pre_reciprocity']:.3f}, tau={row['tau_recovery_years']:.1f}y"
+            )
         print(f"  Corr(preR, -tau): r={r_tau:.3f}, p={p_tau:.4g}")
 
     # Write JSON summary
@@ -133,14 +143,31 @@ def main() -> None:
                 kval = float(df_all.loc[df_all["year"] == yn, "K"].iloc[0])
                 lo = ci_low_by_year.get(yn)
                 if lo is not None:
-                    band_check.append({"year": int(yn), "K": kval, "ci_low": float(lo), "pass": bool(kval < lo)})
+                    band_check.append(
+                        {
+                            "year": int(yn),
+                            "K": kval,
+                            "ci_low": float(lo),
+                            "pass": bool(kval < lo),
+                        }
+                    )
 
     out = {
         "H1_1": {
-            "troughs": [{"year": int(y), "K": float(kv), "pass": bool(ok)} for y, kv, ok in trough_results]
+            "troughs": [
+                {"year": int(y), "K": float(kv), "pass": bool(ok)}
+                for y, kv, ok in trough_results
+            ]
         },
-        "H1_2": {"slope": float(lr.slope), "p": float(lr.pvalue), "pass": bool(trend_pass)},
-        "H1_3": {"r": None if np.isnan(r_kw) else float(r_kw), "p": None if np.isnan(p_kw) else float(p_kw)},
+        "H1_2": {
+            "slope": float(lr.slope),
+            "p": float(lr.pvalue),
+            "pass": bool(trend_pass),
+        },
+        "H1_3": {
+            "r": None if np.isnan(r_kw) else float(r_kw),
+            "p": None if np.isnan(p_kw) else float(p_kw),
+        },
         "H1_4": {
             "rows": [
                 {

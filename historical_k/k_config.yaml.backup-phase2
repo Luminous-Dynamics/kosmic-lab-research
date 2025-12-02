@@ -2,7 +2,7 @@
 
 temporal_coverage:
   start_year: 1810
-  end_year: 2023
+  end_year: 2020
   granularity: 10  # Decadal
 
 windows:
@@ -58,4 +58,3 @@ preregistered_events:
     - 1995
     - 2010
     - 2020  # Added to extend computation through 2020
-    - 2023  # Phase 2: Extension to 2023

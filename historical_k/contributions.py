@@ -1,12 +1,10 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
 
 DATA_PATH = Path("logs/historical_k/k_t_series.csv")
 
@@ -70,4 +68,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

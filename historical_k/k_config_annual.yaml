@@ -1,12 +1,13 @@
-# Configuration for Historical K(t) v1 (1810-2020, decadal).
+# Configuration for Historical K(t) v1 (1810-2020, annual resolution).
+# This configuration generates 211 annual data points for enhanced statistical power.
 
 temporal_coverage:
   start_year: 1810
-  end_year: 2023
-  granularity: 10  # Decadal
+  end_year: 2020  # Changed from 2023 to match manuscript scope
+  granularity: 1  # Annual (changed from 10)
 
 windows:
-  size: decade
+  size: year  # Changed from "decade"
   normalization: minmax_by_century
 
 proxies:
@@ -57,5 +58,4 @@ preregistered_events:
     - 1890
     - 1995
     - 2010
-    - 2020  # Added to extend computation through 2020
-    - 2023  # Phase 2: Extension to 2023
+    - 2020

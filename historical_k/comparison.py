@@ -12,7 +12,9 @@ from core.config import load_yaml_config
 from historical_k.etl import build_harmony_frame, compute_k_series
 
 
-def _compute_for_strategy(payload: Dict, years: List[int], strategy: str) -> pd.DataFrame:
+def _compute_for_strategy(
+    payload: Dict, years: List[int], strategy: str
+) -> pd.DataFrame:
     win = payload.get("windows", {})
     overrides = win.get("normalization_overrides", {})
     frame = build_harmony_frame(payload.get("proxies", {}), years, strategy, overrides)
@@ -91,9 +93,10 @@ def main() -> None:
             "slope_1950_1990": _slope_1950_1990(merged, col),
         }
 
-    (outdir / "compare_summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
+    (outdir / "compare_summary.json").write_text(
+        json.dumps(summary, indent=2) + "\n", encoding="utf-8"
+    )
 
 
 if __name__ == "__main__":
     main()
-
