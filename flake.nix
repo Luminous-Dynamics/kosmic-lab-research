@@ -2,7 +2,7 @@
   description = "Kosmic Lab development environment";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";  # Latest packages for cutting-edge science
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -12,22 +12,45 @@
         pkgs = import nixpkgs { inherit system; };
         projectDir = ./.;
         pythonEnv = pkgs.python311.withPackages (ps: with ps; [
+          # Core scientific computing
           numpy
           scipy
           pandas
           networkx
+
+          # Machine learning and statistics (for K_Topo and Track M)
+          scikit-learn
+          statsmodels
+
+          # Visualization
+          matplotlib
+          seaborn
+          plotly
+
+          # Interactive analysis
+          jupyterlab
+          ipython
+          notebook
+
+          # Development tools
           tqdm
           pyyaml
           jsonschema
           pytest
+          pytest-cov
+          pytest-asyncio
           pip
           black
-          matplotlib
-          seaborn
+
+          # Web and async
           pygame  # Pre-built, avoids build issues
           fastapi
           uvicorn
           httpx
+
+          # Note: ripser (for persistent homology) is not in nixpkgs
+          # Add via: poetry add ripser
+          # Alternative TDA: poetry add gudhi (also not in nixpkgs)
         ]);
         runTestsScript = pkgs.writeShellApplication {
           name = "kosmic-run-tests";

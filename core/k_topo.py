@@ -117,8 +117,10 @@ def compute_k_topo(
         from ripser import ripser
 
         # Compute persistence diagrams
+        # Note: For K_Topo, we want to capture ALL persistent features,
+        # not filter them with threshold. Use diameter * 2 to be generous.
         if max_edge_length is None:
-            max_edge_length = diameter * 0.5  # Reasonable default
+            max_edge_length = diameter * 2.0  # Generous threshold for all features
 
         result = ripser(
             trajectory,

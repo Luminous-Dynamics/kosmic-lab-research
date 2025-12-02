@@ -44,6 +44,7 @@ scikit-learn = "^1.5"
 scipy = "^1.12"
 seaborn = "^0.13"
 requests = "^2.32"
+ripser = "^0.6"  # Persistent homology for K_Topo (not in nixpkgs)
 pettingzoo = "^1.24"  # pygame provided by nixpkgs in flake.nix
 # MuJoCo continuous control dependencies (Paper 6 - O/R Index)
 mujoco = "^3.0"
