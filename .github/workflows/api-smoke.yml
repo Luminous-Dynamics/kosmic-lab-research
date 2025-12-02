@@ -1,0 +1,59 @@
+name: API Smoke
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.8.2
+
+      - name: Install dependencies
+        run: poetry install --no-interaction
+
+      - name: Generate fixtures
+        run: poetry run python scripts/generate_api_fixtures.py --out logs
+
+      - name: Launch API and probe endpoints
+        env:
+          PORT: 8052
+          KOSMIC_LOGS_DIR: logs
+          KOSMIC_API_STRICT_READY: "1"
+          KOSMIC_API_ETAG: weak
+          KOSMIC_API_CACHE_SECONDS: "90"
+        run: |
+          set -euo pipefail
+          poetry run uvicorn historical_k.api:app --host 127.0.0.1 --port ${PORT} &
+          PID=$!
+          echo "Started uvicorn PID=${PID}"
+          cleanup() { kill ${PID} || true; };
+          trap cleanup EXIT
+
+          # Wait for readiness
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:${PORT}/ready || true)
+            if [ "$code" = "200" ]; then echo "Ready"; break; fi
+            sleep 1
+          done
+          curl -fS http://127.0.0.1:${PORT}/health -i
+          curl -fS http://127.0.0.1:${PORT}/meta -i
+          curl -fS http://127.0.0.1:${PORT}/k/series -i | head -n 20
+          # Test conditional GET 304
+          etag=$(curl -sI http://127.0.0.1:${PORT}/k/series | awk '/^ETag:/ {print $2}' | tr -d '\r')
+          [ -n "$etag" ]
+          code=$(curl -s -o /dev/null -w "%{http_code}" -H "If-None-Match: $etag" http://127.0.0.1:${PORT}/k/series)
+          [ "$code" = "304" ]
+

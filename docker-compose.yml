@@ -1,0 +1,104 @@
+# Docker Compose for Historical K(t)
+#
+# This file provides easy orchestration of the Historical K(t) container
+# with volume mounts for data and results.
+#
+# Usage:
+#   docker-compose up              # Run default analysis
+#   docker-compose run compute make extended-compute  # Custom command
+#   docker-compose run compute make phase3-demo       # Phase 3 analytics
+
+version: '3.8'
+
+services:
+  compute:
+    image: historical-k:v1.0.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: historical-k-compute
+    volumes:
+      # Mount data directory for input/output
+      - ./data:/app/data
+      - ./logs:/app/logs
+      # Optional: mount custom config
+      - ./historical_k/k_config_extended.yaml:/app/historical_k/k_config_extended.yaml:ro
+    environment:
+      # Number of CPU cores to use
+      - COMPUTE_CORES=4
+      # Python optimization
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    command: make extended-compute
+    restart: "no"
+
+  # Service for validation against external indices
+  validation:
+    image: historical-k:v1.0.0
+    container_name: historical-k-validation
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - COMPUTE_CORES=4
+    command: python historical_k/external_validation.py --process
+    restart: "no"
+    depends_on:
+      - compute
+
+  # Service for robustness testing
+  robustness:
+    image: historical-k:v1.0.0
+    container_name: historical-k-robustness
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - COMPUTE_CORES=4
+    command: python historical_k/robustness_tests.py --all
+    restart: "no"
+    depends_on:
+      - compute
+
+  # Service for performance-optimized computation
+  compute-optimized:
+    image: historical-k:v1.0.0
+    container_name: historical-k-compute-optimized
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - COMPUTE_CORES=8  # Use more cores for optimization
+    command: python historical_k/performance_optimized.py --benchmark
+    restart: "no"
+
+  # Historical K API service (serves artifacts from logs/)
+  api:
+    image: historical-k:v1.0.0
+    container_name: historical-k-api
+    depends_on:
+      - compute
+    volumes:
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - KOSMIC_LOGS_DIR=${KOSMIC_LOGS_DIR:-/app/logs}
+      # Optional cache/cors tuning (overridable via .env)
+      - KOSMIC_API_ETAG=${KOSMIC_API_ETAG:-weak}
+      - KOSMIC_API_CACHE_SECONDS=${KOSMIC_API_CACHE_SECONDS:-120}
+      - KOSMIC_API_CORS_ORIGINS=${KOSMIC_API_CORS_ORIGINS:-}
+    ports:
+      - "${API_PORT:-8052}:8052"
+    command: uvicorn historical_k.api:app --host 0.0.0.0 --port 8052
+    restart: "no"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; import sys; requests.get('http://127.0.0.1:8052/health', timeout=3).raise_for_status(); sys.exit(0)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+# Named volumes for persistent data (optional)
+volumes:
+  historical-k-data:
+  historical-k-logs:

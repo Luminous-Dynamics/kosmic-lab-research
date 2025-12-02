@@ -1,0 +1,37 @@
+name: Format-Check
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.8.2
+
+      - name: Install dependencies
+        run: poetry install --no-interaction
+
+      - name: Black check (code dirs)
+        run: poetry run black --check --diff core fre historical_k scripts tests
+        continue-on-error: true
+
+      - name: Ruff (E,F,I) (code dirs)
+        run: poetry run ruff check core fre historical_k scripts tests --select E,F,I
+        continue-on-error: true
+
+      - name: Summary
+        run: |
+          echo "If this job reports differences, run: make format-code"
+

@@ -1,0 +1,72 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs and temp files
+logs/
+*.log
+*.tmp
+*.temp
+
+# Documentation (large files)
+docs/
+*.md
+!README.md
+
+# Test data (use mounted volumes instead)
+data/ancient/*.csv
+data/sources/*/raw/*
+
+# Archives
+*.tar.gz
+*.zip
+*.bz2
+
+# Jupyter
+.ipynb_checkpoints
+*.ipynb
+
+# Coverage
+.coverage
+.pytest_cache/
+htmlcov/
+
+# Large binary files
+*.nc  # NetCDF files (HYDE data)
+*.hdf5
+*.h5

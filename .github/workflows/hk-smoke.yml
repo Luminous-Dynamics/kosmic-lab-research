@@ -1,0 +1,29 @@
+name: HK-Smoke
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  hk-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.8.2
+      - name: Install dependencies
+        run: poetry install --no-interaction
+      - name: Run HK smoke generator
+        run: poetry run python scripts/hk_smoke.py
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: hk-smoke-logs
+          path: logs/historical_k

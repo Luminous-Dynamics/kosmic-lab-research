@@ -1,0 +1,28 @@
+name: TE-Fast
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  te-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.8.2
+      - name: Install dependencies
+        run: poetry install --no-interaction
+      - name: Run TE stability/directionality tests
+        run: poetry run pytest -q tests/test_te_bridge_*.py

@@ -1,0 +1,44 @@
+name: API-HK-Smoke
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  api-hk-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.8.2
+      - name: Install dependencies
+        run: poetry install --no-interaction
+      - name: Generate HK smoke artifacts
+        run: poetry run python scripts/hk_smoke.py
+      - name: Launch API with HK artifacts and probe
+        env:
+          PORT: 8052
+          KOSMIC_LOGS_DIR: logs
+        run: |
+          set -euo pipefail
+          poetry run uvicorn historical_k.api:app --host 127.0.0.1 --port ${PORT} &
+          PID=$!
+          trap 'kill ${PID} || true' EXIT
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:${PORT}/ready || true)
+            if [ "$code" = "200" ]; then break; fi
+            sleep 1
+          done
+          curl -fS http://127.0.0.1:${PORT}/meta -i
+          curl -fS http://127.0.0.1:${PORT}/metrics -i | head -n 20
+          curl -fS http://127.0.0.1:${PORT}/k/series -i | head -n 20
+          curl -fS http://127.0.0.1:${PORT}/k/summary -i | head -n 20
+          curl -fS http://127.0.0.1:${PORT}/regimes -i | head -n 20
+          curl -fS http://127.0.0.1:${PORT}/forecast -i | head -n 40

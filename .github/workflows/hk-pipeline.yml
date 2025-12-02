@@ -1,0 +1,37 @@
+name: HK-Pipeline
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  hk-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.8.2
+      - name: Install dependencies
+        run: poetry install --no-interaction
+      - name: Generate HK mini dataset (real proxies)
+        run: poetry run python scripts/hk_mini_dataset.py
+      - name: Run regimes detection
+        run: poetry run python -m historical_k.regimes --data logs/historical_k/k_t_series.csv --output logs/regimes
+      - name: Run forecasting (ensemble)
+        run: poetry run python -m historical_k.forecasting --data logs/historical_k/k_t_series.csv --method ensemble --horizon 20
+      - name: Validate pipeline outputs
+        run: poetry run python scripts/validate_hk_outputs.py
+      - name: Upload pipeline artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: hk-pipeline-outputs
+          path: |
+            logs/regimes
+            logs/forecasting
