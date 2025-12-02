@@ -349,11 +349,12 @@ def run_phase1_reactivity(
                     continue
 
         # Compute K-Index
+        # Phase 1: single-turn interactions, no conversation tracking needed
         k_result = compute_llm_k_index(
             prompt_norms=np.array(all_prompt_norms),
             response_norms=np.array(all_response_norms),
             model_name=model,
-            conversation_lengths=conversation_lengths,
+            conversation_lengths=None,  # Single-turn reactivity tests
         )
 
         results[model] = k_result
