@@ -1,0 +1,13 @@
+{
+  "scenario": "cramped_room_h800_stress_temporal",
+  "layout": "cramped_room",
+  "horizon": 800,
+  "randomize_positions": false,
+  "checkpoint": "ppo_5k",
+  "n_episodes": 125,
+  "obs_dim": 2080,
+  "n_actions": 6,
+  "learning_rate": 0.0003,
+  "gamma": 0.99,
+  "entropy_beta": 0.01
+}

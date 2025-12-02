@@ -77,23 +77,26 @@ def collect_episode(env, policies, seed: int):
 
 def collect_trajectories(
     layout: str,
+    scenario_id: str,
     policy_type: str,
     checkpoint_path: Path,
+    horizon: int,
     n_seeds: int = 30,
 ):
     """Collect trajectories for a given policy and save"""
 
-    print(f"\nCollecting trajectories: {layout} / {policy_type}")
+    print(f"\nCollecting trajectories: {scenario_id} / {policy_type}")
     print(f"  Checkpoint: {checkpoint_path}")
+    print(f"  Layout: {layout}, Horizon: {horizon}")
 
-    # Create environment
-    env = OvercookedMARLEnv(layout, horizon=400)
+    # Create environment with matching horizon
+    env = OvercookedMARLEnv(layout, horizon=horizon)
 
     # Load policies
     policies = load_checkpoint(checkpoint_path, env)
 
-    # Output directory
-    output_dir = Path(f"./{layout}/{policy_type}")
+    # Output directory matches training structure
+    output_dir = Path(f"./trajectories/{scenario_id}/{policy_type}")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Collect trajectories for each seed
@@ -120,7 +123,9 @@ def collect_trajectories(
 
         # Save metadata JSON
         meta = {
+            "scenario_id": scenario_id,
             "layout": layout,
+            "horizon": horizon,
             "policy_type": policy_type,
             "seed": seed,
             "episode_return": float(ep_return),
@@ -135,34 +140,58 @@ def collect_trajectories(
 
 
 def main():
-    """Collect all trajectories for all layouts and policy types"""
+    """Collect all trajectories for all scenarios and policy types - A+B+C Comprehensive Validation"""
 
-    layouts = ["cramped_room", "asymmetric_advantages"]
+    # Match training configuration from train_overcooked.py
+    # Format: (layout_name, horizon, scenario_type)
+    scenarios = [
+        # OPTION A: Standard validation (2 layouts, normal difficulty)
+        ("cramped_room", 400, "baseline"),
+        ("asymmetric_advantages", 400, "baseline"),
+
+        # OPTION B: Stress tests (harder coordination scenarios)
+        ("coordination_ring", 400, "stress_spatial"),
+        ("forced_coordination", 400, "stress_sequential"),
+        ("cramped_room", 800, "stress_temporal"),
+
+        # OPTION C: "Many-agent simulation" via rapid role-switching
+        ("cramped_room", 400, "multiagent_sim"),
+    ]
+
     policy_types = ["random", "ppo_5k", "ppo_50k", "ppo_200k"]
-
     models_path = Path("../../models/overcooked")
 
     print("="*60)
-    print("Collecting Overcooked Trajectories")
+    print("Collecting Overcooked Trajectories - A+B+C Validation")
     print("="*60)
+    print(f"Scenarios: {len(scenarios)}")
+    print(f"Checkpoints per scenario: {len(policy_types)}")
+    print(f"Seeds per checkpoint: 30")
+    print(f"Total trajectories: {len(scenarios) * len(policy_types) * 30}")
 
-    for layout in layouts:
+    for layout_name, horizon, scenario_type in scenarios:
+        # Match training's scenario_id format
+        scenario_id = f"{layout_name}_h{horizon}_{scenario_type}"
+
         print(f"\n{'#'*60}")
-        print(f"# Layout: {layout}")
+        print(f"# Scenario: {scenario_id}")
+        print(f"#   Layout: {layout_name}, Horizon: {horizon}, Type: {scenario_type}")
         print(f"{'#'*60}")
 
         for policy_type in policy_types:
-            checkpoint_path = models_path / layout / f"{policy_type}.pth"
+            checkpoint_path = models_path / scenario_id / f"{policy_type}.pth"
 
             if not checkpoint_path.exists():
                 print(f"  ⚠ Checkpoint not found: {checkpoint_path}")
-                print(f"  ⚠ Run train_overcooked.py first!")
+                print(f"  ⚠ Training may still be in progress or failed")
                 continue
 
             collect_trajectories(
-                layout=layout,
+                layout=layout_name,
+                scenario_id=scenario_id,
                 policy_type=policy_type,
                 checkpoint_path=checkpoint_path,
+                horizon=horizon,
                 n_seeds=30,
             )
 

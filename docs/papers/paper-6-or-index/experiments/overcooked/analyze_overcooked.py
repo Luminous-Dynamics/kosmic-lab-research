@@ -77,50 +77,79 @@ def compute_or_index(observations, actions, n_bins=10):
     return or_index
 
 
-def compute_coordination_success(episode_return, layout):
+def compute_coordination_success(episode_return, scenario_id):
     """
     Normalize episode return to [0, 1] coordination score.
 
     These baselines are approximate - adjust based on your observed ranges.
+    Different scenarios have different difficulty levels.
     """
-    # Approximate baselines per layout (adjust after seeing data)
+    # Approximate baselines per scenario (adjust after seeing data)
     baselines = {
-        "cramped_room": {"random": 0, "expert": 200},
-        "asymmetric_advantages": {"random": 0, "expert": 250},
+        # Option A: Baseline scenarios
+        "cramped_room_h400_baseline": {"random": 0, "expert": 200},
+        "asymmetric_advantages_h400_baseline": {"random": 0, "expert": 250},
+
+        # Option B: Stress tests (harder = lower expert performance)
+        "coordination_ring_h400_stress_spatial": {"random": 0, "expert": 150},
+        "forced_coordination_h400_stress_sequential": {"random": 0, "expert": 180},
+        "cramped_room_h800_stress_temporal": {"random": 0, "expert": 350},  # 2x horizon
+
+        # Option C: Many-agent simulation
+        "cramped_room_h400_multiagent_sim": {"random": 0, "expert": 180},
     }
 
-    return_random = baselines.get(layout, {}).get("random", 0)
-    return_expert = baselines.get(layout, {}).get("expert", 200)
+    # Fallback if scenario not found
+    default = {"random": 0, "expert": 200}
+    return_random = baselines.get(scenario_id, default).get("random", 0)
+    return_expert = baselines.get(scenario_id, default).get("expert", 200)
 
     score = (episode_return - return_random) / (return_expert - return_random)
     return np.clip(score, 0, 1)
 
 
 def analyze_all_trajectories():
-    """Walk all trajectories, compute O/R, and create summary CSV"""
+    """Walk all trajectories, compute O/R, and create summary CSV - A+B+C Validation"""
 
     print("="*60)
-    print("Analyzing Overcooked Trajectories")
+    print("Analyzing Overcooked Trajectories - A+B+C Validation")
     print("="*60)
 
     results = []
 
-    layouts = ["cramped_room", "asymmetric_advantages"]
-    policy_types = ["random", "ppo_5k", "ppo_50k", "ppo_200k"]
+    # Match collection configuration
+    scenarios = [
+        # OPTION A: Standard validation
+        ("cramped_room", 400, "baseline"),
+        ("asymmetric_advantages", 400, "baseline"),
 
-    for layout in layouts:
+        # OPTION B: Stress tests
+        ("coordination_ring", 400, "stress_spatial"),
+        ("forced_coordination", 400, "stress_sequential"),
+        ("cramped_room", 800, "stress_temporal"),
+
+        # OPTION C: Many-agent simulation
+        ("cramped_room", 400, "multiagent_sim"),
+    ]
+
+    policy_types = ["random", "ppo_5k", "ppo_50k", "ppo_200k"]
+    trajectories_path = Path("./trajectories")
+
+    for layout_name, horizon, scenario_type in scenarios:
+        scenario_id = f"{layout_name}_h{horizon}_{scenario_type}"
+
         print(f"\n{'#'*60}")
-        print(f"# Layout: {layout}")
+        print(f"# Scenario: {scenario_id}")
         print(f"{'#'*60}")
 
-        layout_path = Path(f"./{layout}")
-        if not layout_path.exists():
-            print(f"  ⚠ Directory not found: {layout_path}")
+        scenario_path = trajectories_path / scenario_id
+        if not scenario_path.exists():
+            print(f"  ⚠ Directory not found: {scenario_path}")
             print(f"  ⚠ Run collect_overcooked.py first!")
             continue
 
         for policy_type in policy_types:
-            policy_path = layout_path / policy_type
+            policy_path = scenario_path / policy_type
 
             if not policy_path.exists():
                 print(f"  ⚠ Policy directory not found: {policy_path}")
@@ -146,12 +175,15 @@ def analyze_all_trajectories():
                     # Compute O/R Index
                     or_value = compute_or_index(obs, actions, n_bins=10)
 
-                    # Compute coordination success
-                    coord_success = compute_coordination_success(ep_return, layout)
+                    # Compute coordination success (using scenario_id for proper baselines)
+                    coord_success = compute_coordination_success(ep_return, scenario_id)
 
-                    # Store result
+                    # Store result with all scenario metadata
                     results.append({
-                        "layout": layout,
+                        "scenario_id": scenario_id,
+                        "layout": layout_name,
+                        "horizon": horizon,
+                        "scenario_type": scenario_type,
                         "policy_type": policy_type,
                         "seed": meta["seed"],
                         "episode_return": ep_return,
@@ -185,38 +217,62 @@ def analyze_all_trajectories():
     overall_r, overall_p = pearsonr(df["or_index"], df["coordination_success"])
     print(f"\nOverall correlation: r = {overall_r:.3f} (p = {overall_p:.2e})")
 
-    # Print per-layout correlations
-    print("\nPer-layout correlations:")
-    for layout in df["layout"].unique():
-        layout_df = df[df["layout"] == layout]
-        r, p = pearsonr(layout_df["or_index"], layout_df["coordination_success"])
-        print(f"  {layout}: r = {r:.3f} (p = {p:.2e}), n = {len(layout_df)}")
+    # Print per-scenario correlations
+    print("\nPer-scenario correlations:")
+    for scenario_id in df["scenario_id"].unique():
+        scenario_df = df[df["scenario_id"] == scenario_id]
+        if len(scenario_df) < 2:
+            print(f"  {scenario_id}: insufficient data (n = {len(scenario_df)})")
+            continue
+        r, p = pearsonr(scenario_df["or_index"], scenario_df["coordination_success"])
+        print(f"  {scenario_id}: r = {r:.3f} (p = {p:.2e}), n = {len(scenario_df)}")
+
+    # Group by scenario type (baseline vs stress vs multiagent)
+    print("\nPer-scenario-type correlations:")
+    for scenario_type in df["scenario_type"].unique():
+        type_df = df[df["scenario_type"] == scenario_type]
+        if len(type_df) < 2:
+            continue
+        r, p = pearsonr(type_df["or_index"], type_df["coordination_success"])
+        print(f"  {scenario_type}: r = {r:.3f} (p = {p:.2e}), n = {len(type_df)}")
 
     return df
 
 
-def plot_scatter_by_layout(df):
-    """Generate 2-panel scatter plot (one per layout)"""
+def plot_scatter_by_scenario(df):
+    """Generate 3x2 scatter plot grid (one per scenario) - A+B+C Validation"""
 
-    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+    fig, axes = plt.subplots(3, 2, figsize=(14, 18))
+    axes = axes.flatten()
 
-    layouts = ["cramped_room", "asymmetric_advantages"]
-    layout_titles = ["Cramped Room", "Asymmetric Advantages"]
+    scenarios = [
+        ("cramped_room_h400_baseline", "Cramped Room (baseline)"),
+        ("asymmetric_advantages_h400_baseline", "Asymmetric Advantages (baseline)"),
+        ("coordination_ring_h400_stress_spatial", "Coordination Ring (spatial stress)"),
+        ("forced_coordination_h400_stress_sequential", "Forced Coordination (sequential stress)"),
+        ("cramped_room_h800_stress_temporal", "Cramped Room 2× Horizon (temporal stress)"),
+        ("cramped_room_h400_multiagent_sim", "Cramped Room (many-agent sim)"),
+    ]
 
-    for idx, (layout, title) in enumerate(zip(layouts, layout_titles)):
+    # Color by policy type
+    policy_colors = {
+        "random": "gray",
+        "ppo_5k": "lightblue",
+        "ppo_50k": "blue",
+        "ppo_200k": "darkblue",
+    }
+
+    for idx, (scenario_id, title) in enumerate(scenarios):
         ax = axes[idx]
-        layout_df = df[df["layout"] == layout]
+        scenario_df = df[df["scenario_id"] == scenario_id]
 
-        # Color by policy type
-        policy_colors = {
-            "random": "gray",
-            "ppo_5k": "lightblue",
-            "ppo_50k": "blue",
-            "ppo_200k": "darkblue",
-        }
+        if len(scenario_df) == 0:
+            ax.text(0.5, 0.5, "No data", ha='center', va='center', transform=ax.transAxes)
+            ax.set_title(title, fontsize=12, fontweight='bold')
+            continue
 
         for policy_type, color in policy_colors.items():
-            policy_data = layout_df[layout_df["policy_type"] == policy_type]
+            policy_data = scenario_df[scenario_df["policy_type"] == policy_type]
             if len(policy_data) > 0:
                 ax.scatter(
                     policy_data["or_index"],
@@ -224,147 +280,185 @@ def plot_scatter_by_layout(df):
                     label=policy_type,
                     color=color,
                     alpha=0.6,
-                    s=50,
+                    s=40,
                     edgecolors='white',
                     linewidth=0.5
                 )
 
         # Compute correlation
-        r, p = pearsonr(layout_df["or_index"], layout_df["coordination_success"])
+        if len(scenario_df) >= 2:
+            r, p = pearsonr(scenario_df["or_index"], scenario_df["coordination_success"])
 
-        # Add best-fit line
-        z = np.polyfit(layout_df["or_index"], layout_df["coordination_success"], 1)
-        p_func = np.poly1d(z)
-        x_line = np.linspace(layout_df["or_index"].min(), layout_df["or_index"].max(), 100)
-        ax.plot(x_line, p_func(x_line), "r--", alpha=0.5, linewidth=2)
+            # Add best-fit line
+            z = np.polyfit(scenario_df["or_index"], scenario_df["coordination_success"], 1)
+            p_func = np.poly1d(z)
+            x_line = np.linspace(scenario_df["or_index"].min(), scenario_df["or_index"].max(), 100)
+            ax.plot(x_line, p_func(x_line), "r--", alpha=0.5, linewidth=2)
 
-        # Formatting
-        ax.set_xlabel("O/R Index", fontsize=13)
-        ax.set_ylabel("Coordination Success", fontsize=13)
-        ax.set_title(
-            f"{title}\n$r = {r:.3f}${'***' if p < 0.001 else '**' if p < 0.01 else '*' if p < 0.05 else ''}, $n = {len(layout_df)}$",
-            fontsize=14,
-            fontweight='bold'
-        )
-        ax.legend(loc='best', fontsize=10)
+            # Formatting with correlation
+            ax.set_title(
+                f"{title}\n$r = {r:.2f}${'***' if p < 0.001 else '**' if p < 0.01 else '*' if p < 0.05 else ''}, $n = {len(scenario_df)}$",
+                fontsize=11,
+                fontweight='bold'
+            )
+        else:
+            ax.set_title(title, fontsize=11, fontweight='bold')
+
+        ax.set_xlabel("O/R Index", fontsize=10)
+        ax.set_ylabel("Coordination Success", fontsize=10)
+        ax.legend(loc='best', fontsize=8)
         ax.grid(alpha=0.3, linestyle='--')
 
     plt.tight_layout()
 
     # Save figure
-    output_path = Path("../../figures/overcooked/figure_overcooked_scatter.png")
+    output_path = Path("../../figures/overcooked/figure_overcooked_scatter_comprehensive.png")
     output_path.parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(output_path, dpi=300, bbox_inches='tight')
-    print(f"\n✓ Saved scatter plot: {output_path}")
+    print(f"\n✓ Saved comprehensive scatter plot: {output_path}")
 
     return fig
 
 
 def plot_training_evolution(df):
-    """Generate training evolution plot (O/R vs timesteps)"""
+    """Generate training evolution plot (O/R vs timesteps) - Grouped by scenario type"""
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
 
     policy_order = ["random", "ppo_5k", "ppo_50k", "ppo_200k"]
     timesteps = [0, 5000, 50000, 200000]
 
-    layouts = ["cramped_room", "asymmetric_advantages"]
-    layout_styles = {
-        "cramped_room": {"marker": 'o', "linestyle": '-'},
-        "asymmetric_advantages": {"marker": 's', "linestyle": '--'},
+    # Group scenarios by type
+    scenario_groups = {
+        "Baseline": ["cramped_room_h400_baseline", "asymmetric_advantages_h400_baseline"],
+        "Stress Tests": ["coordination_ring_h400_stress_spatial", "forced_coordination_h400_stress_sequential", "cramped_room_h800_stress_temporal"],
+        "Many-Agent Sim": ["cramped_room_h400_multiagent_sim"],
     }
 
-    for layout in layouts:
-        or_means = []
-        or_stds = []
-        success_means = []
+    colors = plt.cm.tab10.colors
 
-        for policy_type in policy_order:
-            policy_data = df[(df["layout"] == layout) & (df["policy_type"] == policy_type)]
+    for ax_idx, (group_name, scenario_ids) in enumerate(scenario_groups.items()):
+        ax = axes[ax_idx]
 
-            if len(policy_data) > 0:
-                or_means.append(policy_data["or_index"].mean())
-                or_stds.append(policy_data["or_index"].std())
-                success_means.append(policy_data["coordination_success"].mean())
-            else:
-                or_means.append(np.nan)
-                or_stds.append(np.nan)
-                success_means.append(np.nan)
+        for color_idx, scenario_id in enumerate(scenario_ids):
+            or_means = []
+            or_stds = []
 
-        # Plot O/R evolution
-        ax.errorbar(
-            timesteps, or_means, yerr=or_stds,
-            label=f"{layout} (O/R)",
-            marker=layout_styles[layout]["marker"],
-            linestyle=layout_styles[layout]["linestyle"],
-            linewidth=2,
-            capsize=5,
-            alpha=0.8
-        )
+            for policy_type in policy_order:
+                policy_data = df[(df["scenario_id"] == scenario_id) & (df["policy_type"] == policy_type)]
 
-    # Formatting
-    ax.set_xlabel("Training Timesteps", fontsize=13)
-    ax.set_ylabel("O/R Index", fontsize=13)
-    ax.set_title("O/R Index Evolution During Training", fontsize=14, fontweight='bold')
-    ax.legend(loc='best', fontsize=11)
-    ax.grid(alpha=0.3, linestyle='--')
-    ax.set_xscale('symlog')  # Use symlog for better visualization of 0
+                if len(policy_data) > 0:
+                    or_means.append(policy_data["or_index"].mean())
+                    or_stds.append(policy_data["or_index"].std())
+                else:
+                    or_means.append(np.nan)
+                    or_stds.append(np.nan)
+
+            # Shortened label for readability
+            label = scenario_id.replace("_h400_", " ").replace("_h800_", " 2×h ").replace("_", " ")
+
+            # Plot O/R evolution
+            ax.errorbar(
+                timesteps, or_means, yerr=or_stds,
+                label=label,
+                marker='o',
+                linestyle='-',
+                linewidth=2,
+                capsize=4,
+                alpha=0.8,
+                color=colors[color_idx % len(colors)]
+            )
+
+        # Formatting
+        ax.set_xlabel("Training Timesteps", fontsize=11)
+        ax.set_ylabel("O/R Index", fontsize=11)
+        ax.set_title(f"{group_name}", fontsize=12, fontweight='bold')
+        ax.legend(loc='best', fontsize=8)
+        ax.grid(alpha=0.3, linestyle='--')
+        ax.set_xscale('symlog')  # Use symlog for better visualization of 0
 
     plt.tight_layout()
 
     # Save figure
-    output_path = Path("../../figures/overcooked/figure_overcooked_evolution.png")
+    output_path = Path("../../figures/overcooked/figure_overcooked_evolution_comprehensive.png")
     output_path.parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(output_path, dpi=300, bbox_inches='tight')
-    print(f"✓ Saved evolution plot: {output_path}")
+    print(f"✓ Saved comprehensive evolution plot: {output_path}")
 
     return fig
 
 
 def generate_latex_table(df):
-    """Generate LaTeX table for paper"""
+    """Generate LaTeX table for paper - A+B+C Comprehensive Validation"""
 
     print("\n" + "="*60)
-    print("LaTeX Table for Paper")
+    print("LaTeX Table for Paper - Comprehensive Validation")
     print("="*60)
 
     print("\n\\begin{center}")
-    print("\\begin{tabular}{lccc}")
+    print("\\begin{tabular}{lcccp{6cm}}")
     print("\\toprule")
-    print("\\textbf{Layout} & \\textbf{r} & \\textbf{p-value} & \\textbf{n} \\\\")
+    print("\\textbf{Scenario} & \\textbf{Type} & \\textbf{r} & \\textbf{p} & \\textbf{n} \\\\")
     print("\\midrule")
 
-    for layout in df["layout"].unique():
-        layout_df = df[df["layout"] == layout]
-        r, p = pearsonr(layout_df["or_index"], layout_df["coordination_success"])
+    # Group by scenario type for better presentation
+    scenario_types = df["scenario_type"].unique()
 
-        # Format layout name
-        layout_name = layout.replace("_", " ").title()
+    for scenario_type in sorted(scenario_types):
+        # Section header
+        type_name = scenario_type.replace("_", " ").title()
+        print(f"\\multicolumn{{5}}{{l}}{{\\textit{{{type_name}}}}} \\\\")
 
-        # Format p-value
-        if p < 0.001:
-            p_str = "$<0.001$"
-        else:
-            p_str = f"${p:.3f}$"
+        # Get scenarios of this type
+        type_scenarios = df[df["scenario_type"] == scenario_type]["scenario_id"].unique()
 
-        print(f"{layout_name} & ${r:.2f}$ & {p_str} & {len(layout_df)} \\\\")
+        for scenario_id in sorted(type_scenarios):
+            scenario_df = df[df["scenario_id"] == scenario_id]
+
+            if len(scenario_df) < 2:
+                continue
+
+            r, p = pearsonr(scenario_df["or_index"], scenario_df["coordination_success"])
+
+            # Format scenario name (shortened)
+            scenario_name = scenario_id.replace("_h400", "").replace("_h800", " (2×h)").replace("_", " ").replace(" baseline", "").replace(" stress ", " ")
+            if len(scenario_name) > 30:
+                scenario_name = scenario_name[:27] + "..."
+
+            # Format p-value
+            if p < 0.001:
+                p_str = "$<0.001$***"
+            elif p < 0.01:
+                p_str = f"${p:.3f}$**"
+            elif p < 0.05:
+                p_str = f"${p:.3f}$*"
+            else:
+                p_str = f"${p:.3f}$"
+
+            print(f"  {scenario_name} & & ${r:.2f}$ & {p_str} & {len(scenario_df)} \\\\")
+
+        print("\\midrule")
 
     # Overall
     overall_r, overall_p = pearsonr(df["or_index"], df["coordination_success"])
     if overall_p < 0.001:
-        overall_p_str = "$<0.001$"
+        overall_p_str = "$<0.001$***"
+    elif overall_p < 0.01:
+        overall_p_str = f"${overall_p:.3f}$**"
+    elif overall_p < 0.05:
+        overall_p_str = f"${overall_p:.3f}$*"
     else:
         overall_p_str = f"${overall_p:.3f}$"
 
-    print("\\midrule")
-    print(f"\\textbf{{Combined}} & $\\mathbf{{{overall_r:.2f}}}$ & {overall_p_str} & {len(df)} \\\\")
+    print(f"\\textbf{{Combined (all scenarios)}} & & $\\mathbf{{{overall_r:.2f}}}$ & {overall_p_str} & {len(df)} \\\\")
     print("\\bottomrule")
     print("\\end{tabular}")
     print("\\end{center}")
+    print("\n\\textit{Note: *** p < 0.001, ** p < 0.01, * p < 0.05}")
 
 
 def main():
-    """Run complete analysis pipeline"""
+    """Run complete analysis pipeline - A+B+C Comprehensive Validation"""
 
     # Analyze all trajectories
     df = analyze_all_trajectories()
@@ -374,10 +468,10 @@ def main():
 
     # Generate plots
     print("\n" + "="*60)
-    print("Generating Publication Figures")
+    print("Generating Publication Figures - Comprehensive Validation")
     print("="*60)
 
-    plot_scatter_by_layout(df)
+    plot_scatter_by_scenario(df)
     plot_training_evolution(df)
 
     # Generate LaTeX table
@@ -388,8 +482,13 @@ def main():
     print("="*60)
     print("\nGenerated files:")
     print("  - overcooked_summary.csv")
-    print("  - figures/overcooked/figure_overcooked_scatter.png")
-    print("  - figures/overcooked/figure_overcooked_evolution.png")
+    print("  - figures/overcooked/figure_overcooked_scatter_comprehensive.png (3×2 grid)")
+    print("  - figures/overcooked/figure_overcooked_evolution_comprehensive.png (3-panel)")
+    print("\nValidation coverage:")
+    print("  - Option A (baseline): 2 scenarios")
+    print("  - Option B (stress tests): 3 scenarios")
+    print("  - Option C (many-agent sim): 1 scenario")
+    print("  - Total: 6 scenarios × 4 checkpoints × 30 seeds = 720 trajectories")
     print("\nNext step: Integrate results into paper Section 5.X")
 
 

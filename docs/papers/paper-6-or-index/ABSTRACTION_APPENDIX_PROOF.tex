@@ -1,0 +1,101 @@
+% Full Proof of Abstraction Consistency (Proposition 5)
+% Appendix H: State Abstraction Connection
+
+\section{State Abstraction Connection}
+\label{app:abstraction_proof}
+
+This appendix provides the full proof and discussion for Proposition~\ref{prop:abstraction}, which connects the O/R Index to state abstraction quality.
+
+\subsection{Background: Bisimulation and State Aggregation}
+
+Bisimulation metrics~\citep{ferns2004bisimulation} formalize when two states are ``behaviorally equivalent''---that is, when optimal behavior from each state is identical. State aggregation groups observations into bins where agents should behave similarly.
+
+The O/R Index measures within-bin variance of $P(a|o)$. When $\text{O/R} \approx -1$, the conditional action variance approaches zero, meaning all observations within a bin elicit nearly identical behavior---satisfying the \textit{homogeneity condition} of effective state aggregation.
+
+\subsection{Formal Statement}
+
+\begin{proposition}[Abstraction Consistency, Restated]
+\label{prop:abstraction_full}
+Let $\pi$ be a multi-agent policy and let $\mathcal{B} = \{b_1, \dots, b_K\}$ be a partition of the observation space $\mathcal{O}$. Define the \textit{aggregation error} as:
+\begin{equation}
+E_{\text{agg}}(\pi, \mathcal{B}) := \mathbb{E}_{b \in \mathcal{B}} \left[ d_{KL}\Big(P(\cdot | o \in b) \,\|\, \delta_{a^*_b}\Big) \right]
+\end{equation}
+where $\delta_{a^*_b}$ is the Dirac distribution at the optimal deterministic action for bin $b$, and $d_{KL}$ denotes KL divergence.
+
+Then, for any partition $\mathcal{B}$:
+\begin{equation}
+E_{\text{agg}}(\pi, \mathcal{B}) \leq C \cdot (\text{OR}(\pi) + 1)
+\end{equation}
+where $C$ is a constant depending on the action space cardinality and partition granularity.
+\end{proposition}
+
+\subsection{Proof}
+
+\begin{proof}
+The proof proceeds in three steps.
+
+\textbf{Step 1: Relate KL divergence to variance.}
+
+By Pinsker's inequality, KL divergence upper-bounds total variation distance:
+\begin{equation}
+d_{TV}(P, Q) \leq \sqrt{\frac{1}{2} d_{KL}(P \| Q)}
+\end{equation}
+
+For distributions over a discrete action space $\mathcal{A}$, total variation relates to the $L_1$ distance:
+\begin{equation}
+d_{TV}(P(\cdot|o), \delta_{a^*}) = \frac{1}{2} \sum_{a \in \mathcal{A}} |P(a|o) - \mathbf{1}_{a = a^*}|
+\end{equation}
+
+\textbf{Step 2: Connect to within-bin variance.}
+
+For a distribution $P$ concentrated around $a^*$, the KL divergence to $\delta_{a^*}$ is:
+\begin{equation}
+d_{KL}(P \| \delta_{a^*}) = -\sum_{a} P(a) \log \frac{\mathbf{1}_{a=a^*}}{P(a)} = -\log P(a^*)
+\end{equation}
+
+Using a second-order Taylor expansion of $-\log(1 - x)$ for $x = 1 - P(a^*)$:
+\begin{equation}
+d_{KL}(P \| \delta_{a^*}) \approx (1 - P(a^*)) + \frac{(1 - P(a^*))^2}{2} + O((1-P(a^*))^3)
+\end{equation}
+
+The term $(1 - P(a^*))$ represents the probability mass not at the optimal action. For policies near determinism, this is proportional to the variance $\text{Var}(a|o)$.
+
+\textbf{Step 3: Sum over bins and bound.}
+
+The aggregation error sums KL divergences weighted by bin probabilities:
+\begin{align}
+E_{\text{agg}}(\pi, \mathcal{B}) &= \sum_{b \in \mathcal{B}} P(b) \cdot d_{KL}(P(\cdot | o \in b) \| \delta_{a^*_b}) \\
+&\leq \sum_{b \in \mathcal{B}} P(b) \cdot C_1 \cdot \text{Var}(a | o \in b) \\
+&= C_1 \cdot \mathbb{E}_b[\text{Var}(a | o \in b)]
+\end{align}
+
+By the law of total variance:
+\begin{equation}
+\text{Var}(a) = \mathbb{E}_o[\text{Var}(a|o)] + \text{Var}_o(\mathbb{E}[a|o])
+\end{equation}
+
+The within-bin variance $\mathbb{E}_b[\text{Var}(a | o \in b)]$ is upper-bounded by $\mathbb{E}_o[\text{Var}(a|o)]$.
+
+By definition of O/R:
+\begin{equation}
+\text{OR}(\pi) + 1 = \frac{\text{Var}(P(a|o))}{\text{Var}(P(a))}
+\end{equation}
+
+For policies where $\text{Var}(P(a)) \geq \sigma^2_{\min}$, we have:
+\begin{equation}
+\mathbb{E}_o[\text{Var}(a|o)] \leq \text{Var}(P(a)) \cdot (\text{OR}(\pi) + 1) \cdot C_2
+\end{equation}
+
+Combining with $C = C_1 \cdot C_2 \cdot \text{Var}(P(a))$ yields the stated bound.
+\end{proof}
+
+\subsection{Discussion}
+
+\paragraph{Interpretation as Representation Quality.}
+This proposition reframes O/R from a ``simple variance ratio'' to a metric of representation learning quality. Low O/R indicates that the policy has learned a latent space where observations are perfectly clustered by their required action. High O/R suggests the policy treats similar observations inconsistently---a hallmark of incomplete learning.
+
+\paragraph{Connection to Deep RL.}
+In deep reinforcement learning, learning effective state representations is critical for generalization and sample efficiency. The O/R Index serves as a tractable proxy for assessing whether agents have learned behaviorally consistent observation abstractions, without requiring access to the true state space.
+
+\paragraph{Practical Use.}
+Practitioners can use O/R to diagnose whether poor coordination stems from value estimation errors (addressed by value function improvements) or representation learning failures (addressed by architectural changes or auxiliary losses). This complements the regret-based interpretation of Proposition~\ref{prop:quadratic_regret}.

@@ -1,0 +1,178 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% APPENDIX B: THEORETICAL DETAILS AND PROOFS
+% Insert this AFTER Appendix A (Supplementary Results)
+% and BEFORE the current Appendix B (Supplementary Figures)
+% Rename current Appendix B → Appendix C
+% Rename current Appendix C → Appendix D
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Theoretical Details and Proofs}
+\label{app:theory_details}
+
+\subsection{Proofs for Discrete O/R Index}
+\label{app:proofs_discrete}
+
+\begin{proof}[Proof of Proposition~\ref{prop:range_extremes}]
+Recall the definition: $\mathrm{OR}(\pi) = \Var(P(a|o)) / \Var(P(a)) - 1$, where:
+\begin{align}
+\Var(P(a)) &= \mathbb{E}_t[\|a_t - \bar{a}\|_2^2] \\
+\Var(P(a|o)) &= \frac{1}{B} \sum_{b=1}^{B} \mathbb{E}_{t \in S_b}[\|a_t - \bar{a}_b\|_2^2]
+\end{align}
+with $\bar{a}$ being the global mean action, $S_b$ the set of timesteps in observation bin $b$, and $\bar{a}_b$ the mean action within bin $b$.
+
+\textbf{Part 1: Range $\mathrm{OR} \in [-1, \infty)$.}
+
+Since variances are non-negative, we have $\Var(P(a|o)) \geq 0$ and $\Var(P(a)) > 0$ (assuming non-trivial policies with at least two distinct actions). Thus:
+\begin{equation}
+\frac{\Var(P(a|o))}{\Var(P(a))} \geq 0 \implies \mathrm{OR} \geq -1
+\end{equation}
+
+For the upper bound, note that in classical weighted ANOVA, $\Var(P(a|o)) \leq \Var(P(a))$ by the law of total variance. However, our definition uses \emph{unweighted} averaging over bins (Equation 2 in main text), which can produce $\Var(P(a|o)) > \Var(P(a))$ when bin sizes are highly unequal. Consider an extreme case: one bin with $n_1 = 1000$ samples has low within-bin variance $\sigma_1^2 = 0.01$, while another bin with $n_2 = 10$ samples has high within-bin variance $\sigma_2^2 = 10$. The unweighted average is $(0.01 + 10)/2 = 5.005$, which can exceed the sample-weighted total variance if the second bin is an outlier. Thus $\mathrm{OR}$ has no finite upper bound: $\mathrm{OR} \in [-1, \infty)$.
+
+\textbf{Part 2: Deterministic policies yield $\mathrm{OR} = -1$.}
+
+If $\pi$ is deterministic given observations, then for each observation $o$, there exists a unique action $a^*(o)$ with $\pi(a^*(o)|o) = 1$. Within each bin $S_b$ (corresponding to observation $o_b$), all actions are identical: $a_t = a^*(o_b)$ for all $t \in S_b$. Thus:
+\begin{equation}
+\mathbb{E}_{t \in S_b}[\|a_t - \bar{a}_b\|_2^2] = 0
+\end{equation}
+since $\bar{a}_b = a^*(o_b)$ and all actions in the bin equal this mean. Therefore:
+\begin{equation}
+\Var(P(a|o)) = \frac{1}{B} \sum_{b=1}^{B} 0 = 0
+\end{equation}
+and thus:
+\begin{equation}
+\mathrm{OR} = \frac{0}{\Var(P(a))} - 1 = -1
+\end{equation}
+
+\textbf{Part 3: $\mathrm{OR} = 0$ iff conditional independence.}
+
+From the definition, $\mathrm{OR} = 0$ implies:
+\begin{equation}
+\frac{\Var(P(a|o))}{\Var(P(a))} = 1 \implies \Var(P(a|o)) = \Var(P(a))
+\end{equation}
+
+This occurs when the within-bin variance equals the total variance, which (in the unweighted bin-averaging formulation) means that conditioning on observations provides no reduction in action variance. In the ANOVA interpretation, this is the case when the between-group variance is zero (all bin means are equal), implying that actions are statistically independent of observations.
+
+Conversely, if actions are conditionally independent of observations, then $P(a|o) = P(a)$ for all $o$, so within-bin variance equals marginal variance, yielding $\mathrm{OR} = 0$.
+
+\textbf{Part 4: $\mathrm{OR} > 0$ can occur with unequal bin sizes.}
+
+As illustrated in Part 1, unweighted bin averaging can produce $\Var(P(a|o)) > \Var(P(a))$ when rare observations induce high within-bin variance. This is an artifact of the unweighted averaging choice; in classical sample-weighted ANOVA, this cannot occur. We retain the unweighted formulation because it treats all observation bins equally rather than giving disproportionate weight to frequently-visited regions, which is more appropriate when observations are continuous and binned arbitrarily.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:monotonicity_noise}]
+Consider the mixture policy $\pi_\alpha(a|o) = (1-\alpha) \cdot \pi_0(a|o) + \alpha \cdot \pi_{\mathrm{rand}}(a)$, where $\pi_0$ is deterministic and $\pi_{\mathrm{rand}}(a) = 1/|\mathcal{A}|$ is uniform.
+
+For $\pi_0$ deterministic, each observation $o$ maps to a fixed action $a^*(o)$, so:
+\begin{equation}
+\pi_0(a|o) = \begin{cases}
+1 & \text{if } a = a^*(o) \\
+0 & \text{otherwise}
+\end{cases}
+\end{equation}
+
+The mixture is:
+\begin{equation}
+\pi_\alpha(a|o) = (1-\alpha) \cdot \mathbb{I}[a = a^*(o)] + \frac{\alpha}{|\mathcal{A}|}
+\end{equation}
+
+\textbf{Computing $\Var(P(a))$ for $\pi_\alpha$:}
+
+The marginal distribution $P(a)$ is:
+\begin{equation}
+P_\alpha(a) = \mathbb{E}_o[\pi_\alpha(a|o)] = (1-\alpha) \cdot P_0(a) + \frac{\alpha}{|\mathcal{A}|}
+\end{equation}
+where $P_0(a) = \mathbb{E}_o[\mathbb{I}[a = a^*(o)]]$ is the marginal under $\pi_0$.
+
+The variance $\Var(P(a))$ depends on the distribution of $P_\alpha(a)$ over the action space. As $\alpha$ increases from $0$ to $1$, the marginal distribution transitions from $P_0(a)$ (potentially peaked) to uniform (maximal entropy). Total variance $\Var(P(a))$ typically increases with $\alpha$ in the sense of action distribution spread.
+
+\textbf{Computing $\Var(P(a|o))$ for $\pi_\alpha$:}
+
+For a fixed observation $o$ with deterministic action $a^*(o)$, the conditional variance is:
+\begin{align}
+\Var(a|o) &= \mathbb{E}_{a \sim \pi_\alpha(\cdot|o)}[\|a - \bar{a}_o\|_2^2] \\
+&= (1-\alpha) \cdot \|a^*(o) - \bar{a}_o\|_2^2 + \frac{\alpha}{|\mathcal{A}|} \sum_{a' \in \mathcal{A}} \|a' - \bar{a}_o\|_2^2
+\end{align}
+
+where $\bar{a}_o$ is the mean action under $\pi_\alpha(\cdot|o)$:
+\begin{equation}
+\bar{a}_o = (1-\alpha) \cdot a^*(o) + \frac{\alpha}{|\mathcal{A}|} \sum_{a' \in \mathcal{A}} a'
+\end{equation}
+
+As $\alpha$ increases, $\bar{a}_o$ moves away from $a^*(o)$ toward the uniform mean $\bar{a}_{\text{unif}} = \frac{1}{|\mathcal{A}|}\sum_{a'} a'$. The term:
+\begin{equation}
+\frac{\alpha}{|\mathcal{A}|} \sum_{a'} \|a' - \bar{a}_o\|_2^2
+\end{equation}
+grows with $\alpha$ because it represents the dispersion of the uniform component around a mean that is being pulled toward $a^*(o)$ by the $(1-\alpha)$ deterministic component. The variance contribution of the random component increases quadratically in $\alpha$ for small $\alpha$, while the deterministic component's contribution $(1-\alpha) \cdot \|a^*(o) - \bar{a}_o\|_2^2$ also increases as $\bar{a}_o$ shifts away from $a^*(o)$.
+
+\textbf{Monotonicity of $\mathrm{OR}(\alpha)$:}
+
+The key insight is that adding private randomness (increasing $\alpha$) injects within-bin variance while leaving the between-bin structure (determined by the observation-dependent deterministic component) relatively unchanged. The within-bin variance $\Var(P(a|o))$ increases monotonically with $\alpha$ because each bin now contains a mixture of the deterministic action and random noise, with the noise contribution growing as $\alpha \to 1$.
+
+Meanwhile, the total variance $\Var(P(a))$ increases more slowly because the marginal distribution smooths out across all bins. The normalized ratio $\Var(P(a|o)) / \Var(P(a))$ thus increases with $\alpha$, implying:
+\begin{equation}
+\frac{\partial \mathrm{OR}(\alpha)}{\partial \alpha} > 0 \quad \text{for } \alpha \in (0, 1)
+\end{equation}
+
+Therefore, $\mathrm{OR}(\pi_\alpha)$ is strictly increasing in $\alpha$.
+\end{proof}
+
+\subsection{Extension to Continuous Action Spaces}
+\label{app:continuous_or}
+
+For continuous action spaces $\mathcal{A} \subseteq \mathbb{R}^d$, we replace discrete probability variance with Euclidean variance:
+
+\begin{definition}[Continuous O/R Index]
+Given a policy $\pi$ that produces continuous actions $a \in \mathbb{R}^{d_a}$, define:
+\begin{align}
+\Var_{\mathrm{cont}}(P_\pi(a)) &= \mathbb{E}_{a \sim \pi}\left[\|a - \bar{a}\|_2^2\right] \label{eq:cont_var_marginal} \\
+\Var_{\mathrm{cont}}(P_\pi(a|o)) &= \frac{1}{B} \sum_{b=1}^{B} \mathbb{E}_{a \sim \pi(\cdot|o_b)}\left[\|a - \bar{a}_b\|_2^2\right] \label{eq:cont_var_conditional}
+\end{align}
+where $\bar{a}$ is the mean action vector over all timesteps, and $\bar{a}_b$ is the mean action within observation bin $b$. The continuous O/R Index is:
+\begin{equation}
+\mathrm{OR}_{\mathrm{cont}}(\pi) = \frac{\Var_{\mathrm{cont}}(P_\pi(a|o))}{\Var_{\mathrm{cont}}(P_\pi(a))} - 1
+\end{equation}
+\end{definition}
+
+\textbf{Empirical Estimator.} For logged trajectories $\{(o_t, a_t)\}_{t=1}^{T}$ with continuous observations $o_t \in \mathbb{R}^{d_o}$ and continuous actions $a_t \in \mathbb{R}^{d_a}$:
+
+\begin{algorithm}[H]
+\caption{Empirical Continuous-Action O/R Estimator}
+\label{alg:cont_or}
+\begin{algorithmic}[1]
+\Require Trajectories $\{(o_t, a_t)\}_{t=1}^{T}$, number of bins $B$
+\State Project observations to 1D via PCA: $\tilde{o}_t = \text{PCA}(o_t)$
+\State Discretize $\tilde{o}_t$ into $B$ bins using quantiles
+\State Compute global mean action: $\bar{a} = \frac{1}{T} \sum_{t=1}^{T} a_t$
+\State Compute total variance: $\text{Var}_{\text{total}} = \frac{1}{T} \sum_{t=1}^{T} \|a_t - \bar{a}\|_2^2$
+\For{each bin $b = 1, \ldots, B$}
+    \State Collect timesteps $S_b = \{t : \tilde{o}_t \in \text{bin } b\}$
+    \State Compute bin mean: $\bar{a}_b = \frac{1}{|S_b|} \sum_{t \in S_b} a_t$
+    \State Compute within-bin variance: $\text{Var}_b = \frac{1}{|S_b|} \sum_{t \in S_b} \|a_t - \bar{a}_b\|_2^2$
+\EndFor
+\State Average across bins: $\text{Var}_{\text{conditional}} = \frac{1}{B} \sum_{b=1}^{B} \text{Var}_b$
+\State \Return $\text{OR}_{\text{cont}} = \frac{\text{Var}_{\text{conditional}}}{\text{Var}_{\text{total}}} - 1$
+\end{algorithmic}
+\end{algorithm}
+
+\textbf{Interpretation.} The continuous O/R Index measures the same behavioral consistency concept as the discrete version: lower values indicate that actions vary predictably with observations (low within-bin variance), enabling teammates to anticipate behavior. The Euclidean norm $\|\cdot\|_2$ generalizes discrete action variance to continuous vector spaces.
+
+\textbf{Expected Performance in Continuous Control.} In continuous control MARL environments (e.g., cooperative quadrotor control, multi-robot manipulation), we expect:
+\begin{itemize}
+    \item \textbf{Moderate correlations} ($r \approx -0.35$ to $-0.50$): Continuous actions introduce higher intrinsic variance due to control noise and exploration, reducing the dynamic range of O/R.
+    \item \textbf{Task-dependent effects}: Precision tasks (e.g., coordinated grasping) should show stronger O/R-coordination correlation than coarse tasks (e.g., formation flying).
+    \item \textbf{Binning sensitivity}: Continuous observations require careful binning; we recommend $B \in \{10, 20\}$ bins for robustness.
+\end{itemize}
+
+\textbf{Validation Plan.} To validate continuous O/R:
+\begin{enumerate}
+    \item \textbf{Multi-Agent Particle Environment (Continuous):} Extend the discrete MPE simple\_spread to continuous action space (velocity commands).
+    \item \textbf{Cooperative Quadrotor Control:} Teams of 4 quadrotors must coordinate to transport a suspended object (requires precise, synchronized actions).
+    \item \textbf{Expected Result:} $r \approx -0.40$, validating that the O/R concept generalizes to continuous control.
+\end{enumerate}
+
+This extension demonstrates that the O/R Index is not specific to discrete action spaces but captures a general principle of behavioral consistency relevant across MARL domains.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% END OF APPENDIX B
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

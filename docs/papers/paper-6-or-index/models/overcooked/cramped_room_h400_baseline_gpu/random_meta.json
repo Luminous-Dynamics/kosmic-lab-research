@@ -1,0 +1,9 @@
+{
+  "scenario_id": "cramped_room_h400_baseline_gpu",
+  "layout": "cramped_room",
+  "horizon": 400,
+  "checkpoint": "random",
+  "n_episodes": 0,
+  "mean_reward": 0.0,
+  "device": "cuda"
+}

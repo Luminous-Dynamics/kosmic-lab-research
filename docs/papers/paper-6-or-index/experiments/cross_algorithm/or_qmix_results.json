@@ -1,0 +1,286 @@
+{
+  "algorithm": "QMIX",
+  "metrics": [
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.628605296050611,
+      "or_index": 0.0,
+      "mean_reward": -27.11225896899304,
+      "algorithm": "QMIX",
+      "seed": 42,
+      "episode": 100
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.43506259309698847,
+      "or_index": 0.0,
+      "mean_reward": -28.157962660769282,
+      "algorithm": "QMIX",
+      "seed": 42,
+      "episode": 200
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.3488327414764796,
+      "or_index": 0.0,
+      "mean_reward": -43.696566697209825,
+      "algorithm": "QMIX",
+      "seed": 42,
+      "episode": 300
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.4130465669956086,
+      "or_index": 0.0,
+      "mean_reward": -69.1306542763887,
+      "algorithm": "QMIX",
+      "seed": 42,
+      "episode": 400
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.4144202563290508,
+      "or_index": 0.0,
+      "mean_reward": -78.15052692095973,
+      "algorithm": "QMIX",
+      "seed": 42,
+      "episode": 500
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.43434920856394676,
+      "or_index": 0.0,
+      "mean_reward": -79.93709854564035,
+      "algorithm": "QMIX",
+      "seed": 42,
+      "episode": 600
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.47640294632118163,
+      "or_index": 0.0,
+      "mean_reward": -55.495477363641065,
+      "algorithm": "QMIX",
+      "seed": 42,
+      "episode": 700
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.4117500551968677,
+      "or_index": 0.0,
+      "mean_reward": -56.26954298240501,
+      "algorithm": "QMIX",
+      "seed": 42,
+      "episode": 800
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.39678898542594065,
+      "or_index": 0.0,
+      "mean_reward": -57.55988111505566,
+      "algorithm": "QMIX",
+      "seed": 42,
+      "episode": 900
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.39789310577800574,
+      "or_index": 0.0,
+      "mean_reward": -58.71028806605557,
+      "algorithm": "QMIX",
+      "seed": 42,
+      "episode": 1000
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.7241668788864494,
+      "or_index": 0.0,
+      "mean_reward": -23.781657356094776,
+      "algorithm": "QMIX",
+      "seed": 123,
+      "episode": 100
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.6830659639975494,
+      "or_index": 0.0,
+      "mean_reward": -20.6590070765666,
+      "algorithm": "QMIX",
+      "seed": 123,
+      "episode": 200
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.6679355958587465,
+      "or_index": 0.0,
+      "mean_reward": -22.60441600779125,
+      "algorithm": "QMIX",
+      "seed": 123,
+      "episode": 300
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.6834640165398256,
+      "or_index": 0.0,
+      "mean_reward": -24.591931493825854,
+      "algorithm": "QMIX",
+      "seed": 123,
+      "episode": 400
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.3819291569325386,
+      "or_index": 0.0,
+      "mean_reward": -33.94872868021035,
+      "algorithm": "QMIX",
+      "seed": 123,
+      "episode": 500
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.5226594789635157,
+      "or_index": 0.0,
+      "mean_reward": -38.014494143175355,
+      "algorithm": "QMIX",
+      "seed": 123,
+      "episode": 600
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.39486268564977245,
+      "or_index": 0.0,
+      "mean_reward": -59.41252335191557,
+      "algorithm": "QMIX",
+      "seed": 123,
+      "episode": 700
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.4260758864446703,
+      "or_index": 0.0,
+      "mean_reward": -62.675792599595844,
+      "algorithm": "QMIX",
+      "seed": 123,
+      "episode": 800
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.4439983225686691,
+      "or_index": 0.0,
+      "mean_reward": -60.56724202290985,
+      "algorithm": "QMIX",
+      "seed": 123,
+      "episode": 900
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.4090498749813519,
+      "or_index": 0.0,
+      "mean_reward": -67.03703107687855,
+      "algorithm": "QMIX",
+      "seed": 123,
+      "episode": 1000
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.7115554938274229,
+      "or_index": 0.0,
+      "mean_reward": -24.835330612123588,
+      "algorithm": "QMIX",
+      "seed": 456,
+      "episode": 100
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.6329264522558989,
+      "or_index": 0.0,
+      "mean_reward": -20.742261757769203,
+      "algorithm": "QMIX",
+      "seed": 456,
+      "episode": 200
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.6256819998196234,
+      "or_index": 0.0,
+      "mean_reward": -24.90827387404576,
+      "algorithm": "QMIX",
+      "seed": 456,
+      "episode": 300
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.6679706708868656,
+      "or_index": 0.0,
+      "mean_reward": -29.085305869682287,
+      "algorithm": "QMIX",
+      "seed": 456,
+      "episode": 400
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.41088232639300915,
+      "or_index": 0.0,
+      "mean_reward": -64.8489779767825,
+      "algorithm": "QMIX",
+      "seed": 456,
+      "episode": 500
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.37628956817780446,
+      "or_index": 0.0,
+      "mean_reward": -60.98142915097459,
+      "algorithm": "QMIX",
+      "seed": 456,
+      "episode": 600
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.4338161348698909,
+      "or_index": 0.0,
+      "mean_reward": -63.04719782315315,
+      "algorithm": "QMIX",
+      "seed": 456,
+      "episode": 700
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.4094304485851967,
+      "or_index": 0.0,
+      "mean_reward": -69.39024937471763,
+      "algorithm": "QMIX",
+      "seed": 456,
+      "episode": 800
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.4598835686535855,
+      "or_index": 0.0,
+      "mean_reward": -59.59427235984598,
+      "algorithm": "QMIX",
+      "seed": 456,
+      "episode": 900
+    },
+    {
+      "observation_consistency": 0.0,
+      "reward_consistency": 0.43923101964232103,
+      "or_index": 0.0,
+      "mean_reward": -59.83418840165369,
+      "algorithm": "QMIX",
+      "seed": 456,
+      "episode": 1000
+    }
+  ],
+  "summary": {
+    "n": 30,
+    "O_mean": 0.0,
+    "O_std": 0.0,
+    "R_mean": 0.49540090997231295,
+    "R_std": 0.11932648827354364,
+    "OR_mean": 0.0,
+    "OR_std": 0.0,
+    "reward_mean": -48.15935228689434,
+    "reward_std": 18.995997893231916
+  }
+}

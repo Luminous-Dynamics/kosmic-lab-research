@@ -1,0 +1,65 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION 3.5: THEORETICAL PROPERTIES OF THE O/R INDEX
+% Insert this after Section 3.4 (Theoretical Motivation)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Theoretical Properties}
+\label{subsec:theory_properties}
+
+While our primary contribution is empirical validation, we establish formal properties that characterize when and why the O/R Index succeeds as a coordination predictor.
+
+\begin{proposition}[Range and Extremes]
+\label{prop:range_extremes}
+Let $\pi$ be a policy with discrete observation space $\mathcal{O}$ and finite discrete action space $\mathcal{A}$. Then the O/R Index satisfies:
+\begin{enumerate}
+    \item $\mathrm{OR}(\pi) \in [-1, \infty)$.
+    \item $\mathrm{OR}(\pi) = -1$ whenever $\pi$ is deterministic given observations (i.e., $\forall o \in \mathcal{O}$, $\pi(a|o)$ is a point mass).
+    \item $\mathrm{OR}(\pi) = 0$ if and only if actions are conditionally independent of observations in the ANOVA sense: $\Var(P(a|o)) = \Var(P(a))$.
+    \item $\mathrm{OR}(\pi) > 0$ can occur when observation bins have highly unequal sizes and within-bin variance exceeds total variance due to unweighted bin averaging.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}[Proof sketch]
+See Appendix~\ref{app:proofs_discrete} for complete proofs. The range follows from: (1) deterministic policies yield zero within-bin variance, giving $\mathrm{OR} = 0/\Var(P(a)) - 1 = -1$; (2) when observations provide no information, within-bin variance equals total variance, giving $\mathrm{OR} = 0$; (3) unweighted averaging over bins with unequal sample sizes can produce $\Var(P(a|o)) > \Var(P(a))$, yielding $\mathrm{OR} > 0$.
+\end{proof}
+
+\textbf{Remark on Range.} In general, the O/R Index satisfies $\mathrm{OR}(\pi) \in [-1, \infty)$. The lower bound $-1$ is attained by deterministic observation-based policies. The neutral point $0$ corresponds to policies whose actions are independent of observations. Values greater than $0$ arise when conditioning on observations increases the apparent variability of the action distribution, typically due to skewed observation bins or undersampled states. However, many natural policy constructions (such as noise-mixing in Proposition~\ref{prop:monotonicity_noise}) produce O/R values confined to $[-1, 0]$.
+
+\begin{proposition}[Monotonicity under Noise Mixing]
+\label{prop:monotonicity_noise}
+Let $\pi_0$ be a deterministic observation-based policy mapping each observation $o$ to a fixed action $a^*(o)$, and let $\pi_{\mathrm{rand}}$ be a uniform random policy over $\mathcal{A}$. Define the mixture policy:
+\begin{equation}
+\pi_\alpha(a|o) = (1-\alpha) \cdot \pi_0(a|o) + \alpha \cdot \pi_{\mathrm{rand}}(a)
+\end{equation}
+for $\alpha \in [0, 1]$. Then $\mathrm{OR}(\pi_\alpha)$ is strictly increasing in $\alpha$ for $\alpha \in (0, 1)$.
+\end{proposition}
+
+\begin{proof}[Proof sketch]
+As $\alpha$ increases, we inject more private randomness (action noise independent of observations). This increases within-bin variance $\Var(P(a|o))$ while total variance $\Var(P(a))$ remains bounded. The normalized ratio increases monotonically. See Appendix~\ref{app:proofs_discrete} for the detailed calculation.
+\end{proof}
+
+\textbf{Interpretation.} Proposition~\ref{prop:range_extremes} formalizes the intuition that O/R measures behavioral consistency: deterministic policies achieve the minimum ($-1$), while policies with high conditional variance (unpredictable responses) have high O/R. Proposition~\ref{prop:monotonicity_noise} shows that adding private randomness—behavior invisible to teammates—monotonically increases O/R, formalizing why erratic behavior hinders coordination.
+
+\textbf{Toy Example: 2×2 Matrix Game.} Consider a coordination game with two states (observations) $o_1, o_2$ and two actions $\{L, R\}$:
+\begin{center}
+\begin{tabular}{c|cc}
+& $a_1 = L$ & $a_1 = R$ \\
+\hline
+$a_2 = L$ & 1, 1 & 0, 0 \\
+$a_2 = R$ & 0, 0 & 1, 1 \\
+\end{tabular}
+\end{center}
+
+\textbf{Policy A (Deterministic):} Agent plays $L$ when $o = o_1$ and $R$ when $o = o_2$. Within each observation bin, variance is zero. Thus $\Var(P(a|o)) = 0$ and $\mathrm{OR} = -1$. This is maximally predictable.
+
+\textbf{Policy B (Partially Noisy):} Mix Policy A with uniform random noise at rate $\alpha = 0.5$. Empirical validation (see Appendix~\ref{app:proofs_discrete}) shows this yields $\mathrm{OR} \approx -0.25$, confirming Proposition~\ref{prop:monotonicity_noise}.
+
+\textbf{Policy C (Fully Random):} Uniform random policy over $\{L, R\}$ independent of observations. This yields $\mathrm{OR} \approx 0$, as actions provide no signal about observations.
+
+This toy example validates Proposition~\ref{prop:monotonicity_noise}: in a 2×2 coordination game, our noise-mixing construction produces O/R values confined to $[-1, 0]$, smoothly increasing from $-1.0$ (deterministic) to $\approx 0.0$ (random) as noise level increases. The absence of values $> 0$ here reflects that uniform noise mixing cannot make conditional variance exceed marginal variance in this construction; exploring the $\mathrm{OR} > 0$ regime would require different policy structures (e.g., skewed binning or highly non-uniform observation distributions).
+
+These propositions provide theoretical grounding for our empirical finding that lower O/R predicts coordination success: teams with more deterministic, observation-consistent policies (low O/R) achieve higher coordination because teammates can reliably anticipate behavior under partial observability.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% END OF SECTION 3.5
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

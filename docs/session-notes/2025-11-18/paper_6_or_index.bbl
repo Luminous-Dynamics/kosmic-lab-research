@@ -1,0 +1,29 @@
+\begin{thebibliography}{3}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Hernandez-Leal et~al.(2019)Hernandez-Leal, Kartal, and
+  Taylor]{hernandez2019survey}
+Pablo Hernandez-Leal, Bilal Kartal, and Matthew~E Taylor.
+\newblock A survey and critique of multiagent deep reinforcement learning.
+\newblock \emph{Autonomous Agents and Multi-Agent Systems}, 33\penalty0
+  (6):\penalty0 750--797, 2019.
+
+\bibitem[Jaques et~al.(2019)Jaques, Lazaridou, Hughes, Gulcehre, Ortega,
+  Strouse, Leibo, and De~Freitas]{jaques2019social}
+Natasha Jaques, Angeliki Lazaridou, Edward Hughes, Caglar Gulcehre, Pedro
+  Ortega, DJ~Strouse, Joel~Z Leibo, and Nando De~Freitas.
+\newblock Social influence as intrinsic motivation for multi-agent deep
+  reinforcement learning.
+\newblock In \emph{International Conference on Machine Learning}, pages
+  3040--3049. PMLR, 2019.
+
+\bibitem[Oroojlooy and Hajinezhad(2023)]{oroojlooyjadid2019review}
+Afshin Oroojlooy and Davood Hajinezhad.
+\newblock A review of cooperative multi-agent deep reinforcement learning.
+\newblock \emph{Applied Intelligence}, 53:\penalty0 13677--13722, 2023.
+
+\end{thebibliography}

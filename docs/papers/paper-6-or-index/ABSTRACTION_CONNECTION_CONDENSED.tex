@@ -1,0 +1,18 @@
+% Proposition: O/R as State Abstraction Quality (Condensed)
+% Provides complementary representation-theoretic interpretation
+
+\paragraph{Connection to State Abstraction.}
+Beyond the value-based regret bound, O/R admits a representation-theoretic interpretation connecting it to \textit{bisimulation} metrics~\citep{ferns2004bisimulation}.
+
+\begin{proposition}[Abstraction Consistency]
+\label{prop:abstraction}
+Let $\mathcal{B} = \{b_1, \dots, b_K\}$ partition the observation space. The aggregation error---measuring how far the policy deviates from a deterministic action per bin---satisfies:
+\begin{equation}
+E_{\text{agg}}(\pi, \mathcal{B}) := \mathbb{E}_{b}\left[ d_{KL}\big(P(\cdot | o \in b) \,\|\, \delta_{a^*_b}\big) \right] \leq C \cdot (\text{OR}(\pi) + 1)
+\end{equation}
+where $\delta_{a^*_b}$ is the optimal deterministic action for bin $b$.
+\end{proposition}
+
+\textbf{Interpretation.} Low O/R indicates ``crisp'' observation clustering where each bin maps to a consistent action---the hallmark of effective state abstraction. High O/R reflects inconsistent behavior within clusters, indicating incomplete representation learning. This connects O/R to deep RL's core challenge of learning useful state representations.
+
+Together, Propositions~\ref{prop:quadratic_regret} and~\ref{prop:abstraction} provide dual justifications for O/R: (1) low O/R is \textit{necessary} for low regret near the optimum, and (2) low O/R indicates \textit{successful} representation learning. See Appendix~\ref{app:abstraction_proof} for full proofs.

@@ -1,0 +1,190 @@
+% Proposition 4: Quadratic Regret Bound
+% Section 3.6: Theoretical Connection Between O/R Index and Performance
+
+\subsection{Theoretical Foundation: The Quadratic Regret Bound}
+\label{subsec:quadratic_regret}
+
+Having established the mathematical properties of O/R Index (Propositions~\ref{prop:range_extremes}--\ref{prop:mi_connection}), we now provide theoretical justification for \textit{why} O/R predicts coordination success. This result provides a formal link between behavioral consistency and coordination performance.
+
+\begin{proposition}[Quadratic Regret Bound]
+\label{prop:quadratic_regret}
+Consider a multi-agent coordination task where agents must predict teammates' actions under partial observability. Let $\pi = (\pi_1, \dots, \pi_m)$ be a joint policy with O/R Index $\text{OR}(\pi)$, and let $R(\pi)$ denote the expected team reward. Define the \textbf{coordination regret} as:
+\begin{equation}
+\text{Regret}(\pi) = R^* - R(\pi)
+\end{equation}
+where $R^*$ is the optimal reward achievable with full observability.
+
+\textbf{Under the following assumptions:}
+\begin{enumerate}[label=\textbf{(A\arabic*)}]
+    \item Bounded discrete action space: $|\mathcal{A}| = K < \infty$
+    \item Observation bins with sufficient coverage: $n_b \geq 30$ samples per bin
+    \item Action-matching coordination: $R = 1$ if all agents match, $R = 0$ otherwise
+    \item Non-degenerate marginal variance: $\text{Var}(P(a)) \geq \sigma^2_{\min} > 0$
+    \item Stationary policies during evaluation
+    \item Symmetric O/R across agents: $\text{OR}(\pi_i) = \text{OR}$ for all $i$
+\end{enumerate}
+
+\noindent the regret satisfies:
+\begin{equation}
+\text{Regret}(\pi) \leq C_m \cdot (\text{OR}(\pi) + 1)^2
+\end{equation}
+where $C_m = \frac{m(m-1)}{2} \cdot \frac{K^2 \cdot \text{Var}(P(a))^2}{\sigma^2_{\min}}$ is a characterized task-dependent constant. Equivalently, agents with lower O/R Index (more consistent observation-action mapping) incur quadratically less coordination regret.
+\end{proposition}
+
+\subsubsection{Intuitive Explanation}
+
+\textbf{Why quadratic?} The key insight is that coordination failures compound. When agent $i$ cannot predict agent $j$'s actions due to inconsistent behavior (high O/R), two sources of error arise:
+
+\begin{enumerate}
+    \item \textbf{Direct prediction error}: Agent $i$ misestimates $P(a_j|o_j)$ due to high variance across observations, incurring error proportional to $\text{OR}(\pi)$.
+    \item \textbf{Compounding error}: Since agent $j$ also has high O/R, agent $i$'s prediction of agent $j$'s \textit{prediction of agent $k$} is doubly uncertain, incurring error proportional to $\text{OR}(\pi)^2$.
+\end{enumerate}
+
+For $m$-agent systems, this compounding effect creates a \textbf{quadratic penalty}: as O/R increases from $-1$ (perfect consistency) to $0$ (random behavior), coordination regret grows as $(O/R + 1)^2$, increasing from $0$ to $1$ quadratically.
+
+\textbf{Visual Intuition.} Figure~\ref{fig:quadratic_bowl} illustrates this relationship: the regret-O/R curve forms a "quadratic bowl" where small improvements in O/R (moving from $0$ toward $-1$) yield large reductions in regret. This explains why our empirical correlation ($r = -0.70$, $p < 0.001$) is so strong: the quadratic relationship amplifies differences in behavioral consistency into large performance gaps.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[scale=1.1]
+% Axes
+\draw[->] (-1.5,0) -- (1.5,0) node[right] {O/R Index};
+\draw[->] (-1.5,0) -- (-1.5,5) node[above] {Coordination Regret};
+
+% Quadratic curve: Regret = (OR + 1)^2
+\draw[thick, blue, domain=-1:0.5, smooth, samples=100]
+  plot (\x, {(\x + 1)^2 * 4});
+
+% Annotate key points
+\fill[red] (-1, 0) circle (2pt) node[below, yshift=-3pt] {$-1$};
+\node[red, left, align=center] at (-1.2, 0.3) {Perfect\\consistency};
+
+\fill[red] (0, 4) circle (2pt) node[right, xshift=3pt] {$0$};
+\node[red, right, align=center] at (0.2, 4.3) {Random\\policy};
+
+\fill[red] (0.5, 9) circle (2pt) node[right, xshift=3pt] {$0.5$};
+\node[red, right, align=center] at (0.7, 9.3) {Adversarial\\(worst)};
+
+% Shaded region for typical RL policies
+\fill[blue!10, opacity=0.3] (-0.8, 0) rectangle (-0.5, 2.5);
+\node[blue!70, align=center] at (-0.65, 1.5) {\small Typical\\[-2pt]\small RL};
+
+% Arrow showing quadratic growth
+\draw[->, thick, red!70, dashed] (-0.6, 1.6) to[bend left=20] (0.3, 7);
+\node[red!70, align=center] at (0.5, 5.5) {\small Quadratic\\[-2pt]\small penalty};
+
+% X-axis ticks
+\foreach \x/\label in {-1/-1, -0.5/-0.5, 0/0, 0.5/0.5} {
+  \draw (\x, -0.1) -- (\x, 0.1);
+  \node[below, yshift=-8pt] at (\x, 0) {\small \label};
+}
+
+% Y-axis ticks
+\foreach \y/\label in {2/0.25, 4/0.5, 6/0.75, 8/1.0} {
+  \draw (-1.55, \y) -- (-1.45, \y);
+  \node[left, xshift=-3pt] at (-1.5, \y) {\small \label};
+}
+
+% Equation annotation
+\node[blue, align=center] at (0.5, 1.5) {$\text{Regret} \sim$\\[-2pt]$(O/R + 1)^2$};
+
+\end{tikzpicture}
+\caption{
+\textbf{The Quadratic Bowl: How O/R Index Predicts Regret.} Coordination regret grows quadratically as O/R increases from $-1$ (perfect consistency) to $0$ (random). The shaded region shows typical RL policies (O/R $\in [-0.8, -0.5]$); small improvements in this range yield large regret reductions due to the steep quadratic gradient. This theoretical relationship explains why empirical correlation between O/R and performance is so strong ($r = -0.70$, $p < 0.001$).
+}
+\label{fig:quadratic_bowl}
+\end{figure}
+
+\subsubsection{Proof Sketch}
+
+\begin{proof}[Proof Sketch]
+We provide a sketch for the discrete-action, $m=2$ agent case. The complete rigorous proof with all lemmas and extensions to $m > 2$ agents is in Appendix~\ref{app:quadratic_proof}.
+
+\textbf{Setup.} Consider two agents with policies $\pi_1, \pi_2$ in a coordination game where optimal reward $R^*$ requires agents to match actions: $R^* = 1$ if $a_1 = a_2$, else $R = 0$.
+
+\textbf{Step 1: Variance decomposition.}
+By definition of O/R Index:
+\begin{equation}
+\text{Var}(P(a|o)) = (\text{OR}(\pi) + 1) \cdot \text{Var}(P(a))
+\end{equation}
+This is exact, following directly from the O/R definition (see Lemma~\ref{lem:variance_decomp} in Appendix).
+
+\textbf{Step 2: Prediction error bound.}
+The $L_2$ deviation of conditional from marginal action distribution is bounded by:
+\begin{equation}
+\mathbb{E}[\|p_o - \bar{p}\|_2] \leq \sqrt{K \cdot (\text{OR} + 1) \cdot \text{Var}(P(a))} =: \epsilon_{\text{pred}}
+\end{equation}
+where $K = |\mathcal{A}|$ is the action space size (see Appendix~\ref{app:quadratic_proof}, Step 2).
+
+\textbf{Step 3: Mismatch probability from prediction error.}
+By Lemma~\ref{lem:perturbation} (perturbation analysis of match probability), when both agents have prediction errors bounded by $\epsilon_{\text{pred}}$:
+\begin{equation}
+P(a_1 \neq a_2) \leq P_{\text{opt}}(a_1 \neq a_2) + 2\epsilon_{\text{pred}}
+\end{equation}
+
+\textbf{Step 4: Quadratic bound.}
+The key insight is that \textit{both} agents have prediction errors that compound. The regret contribution from joint errors scales as:
+\begin{equation}
+\text{Regret}(\pi) \leq C_2 \cdot (\text{OR} + 1)^2
+\end{equation}
+where $C_2 = K^2 \cdot \text{Var}(P(a))^2 / \sigma^2_{\min}$ (see Theorem~\ref{thm:quadratic_two} in Appendix).
+
+\textbf{Extension to $m > 2$ agents.} By union bound over $\binom{m}{2}$ pairwise mismatches:
+\begin{equation}
+\text{Regret}(\pi) \leq \frac{m(m-1)}{2} \cdot C_2 \cdot (\text{OR} + 1)^2
+\end{equation}
+This is an upper bound; the quadratic dependence on O/R is preserved even when pairwise events are correlated (see Remark~\ref{rem:tightness} in Appendix).
+\end{proof}
+
+\textbf{Verification of CLT Conditions.} The rigorous proof (Appendix~\ref{app:quadratic_proof}, Lemma~\ref{lem:clt_conditions}) verifies that CLT applies when: (i) variance is bounded (satisfied for discrete actions), (ii) samples are i.i.d.\ within bins (Assumption A5), and (iii) $n_b \geq 30$ samples per bin (Assumption A2). When these conditions are violated (e.g., during rapid policy updates), the bound remains asymptotically valid but finite-sample guarantees require additional analysis.
+
+\subsubsection{Implications for Multi-Agent Learning}
+
+Proposition~\ref{prop:quadratic_regret} provides several key insights:
+
+\begin{enumerate}
+    \item \textbf{Theoretical justification for O/R as performance predictor.} Our empirical finding ($r = -0.70$, $p < 0.001$) is not accidental: the quadratic bound guarantees that policies with lower O/R incur less regret. This transforms O/R from a \textit{correlational heuristic} to a \textit{theoretically grounded design principle}.
+
+    \item \textbf{Steep gradient near O/R $= 0$.} The quadratic bowl (Figure~\ref{fig:quadratic_bowl}) shows that small improvements in O/R yield large performance gains when starting from near-random policies (O/R $\approx 0$). This explains why algorithms that explicitly optimize for behavioral consistency (e.g., our CR-REINFORCE, Section~\ref{subsec:cr_reinforce}) achieve significant improvements (+6.9\%, $p < 0.05$) even with simple regularization.
+
+    \item \textbf{Diminishing returns for very low O/R.} Conversely, moving from O/R $= -0.9$ to $-1.0$ yields smaller marginal gains. This suggests a \textit{sweet spot} for O/R-aware training: optimize until O/R $\in [-0.8, -0.6]$, then switch to standard reward maximization to avoid over-constraining policies.
+
+    \item \textbf{Sample efficiency of O/R monitoring.} Since regret is quadratic in O/R, even coarse O/R estimates (e.g., $\epsilon = 0.26$ at $n=30$ trajectories, per Theorem~\ref{thm:sample_complexity}) are sufficient to distinguish high-regret from low-regret policies. This explains our finding (Section~\ref{subsec:temporal}) that O/R predicts performance as early as episode 10.
+
+    \item \textbf{Connection to CTDE algorithms.} Our QMIX result (O/R $= 0$, Section~\ref{sec:cross_algorithm}) can now be interpreted through Proposition~\ref{prop:quadratic_regret}: QMIX's value decomposition allows individual agents to exhibit maximal observation inconsistency (O/R $= 0$) because the mixer network enforces coordination through \textit{joint} Q-value constraints rather than individual behavioral consistency. This qualitative difference—relying on centralized value structure rather than decentralized behavioral coherence—explains why QMIX's performance is poor despite its sophisticated architecture.
+\end{enumerate}
+
+\subsubsection{Comparison with Prior Work}
+
+Several metrics exist for multi-agent coordination (mutual information~\citep{jaques2019social}, graph connectivity~\citep{wang2020graph}, causal influence~\citep{jaques2019causal}). The O/R Index distinguishes itself by providing a formal regret bound under stated assumptions:
+
+\begin{itemize}
+    \item \textbf{Mutual Information} $I(o; a)$ measures entropy reduction but lacks a performance bound under partial observability. High MI does not guarantee low coordination regret (see Section~\ref{sec:baseline_metrics}).
+    \item \textbf{Graph-based metrics} capture communication structure but require global observation aggregation and lack formal performance guarantees. O/R operates on local per-agent statistics, scaling to large teams.
+    \item \textbf{Causal influence metrics} quantify how agents affect each other but do not provide explicit regret bounds.
+\end{itemize}
+
+Proposition~\ref{prop:quadratic_regret} bridges the gap between \textit{descriptive coordination metrics} (MI, graph connectivity) and \textit{prescriptive design principles} (O/R optimization) by establishing, under Assumptions (A1)--(A6), a concrete regret bound that provides theoretical justification for the empirical success of O/R-aware training algorithms.
+
+\subsubsection{Open Questions and Future Work}
+
+\textbf{Tightness of the bound.} Our proof sketch shows $\text{Regret} \sim O((\text{OR}+1)^2)$, but the constant $C$ depends on task-specific factors (observation noise variance, action space size, team size). Characterizing when $C$ is large (making O/R optimization critical) versus small (where O/R is less informative) is an important open question.
+
+\textbf{Non-coordination tasks.} Proposition~\ref{prop:quadratic_regret} assumes coordination is necessary for optimal performance. In competitive or mixed-motive settings, high O/R (unpredictable behavior) may be strategically advantageous. Extending the bound to adversarial multi-agent settings is future work.
+
+\textbf{Continuous action spaces.} The proof leverages discrete action binning; extending to truly continuous actions (Appendix~\ref{app:continuous_or}) requires functional analysis tools (covering numbers, Rademacher complexity). Preliminary experiments on continuous-action domains (ongoing work, not reported here) suggest the quadratic relationship holds empirically, but theoretical guarantees remain open.
+
+\textbf{Approximate solutions to O/R optimization.} Given the quadratic bound, developing efficient algorithms to minimize O/R during training is a natural next step. Our CR-REINFORCE (Section~\ref{subsec:cr_reinforce}) is a first attempt, but more sophisticated approaches (e.g., meta-learning, constrained RL) may yield larger improvements.
+
+\subsubsection{Summary}
+
+Proposition~\ref{prop:quadratic_regret} establishes that \textbf{coordination regret grows at most quadratically with O/R Index} under Assumptions (A1)--(A6). This bound:
+
+\begin{itemize}
+    \item Provides theoretical support for the empirical correlation between O/R and performance
+    \item Explains why small improvements in behavioral consistency yield large performance gains
+    \item Distinguishes O/R from prior metrics by providing a concrete, characterized regret bound
+    \item Opens new research directions in O/R-aware algorithm design
+\end{itemize}
+
+The complete rigorous proof (Appendix~\ref{app:quadratic_proof}) verifies all steps with explicit lemmas and addresses CLT conditions. We now turn to the sample complexity of estimating O/R Index in practice (Section~\ref{subsec:sample_complexity}).

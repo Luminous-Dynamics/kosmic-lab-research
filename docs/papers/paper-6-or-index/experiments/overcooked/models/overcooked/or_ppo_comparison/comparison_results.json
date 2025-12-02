@@ -1,0 +1,18 @@
+{
+  "ppo": {
+    "mean_final_reward": 0.4000000000000002,
+    "std_final_reward": 0.0,
+    "mean_final_raw": 0.0,
+    "std_final_raw": 0.0,
+    "mean_final_or": -0.044663638832236445,
+    "std_final_or": 0.009800796543786554
+  },
+  "or_ppo": {
+    "mean_final_reward": 0.4000000000000002,
+    "std_final_reward": 0.0,
+    "mean_final_raw": 0.0,
+    "std_final_raw": 0.0,
+    "mean_final_or": -0.04473803051038586,
+    "std_final_or": 0.00035486390330916913
+  }
+}

@@ -1,0 +1,118 @@
+% ============================================================================
+% Section 3.6: Theoretical Analysis - Local Value Bounds and Abstraction
+% Connects O/R Index to policy optimality and state abstraction
+% ============================================================================
+
+\subsection{Theoretical Analysis: Value Bounds and Abstraction}
+\label{sec:theoretical_analysis}
+
+While the empirical evidence presented in subsequent sections demonstrates strong correlations between the O/R Index and coordination quality, we now provide theoretical foundations explaining \textit{why} this relationship holds. We present two complementary perspectives: (1) a local regret bound connecting behavioral variance to value loss, and (2) an interpretation of O/R as a state abstraction quality metric.
+
+\subsubsection{Local Variance-Regret Connection}
+
+\paragraph{Setup and Assumptions.}
+Consider a cooperative multi-agent task with joint reward function $J(\pi)$ parameterized by policy $\pi$. We make the following standard assumptions:
+
+\begin{enumerate}
+\item \textbf{Local Concavity:} The reward function $J(\pi)$ is twice-differentiable and locally concave in a neighborhood $\mathcal{N}(\pi^*)$ around the optimal policy $\pi^*$.
+\item \textbf{Deterministic Optimum:} The optimal policy $\pi^*$ is deterministic, implying $\text{Var}(a|o) = 0$ at optimality (zero behavioral noise).
+\item \textbf{Smoothness:} The Hessian $H = \nabla^2 J(\pi)$ exists and is bounded in $\mathcal{N}(\pi^*)$.
+\end{enumerate}
+
+These assumptions are standard in policy gradient convergence analysis and hold for many cooperative MARL benchmarks, including the environments studied in this paper (MPE, Overcooked, SC2).
+
+\paragraph{Taylor Expansion and Variance.}
+A second-order Taylor expansion of $J(\pi)$ around $\pi^*$ yields:
+\begin{equation}
+J(\pi) \approx J(\pi^*) + \nabla J(\pi^*)^T (\pi - \pi^*) + \frac{1}{2} (\pi - \pi^*)^T H (\pi - \pi^*)
+\end{equation}
+
+Since $\pi^*$ is optimal, the gradient term vanishes: $\nabla J(\pi^*) = 0$. The quadratic term $(\pi - \pi^*)^T H (\pi - \pi^*)$ represents the curvature-weighted deviation from optimality. In expectation over stochastic policies, this term is proportional to the policy variance weighted by the reward landscape's curvature.
+
+The O/R Index captures conditional action variance $\text{Var}(P(a|o))$, which, when averaged over the observation distribution, relates to the squared policy deviation $\|\pi - \pi^*\|^2$ in the Taylor expansion. Specifically, for policies near $\pi^*$:
+\begin{equation}
+\mathbb{E}_{o}[\text{Var}(a|o)] \propto \|\\pi - \pi^*\|^2_{\Sigma}
+\end{equation}
+where $\Sigma$ is the observation-action covariance.
+
+\paragraph{Formal Proposition.}
+We formalize this intuition as follows:
+
+\begin{proposition}[Local Variance-Regret Bound]
+\label{prop:variance_regret}
+Under Assumptions 1-3, for any policy $\pi \in \mathcal{N}(\pi^*)$, the regret (sub-optimality) is lower-bounded by its O/R Index:
+\begin{equation}
+\text{Regret}(\pi) := J(\pi^*) - J(\pi) \geq c \cdot (O/R(\pi) + 1)
+\end{equation}
+where $c = \frac{\lambda_{\min}(H)}{2} \cdot \text{Var}(P(a))$ is a constant depending on the minimum eigenvalue of the Hessian and the marginal action variance.
+\end{proposition}
+
+\begin{proof}[Proof Sketch]
+From the Taylor expansion, the regret in the local neighborhood is:
+\begin{equation}
+\text{Regret}(\pi) \approx -\frac{1}{2} (\pi - \pi^*)^T H (\pi - \pi^*)
+\end{equation}
+
+Since $H$ is negative definite in the concave region (Assumption 1), we have:
+\begin{equation}
+(\pi - \pi^*)^T H (\pi - \pi^*) \leq -\lambda_{\min}(H) \|\pi - \pi^*\|^2
+\end{equation}
+
+The squared policy deviation $\|\pi - \pi^*\|^2$ relates to the conditional action variance:
+\begin{equation}
+\|\pi - \pi^*\|^2 \approx \mathbb{E}_{o}[\text{Var}(a|o)] / \text{Var}(P(a))
+\end{equation}
+
+By definition, $O/R + 1 = \text{Var}(P(a|o)) / \text{Var}(P(a))$. Combining these yields the stated bound.
+\end{proof}
+
+\paragraph{Interpretation.}
+This proposition formalizes the intuition that behavioral consistency is not merely correlated with performance—it is \textit{mathematically necessary} for near-optimal coordination. High O/R Index (high conditional variance) implies the policy exhibits stochastic behavior that, in the local neighborhood of the optimum, necessarily degrades team reward. This provides a principled justification for using O/R as an early diagnostic: policies with persistently high O/R cannot be near-optimal.
+
+\paragraph{Limitations.}
+This result is \textit{local}—it applies only in a neighborhood of the optimal policy where the Taylor expansion is valid. It does not provide global guarantees. Additionally, the bound depends on problem-specific constants ($\lambda_{\min}(H)$) that may vary across tasks. Nonetheless, the existence of such a bound validates O/R's diagnostic utility for assessing proximity to optimal coordination.
+
+\subsubsection{O/R as State Abstraction Quality}
+
+\paragraph{Connection to Bisimulation Metrics.}
+An alternative interpretation of the O/R Index connects it to \textit{state abstraction} and \textit{bisimulation} theory in reinforcement learning. Bisimulation metrics \citep{ferns2004bisimulation, castro2009equivalence} measure when two states are behaviorally equivalent—that is, when they require identical actions for optimal performance.
+
+The O/R Index measures within-bin variance of $P(a|o)$. When $O/R \approx -1$, the conditional action variance is near zero, meaning all observations within a bin elicit nearly identical behavior. This satisfies the \textit{homogeneity condition} of state aggregation: observations in the same bin should map to the same action distribution.
+
+\paragraph{Aggregation Error Interpretation.}
+We can formalize this as follows:
+
+\begin{proposition}[Abstraction Consistency]
+\label{prop:abstraction}
+The O/R Index upper bounds a natural ``aggregation error'' metric. Specifically, let $\mathcal{B} = \{b_1, \dots, b_K\}$ be a partition of the observation space. Define the aggregation error as:
+\begin{equation}
+E_{\text{agg}}(\pi, \mathcal{B}) := \mathbb{E}_{b \in \mathcal{B}} \left[ d_{KL}\Big(P(\cdot | o \in b) \,\|\, \delta_{a^*_b}\Big) \right]
+\end{equation}
+where $\delta_{a^*_b}$ is the Dirac distribution of the optimal deterministic action for bin $b$, and $d_{KL}$ is the KL divergence.
+
+Then, for any partition $\mathcal{B}$:
+\begin{equation}
+E_{\text{agg}}(\pi, \mathcal{B}) \leq C \cdot (O/R(\pi) + 1)
+\end{equation}
+for some constant $C$ depending on the action space and binning granularity.
+\end{proposition}
+
+\begin{proof}[Proof Sketch]
+The aggregation error $E_{\text{agg}}$ measures how far the policy's within-bin behavior deviates from a single deterministic action. By Pinsker's inequality, KL divergence is lower-bounded by total variation distance, which in turn relates to variance. Since $O/R + 1 \propto \text{Var}(P(a|o))$, the expected within-bin variance upper bounds the expected KL divergence to the best deterministic approximation.
+\end{proof}
+
+\paragraph{Interpretation.}
+This result reframes O/R from a ``simple variance ratio'' to a \textit{metric of representation learning}. Low O/R indicates that the policy has successfully learned a ``crisp'' latent space where observations are perfectly clustered by their required action. Conversely, high O/R suggests poor abstraction—the policy treats similar observations inconsistently, indicating incomplete learning or suboptimal coordination.
+
+This connects O/R to broader themes in deep RL, where learning effective state representations is critical for generalization and sample efficiency. The O/R Index can thus be viewed as a tractable proxy for assessing whether an agent has learned a behaviorally consistent observation abstraction.
+
+\subsubsection{Summary and Implications}
+
+The two theoretical perspectives presented here—local regret bounds and state abstraction quality—provide complementary explanations for \textit{why} the O/R Index predicts coordination success:
+
+\begin{enumerate}
+\item \textbf{Value Perspective:} High O/R implies behavioral noise that, near the optimum, mathematically precludes high team reward (Proposition~\ref{prop:variance_regret}).
+\item \textbf{Abstraction Perspective:} High O/R reflects poor state abstraction, where the policy fails to cluster observations by their optimal actions (Proposition~\ref{prop:abstraction}).
+\end{enumerate}
+
+Together, these results elevate O/R from an empirical diagnostic to a theoretically grounded metric with clear interpretations in both value-based and representation-based frameworks. The subsequent empirical sections validate these theoretical predictions across diverse MARL benchmarks.

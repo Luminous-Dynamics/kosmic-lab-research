@@ -1,0 +1,72 @@
+\begin{thebibliography}{9}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Ceballos et~al.(2015)Ceballos, Ehrlich, Barnosky, Garc{\'i}a, Pringle,
+  and Palmer]{ceballos2015}
+Gerardo Ceballos, Paul~R. Ehrlich, Anthony~D. Barnosky, Andr{\'e}s Garc{\'i}a,
+  Robert~M. Pringle, and Todd~M. Palmer.
+\newblock Accelerated modern human-induced species losses: Entering the sixth
+  mass extinction.
+\newblock \emph{Science Advances}, 1\penalty0 (5):\penalty0 e1400253, 2015.
+\newblock \doi{10.1126/sciadv.1400253}.
+
+\bibitem[{Food and Agriculture Organization}(2020)]{fao2020}
+{Food and Agriculture Organization}.
+\newblock Global forest resources assessment 2020: Main report.
+\newblock Technical report, FAO, Rome, Italy, 2020.
+
+\bibitem[{Intergovernmental Panel on Climate Change}(2022)]{ipcc2022}
+{Intergovernmental Panel on Climate Change}.
+\newblock Climate change 2022: Impacts, adaptation, and vulnerability.
+\newblock Technical report, IPCC, Geneva, Switzerland, 2022.
+\newblock URL \url{https://www.ipcc.ch/report/ar6/wg2/}.
+
+\bibitem[{Organisation for Economic Co-operation and
+  Development}(2022)]{oecd2022}
+{Organisation for Economic Co-operation and Development}.
+\newblock Climate finance provided and mobilised by developed countries in
+  2016-2020.
+\newblock Technical report, OECD Publishing, Paris, France, 2022.
+
+\bibitem[Scheffer et~al.(2009)Scheffer, Bascompte, Brock, Brovkin, Carpenter,
+  Dakos, Held, van Nes, Rietkerk, and Sugihara]{scheffer2009}
+Marten Scheffer, Jordi Bascompte, William~A. Brock, Victor Brovkin, Stephen~R.
+  Carpenter, Vasilis Dakos, Hermann Held, Egbert~H. van Nes, Max Rietkerk, and
+  George Sugihara.
+\newblock Early-warning signals for critical transitions.
+\newblock \emph{Nature}, 461\penalty0 (7260):\penalty0 53--59, 2009.
+\newblock \doi{10.1038/nature08227}.
+
+\bibitem[Stiglitz et~al.(2009)Stiglitz, Sen, and Fitoussi]{stiglitz2009}
+Joseph~E. Stiglitz, Amartya Sen, and Jean-Paul Fitoussi.
+\newblock \emph{Report by the Commission on the Measurement of Economic
+  Performance and Social Progress}.
+\newblock Commission on the Measurement of Economic Performance and Social
+  Progress, Paris, France, 2009.
+
+\bibitem[{United Nations Development Programme}(2023)]{undp2023}
+{United Nations Development Programme}.
+\newblock Human development report 2023-24: Breaking the gridlock.
+\newblock Technical report, United Nations Development Programme, New York, NY,
+  2023.
+\newblock URL \url{https://hdr.undp.org/}.
+
+\bibitem[{United Nations High Commissioner for Refugees}(2016)]{unhcr2016}
+{United Nations High Commissioner for Refugees}.
+\newblock Global trends: Forced displacement in 2016.
+\newblock Technical report, UNHCR, Geneva, Switzerland, 2016.
+\newblock URL
+  \url{https://www.unhcr.org/statistics/unhcrstats/5943e8a34/global-trends-forced-displacement-2016.html}.
+
+\bibitem[{World Bank}(2021)]{worldbank2021}
+{World Bank}.
+\newblock World development indicators 2021.
+\newblock World Bank DataBank, 2021.
+\newblock URL
+  \url{https://databank.worldbank.org/source/world-development-indicators}.
+
+\end{thebibliography}

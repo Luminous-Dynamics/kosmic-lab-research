@@ -1,0 +1,67 @@
+% ============================================================================
+% Appendix: Exploratory Analysis on StarCraft II
+% Exploratory study of O/R Index on human-played competitive games
+% Moved to appendix per reviewer feedback (exploratory, not confirmatory)
+% ============================================================================
+
+% Note: Section heading provided by parent document when in appendix
+
+\textbf{Note: This analysis is exploratory, not confirmatory.} To investigate whether O/R-like behavioral consistency patterns might generalize beyond cooperative MARL settings, we analyzed 1,000 StarCraft II (SC2) ladder replays from human players. This exploratory study differs fundamentally from our primary validation (Sections~\ref{sec:main_results}--\ref{sec:cross_algorithm}) in several ways:
+
+\begin{itemize}
+    \item \textbf{Different domain}: SC2 is competitive (1v1), not cooperative multi-agent
+    \item \textbf{Different observation space}: We infer ``observations'' from replay structure, not actual agent state
+    \item \textbf{Different action mapping}: Macro-level strategic decisions vs.\ discrete RL actions
+    \item \textbf{No ground truth coordination metric}: Win/loss provides weaker signal than cooperative reward
+\end{itemize}
+
+\noindent Given these differences, results should be interpreted as hypothesis-generating rather than hypothesis-confirming.
+
+\paragraph{Dataset and Methodology.}
+We used the StarCraft II Ladder Replay Pack (v3.16.1, Pack 1), containing 48,186 ladder game replays from ranked competitive play. We randomly sampled 1,000 replays and computed O/R metrics by treating players' macro-level strategic decisions (extracted from replay events) as observations and individual unit commands as actions. This operationalization differs from our RL experiments---where agents observe environment states and execute discrete actions---but captures an analogous notion of behavioral consistency: whether players maintain coherent strategies across game contexts.
+
+For each replay, we extracted: (1) game duration, (2) player races (Terran, Protoss, Zerg), (3) winner, and (4) temporal action sequences. We computed observation consistency ($O$) by measuring the stability of action patterns within sliding time windows, and reward consistency ($R$) by correlating temporal action patterns with game outcomes (win/loss). All computations used the same binning procedure as our MARL experiments (Section~\ref{subsec:computation}).
+
+\paragraph{Results.}
+Table~\ref{tab:sc2_validation} shows that human SC2 players exhibit moderately high observation and reward consistency, with a mean O/R Index of 1.46. Notably, this is \textbf{higher (worse) than DQN} (1.15) but \textbf{better than SAC and MAPPO} (1.73, 2.00), positioning human performance between best-performing independent learners and on-policy methods. The high standard deviation (14.0) reflects substantial variability in human playstyles and skill levels within the competitive ladder.
+
+\begin{table}[H]
+\centering
+\caption{\textbf{SC2 Exploratory Analysis Results.} Human players in competitive StarCraft II exhibit moderate O/R Index values. Direct comparison with cooperative MARL algorithms is limited due to fundamental domain differences (competitive vs.\ cooperative, different observation spaces). Results based on 1,000 successfully parsed ladder replays; included for exploration only.}
+\label{tab:sc2_validation}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Metric} & \textbf{Mean $\pm$ SD} & \textbf{n} \\
+\midrule
+Observation Consistency ($O$) & $0.836 \pm 0.244$ & 1000 \\
+Reward Consistency ($R$) & $0.789 \pm 0.284$ & 1000 \\
+O/R Index & $\mathbf{1.461 \pm 14.005}$ & 1000 \\
+\midrule
+\multicolumn{3}{l}{\textit{Comparison with MARL (from Section~\ref{sec:cross_algorithm}):}} \\
+DQN (MPE, Cooperative) & $1.15 \pm 0.09$ & 9 \\
+SAC (MPE, Cooperative) & $1.73 \pm 0.23$ & 5 \\
+MAPPO (MPE, Cooperative) & $2.00 \pm 0.00$ & 2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Discussion.}
+The finding that human players achieve intermediate O/R Index---better than some RL algorithms but worse than the best---provides nuanced validation of O/R as a cross-domain metric. Several factors may explain this positioning:
+
+\begin{enumerate}
+\item \textbf{Strategic coherence:} Skilled human players develop coherent long-term strategies that maintain consistency across diverse game states, whereas RL agents may exhibit more reactive, context-specific behaviors that increase O/R.
+
+\item \textbf{Competitive vs. cooperative dynamics:} SC2 is competitive, where players optimize against opponents rather than coordinating with teammates. This may incentivize tighter observation-reward coupling compared to cooperative MARL tasks where credit assignment is more ambiguous.
+
+\item \textbf{Skill ceiling:} The sampled ladder games represent skilled human play (ranked competitive matches), whereas our RL agents were trained for only 1,000 episodes. Longer training or expert-level RL policies might achieve lower O/R.
+
+\item \textbf{Operationalization differences:} Our SC2 measurement treats macro-level strategic decisions as observations, which may naturally exhibit higher consistency than low-level agent observations in RL environments.
+\end{enumerate}
+
+\paragraph{Limitations.}
+This validation has important caveats. First, the O/R computation for SC2 differs from our MARL experiments: we infer observations from replay structure rather than directly observing agent state. Second, SC2 is competitive rather than cooperative, making direct comparisons with cooperative MARL tasks conceptually limited. Third, we analyzed only 1,000 replays from a single game version; broader validation across game versions, skill levels, and game types (team games, tournaments) would strengthen conclusions. Fourth, the operationalization of "observations" and "rewards" in SC2 is necessarily approximate---replay data does not provide direct access to players' internal decision states or moment-to-moment reward signals.
+
+\paragraph{Tentative Implications.}
+Given the exploratory nature of this analysis and the fundamental domain differences, we draw only tentative implications. The SC2 results suggest that behavioral consistency patterns \textit{may} extend beyond cooperative MARL, but this hypothesis requires dedicated validation with: (1) cooperative team games where O/R's interpretation is more appropriate, (2) standardized observation spaces to enable meaningful cross-domain comparison, and (3) performance correlations within-domain (does lower O/R predict SC2 win rate?). We include this analysis primarily to motivate future work on O/R Index in diverse settings, not as confirmatory evidence.
+
+Future work should extend this analysis to cooperative team games (where O/R's multi-agent coordination interpretation is more natural), expert-level RL agents (e.g., AlphaStar), and longitudinal skill progression (do players achieve lower O/R as they improve?). Additionally, investigating whether low O/R correlates with competitive success (win rate, ranking) in SC2 would provide a more direct validation of O/R's predictive utility for real-world performance.

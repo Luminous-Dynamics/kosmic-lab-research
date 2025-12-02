@@ -1,0 +1,27 @@
+% ============================================================================
+% Section 5.X: Cross-Algorithm Validation (CONDENSED for Main Body)
+% Full details in Appendix~\ref{app:cross_algorithm}
+% ============================================================================
+
+\subsection{Cross-Algorithm Validation}
+\label{sec:cross_algorithm}
+
+To test whether O/R Index generalizes beyond specific algorithms, we evaluated four diverse RL paradigms on MPE simple\_spread: DQN (value-based), SAC (off-policy actor-critic), MAPPO (on-policy), and QMIX (value decomposition). Table~\ref{tab:cross_algorithm_condensed} summarizes results.
+
+\begin{table}[h]
+\centering
+\caption{\textbf{Cross-Algorithm O/R Validation.} Strong O/R-performance correlation ($r = -0.79$, $p < 0.001$) across three independent learning algorithms. QMIX shows anomalous O=0 requiring further investigation.}
+\label{tab:cross_algorithm_condensed}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Algorithm} & \textbf{O/R Index} & \textbf{Reward} \\
+\midrule
+DQN & $1.15 \pm 0.09$ & $-1.02 \pm 0.20$ \\
+SAC & $1.73 \pm 0.23$ & $-1.51 \pm 0.24$ \\
+MAPPO & $2.00 \pm 0.00$ & $-2.42 \pm 0.00$ \\
+QMIX & $0.00 \pm 0.00$* & $-48.16 \pm 19.0$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent Among independent learning algorithms (DQN, SAC, MAPPO), O/R shows strong correlation with performance (Spearman $\rho = -0.79$, $p < 0.001$). QMIX exhibits anomalous O=0, \textit{hypothesized} (not confirmed) to result from value decomposition's structural coordination mechanism; see Appendix~\ref{app:cross_algorithm} for detailed analysis and limitations.

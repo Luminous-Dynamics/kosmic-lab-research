@@ -1,0 +1,104 @@
+{
+  "anova_checkpoint": {
+    "f_statistic": 3.5519063185870396,
+    "p_value": 0.03290482149300904,
+    "eta_squared": 0.34759318387339905,
+    "significant": true,
+    "interpretation": "large"
+  },
+  "anova_scenario": {
+    "f_statistic": 3.927021373008658,
+    "p_value": 0.013914332625394066,
+    "eta_squared": 0.5217231595874918,
+    "significant": true,
+    "interpretation": "large"
+  },
+  "pairwise_checkpoints": [
+    {
+      "comparison": "0 vs 5000",
+      "t_statistic": -3.254672303283591,
+      "p_value": 0.008651793574172817,
+      "cohen_d": -1.8790859304248002,
+      "mean_diff": -33732.50779790871,
+      "significant": true,
+      "effect_interpretation": "large",
+      "p_value_str": "0.0087*"
+    },
+    {
+      "comparison": "5000 vs 50000",
+      "t_statistic": 0.975798710667889,
+      "p_value": 0.35217835522582275,
+      "cohen_d": 0.5633776482789954,
+      "mean_diff": 10798.25656005631,
+      "significant": false,
+      "effect_interpretation": "medium",
+      "p_value_str": "0.3522"
+    },
+    {
+      "comparison": "50000 vs 200000",
+      "t_statistic": -0.7495457886992676,
+      "p_value": 0.4707936440771473,
+      "cohen_d": -0.4327504628754724,
+      "mean_diff": -9740.433965718832,
+      "significant": false,
+      "effect_interpretation": "small",
+      "p_value_str": "0.4708"
+    }
+  ],
+  "scenario_ranking": [
+    {
+      "rank": 1,
+      "scenario": "cramped_room_h800_stress_temporal",
+      "mean": 81079.72361986997,
+      "std": 24751.766733627504,
+      "min": 48102.3272634455,
+      "max": 105004.6444727012,
+      "count": 4
+    },
+    {
+      "rank": 2,
+      "scenario": "cramped_room_h400_baseline",
+      "mean": 40305.10608979128,
+      "std": 15663.938380650905,
+      "min": 26273.67388703791,
+      "max": 62563.55354778328,
+      "count": 4
+    },
+    {
+      "rank": 3,
+      "scenario": "cramped_room_h400_multiagent_sim",
+      "mean": 38402.46461083423,
+      "std": 21006.147412745224,
+      "min": 16326.89638763308,
+      "max": 65732.715473421,
+      "count": 4
+    },
+    {
+      "rank": 4,
+      "scenario": "coordination_ring_h400_stress_spatial",
+      "mean": 37204.36362067449,
+      "std": 19100.73934306853,
+      "min": 9642.52926299864,
+      "max": 51503.52107164979,
+      "count": 4
+    },
+    {
+      "rank": 5,
+      "scenario": "asymmetric_advantages_h400_baseline",
+      "mean": 36750.93385070295,
+      "std": 12823.54255887373,
+      "min": 19258.494909306744,
+      "max": 48004.9238127986,
+      "count": 4
+    },
+    {
+      "rank": 6,
+      "scenario": "forced_coordination_h400_stress_sequential",
+      "mean": 32204.918143597122,
+      "std": 14033.535337995048,
+      "min": 12331.42186604967,
+      "max": 43558.339209248814,
+      "count": 4
+    }
+  ]
+}

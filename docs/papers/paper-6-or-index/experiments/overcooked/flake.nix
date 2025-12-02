@@ -10,24 +10,16 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-
-        # Python with base packages available in nixpkgs
-        pythonEnv = pkgs.python311.withPackages (ps: with ps; [
-          numpy
-          pandas
-          matplotlib
-          seaborn
-          scipy
-          scikit-learn
-          tqdm
-          torch
-          torchvision
-        ]);
       in
       {
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
-            pythonEnv
+            # Python 3.10 for Overcooked-AI compatibility (requires <3.11)
+            # Using pip-based approach as poetry has version conflicts
+            python310
+            python310Packages.pip
+            python310Packages.setuptools
+            python310Packages.virtualenv
 
             # System dependencies for Overcooked-AI (SDL2 for rendering)
             SDL2
@@ -38,6 +30,11 @@
             # Build tools
             pkg-config
             gcc
+            cmake
+
+            # Build dependencies for Python packages
+            swig  # For box2d-py
+            zlib  # For multi-agent-ale-py
 
             # Convenience tools
             gnumake
@@ -57,6 +54,12 @@
 
             # Activate venv
             source .venv/bin/activate
+
+            # Set library path for NumPy to find zlib
+            export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath [
+              pkgs.zlib
+              pkgs.gcc.cc.lib
+            ]}:$LD_LIBRARY_PATH"
 
             # Install pip-only packages
             if [ ! -f .venv/.installed ]; then

@@ -1,14 +1,27 @@
 # Overcooked O/R Index Validation - Python Dependencies
 #
-# These are pip-only packages not available in nixpkgs.
+# All Python packages installed via pip for version compatibility
 # Install via: pip install -r requirements.txt
 # (This is done automatically when entering nix develop)
 
-# Overcooked-AI environment
-overcooked-ai-py==1.1.0
+# Core scientific Python stack
+numpy<2.0  # Python 3.10 compatible
+pandas
+matplotlib
+seaborn
+scipy
+scikit-learn
+tqdm
 
-# PettingZoo for MARL environments (optional, for future extensions)
-pettingzoo[all]==1.24.3
+# PyTorch for RL training (CPU version for compatibility)
+torch
+torchvision
 
-# Gymnasium (used by PettingZoo)
+# Overcooked-AI environment (install from GitHub)
+git+https://github.com/HumanCompatibleAI/overcooked_ai.git@1.1.0
+
+# Gymnasium (dependency of Overcooked-AI)
 gymnasium==0.29.1
+
+# Note: Skipping pettingzoo[all] to avoid build issues with box2d-py and multi-agent-ale-py
+# These are not needed for Overcooked experiments

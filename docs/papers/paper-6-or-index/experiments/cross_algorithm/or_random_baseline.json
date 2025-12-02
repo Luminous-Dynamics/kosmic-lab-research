@@ -1,0 +1,266 @@
+{
+  "metadata": {
+    "note": "Random policy baseline for O/R computation testing",
+    "algorithms": [
+      "DQN",
+      "SAC",
+      "MAPPO"
+    ],
+    "seeds": [
+      42,
+      123,
+      456
+    ],
+    "episodes": [
+      100,
+      500,
+      1000
+    ],
+    "total_measurements": 27
+  },
+  "metrics": [
+    {
+      "observation_consistency": 0.7759622633457184,
+      "reward_consistency": 0.7328593958915242,
+      "or_index": 1.0588146336223379,
+      "mean_reward": -1.189346775307934,
+      "algorithm": "DQN",
+      "seed": 42,
+      "episode": 100
+    },
+    {
+      "observation_consistency": 0.7794135957956314,
+      "reward_consistency": 0.628646063125968,
+      "or_index": 1.239828942094501,
+      "mean_reward": -1.1695879707969044,
+      "algorithm": "DQN",
+      "seed": 42,
+      "episode": 500
+    },
+    {
+      "observation_consistency": 0.7843214422464371,
+      "reward_consistency": 0.7215847369843605,
+      "or_index": 1.0869429343182004,
+      "mean_reward": -1.0524620316848958,
+      "algorithm": "DQN",
+      "seed": 42,
+      "episode": 1000
+    },
+    {
+      "observation_consistency": 0.7974978983402252,
+      "reward_consistency": 0.686686177211523,
+      "or_index": 1.161371690871901,
+      "mean_reward": -1.4032270748407807,
+      "algorithm": "DQN",
+      "seed": 123,
+      "episode": 100
+    },
+    {
+      "observation_consistency": 0.8127201646566391,
+      "reward_consistency": 0.7902090583253178,
+      "or_index": 1.0284875196117766,
+      "mean_reward": -1.3289711426116204,
+      "algorithm": "DQN",
+      "seed": 123,
+      "episode": 500
+    },
+    {
+      "observation_consistency": 0.8057779520750046,
+      "reward_consistency": 0.6882539371844041,
+      "or_index": 1.1707567466505386,
+      "mean_reward": -1.4734118524032056,
+      "algorithm": "DQN",
+      "seed": 123,
+      "episode": 1000
+    },
+    {
+      "observation_consistency": 0.78830985724926,
+      "reward_consistency": 0.5696786693442781,
+      "or_index": 1.3837798145379683,
+      "mean_reward": -1.1380243781633328,
+      "algorithm": "DQN",
+      "seed": 456,
+      "episode": 100
+    },
+    {
+      "observation_consistency": 0.7666208446025848,
+      "reward_consistency": 0.5107674151869139,
+      "or_index": 1.5009196099810829,
+      "mean_reward": -1.2524255583268575,
+      "algorithm": "DQN",
+      "seed": 456,
+      "episode": 500
+    },
+    {
+      "observation_consistency": 0.7765604555606842,
+      "reward_consistency": 0.6163656585350412,
+      "or_index": 1.2599021898906033,
+      "mean_reward": -1.0649851562236128,
+      "algorithm": "DQN",
+      "seed": 456,
+      "episode": 1000
+    },
+    {
+      "observation_consistency": 0.7683635503053665,
+      "reward_consistency": 0.6731667325152617,
+      "or_index": 1.141416385833925,
+      "mean_reward": -1.202815113934518,
+      "algorithm": "SAC",
+      "seed": 42,
+      "episode": 100
+    },
+    {
+      "observation_consistency": 0.7691089063882828,
+      "reward_consistency": 0.6986748542545336,
+      "or_index": 1.1008109003733808,
+      "mean_reward": -1.0987066737658842,
+      "algorithm": "SAC",
+      "seed": 42,
+      "episode": 500
+    },
+    {
+      "observation_consistency": 0.7786944210529327,
+      "reward_consistency": 0.6881767080116548,
+      "or_index": 1.1315326436831665,
+      "mean_reward": -1.1199981198039461,
+      "algorithm": "SAC",
+      "seed": 42,
+      "episode": 1000
+    },
+    {
+      "observation_consistency": 0.8071434795856476,
+      "reward_consistency": 0.7442473611789739,
+      "or_index": 1.0845096816493136,
+      "mean_reward": -1.4099476370540542,
+      "algorithm": "SAC",
+      "seed": 123,
+      "episode": 100
+    },
+    {
+      "observation_consistency": 0.8116749227046967,
+      "reward_consistency": 0.7165016159888534,
+      "or_index": 1.1328305383599,
+      "mean_reward": -1.4719215103085292,
+      "algorithm": "SAC",
+      "seed": 123,
+      "episode": 500
+    },
+    {
+      "observation_consistency": 0.8113482296466827,
+      "reward_consistency": 0.7130371575201369,
+      "or_index": 1.1378764903216205,
+      "mean_reward": -1.459716374548368,
+      "algorithm": "SAC",
+      "seed": 123,
+      "episode": 1000
+    },
+    {
+      "observation_consistency": 0.7963692843914032,
+      "reward_consistency": 0.4560573667297948,
+      "or_index": 1.7462041511132855,
+      "mean_reward": -0.9750929366248274,
+      "algorithm": "SAC",
+      "seed": 456,
+      "episode": 100
+    },
+    {
+      "observation_consistency": 0.7849145382642746,
+      "reward_consistency": 0.5685603003490952,
+      "or_index": 1.38052995254336,
+      "mean_reward": -1.0019055576742155,
+      "algorithm": "SAC",
+      "seed": 456,
+      "episode": 500
+    },
+    {
+      "observation_consistency": 0.7729405462741852,
+      "reward_consistency": 0.5672208194956083,
+      "or_index": 1.362680116951117,
+      "mean_reward": -0.970939158965153,
+      "algorithm": "SAC",
+      "seed": 456,
+      "episode": 1000
+    },
+    {
+      "observation_consistency": 0.7666583508253098,
+      "reward_consistency": 0.6887756491870529,
+      "or_index": 1.1130741056241449,
+      "mean_reward": -1.1128636550177313,
+      "algorithm": "MAPPO",
+      "seed": 42,
+      "episode": 100
+    },
+    {
+      "observation_consistency": 0.7729917615652084,
+      "reward_consistency": 0.7476186485705606,
+      "or_index": 1.033938563067916,
+      "mean_reward": -1.1105493484102429,
+      "algorithm": "MAPPO",
+      "seed": 42,
+      "episode": 500
+    },
+    {
+      "observation_consistency": 0.7839784622192383,
+      "reward_consistency": 0.7046635120360205,
+      "or_index": 1.1125571818363025,
+      "mean_reward": -1.0598747011485934,
+      "algorithm": "MAPPO",
+      "seed": 42,
+      "episode": 1000
+    },
+    {
+      "observation_consistency": 0.8044464737176895,
+      "reward_consistency": 0.7742601403446561,
+      "or_index": 1.0389873137079264,
+      "mean_reward": -1.4390982331318145,
+      "algorithm": "MAPPO",
+      "seed": 123,
+      "episode": 100
+    },
+    {
+      "observation_consistency": 0.8057333528995514,
+      "reward_consistency": 0.7421035461805803,
+      "or_index": 1.0857424764900165,
+      "mean_reward": -1.3537621395990007,
+      "algorithm": "MAPPO",
+      "seed": 123,
+      "episode": 500
+    },
+    {
+      "observation_consistency": 0.7960873544216156,
+      "reward_consistency": 0.6648644340931849,
+      "or_index": 1.1973679168652294,
+      "mean_reward": -1.4203228982466582,
+      "algorithm": "MAPPO",
+      "seed": 123,
+      "episode": 1000
+    },
+    {
+      "observation_consistency": 0.7830665409564972,
+      "reward_consistency": 0.5150732936635816,
+      "or_index": 1.5203011598286105,
+      "mean_reward": -1.0543932372408824,
+      "algorithm": "MAPPO",
+      "seed": 456,
+      "episode": 100
+    },
+    {
+      "observation_consistency": 0.7840231955051422,
+      "reward_consistency": 0.5576030494388442,
+      "or_index": 1.406059709023406,
+      "mean_reward": -1.0982537981539642,
+      "algorithm": "MAPPO",
+      "seed": 456,
+      "episode": 500
+    },
+    {
+      "observation_consistency": 0.7786141932010651,
+      "reward_consistency": 0.568199356822352,
+      "or_index": 1.370318656909907,
+      "mean_reward": -0.9320268370500214,
+      "algorithm": "MAPPO",
+      "seed": 456,
+      "episode": 1000
+    }
+  ]
+}

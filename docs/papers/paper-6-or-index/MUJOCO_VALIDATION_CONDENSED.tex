@@ -1,0 +1,19 @@
+% MuJoCo Continuous Action Validation (Condensed for Main Body)
+% Full details and sensitivity analysis in Appendix B (Section B.1)
+
+\subsection{Continuous Action Spaces: MuJoCo Validation}
+\label{sec:mujoco_validation}
+
+To validate O/R generalization beyond discrete actions, we evaluate on \textbf{Multi-Agent MuJoCo}~\citep{de2020deep}---continuous control with high-dimensional state-action spaces.
+
+\textbf{Setup.} Two-agent \texttt{Ant-v2-v0} (27D observations, 8D continuous actions per agent). We discretize continuous spaces via K-means clustering ($B=10$ bins) and compute O/R using the Euclidean variance extension (Appendix~\ref{app:continuous_or}).
+
+\textbf{Results.}
+\begin{itemize}[nosep]
+    \item \textbf{O/R tracks learning}: $-0.64$ at 50K steps $\to$ $-0.998$ at convergence
+    \item \textbf{Binning robust}: O/R stable across $B \in \{5, 10, 15, 20\}$ ($<20\%$ variation)
+    \item \textbf{Computational}: 28.6 min training on NVIDIA RTX A5000 (264 episodes)
+\end{itemize}
+
+\textbf{Interpretation.} The continuous O/R Index captures the same behavioral consistency principle: policies mapping similar observations to similar actions achieve lower O/R. The discretization via K-means introduces approximation but preserves the core diagnostic signal. This validates that O/R is not specific to discrete actions but generalizes across MARL domains.
+

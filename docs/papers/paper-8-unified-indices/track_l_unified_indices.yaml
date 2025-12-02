@@ -1,0 +1,312 @@
+# Track L: K-Index ↔ O/R Index Bridge Study
+# Goal: Establish relationship between magnitude coupling (K) and behavioral consistency (O/R)
+# Paper 8: Unified Indices of Machine Consciousness
+#
+# NOTE: Copy this file to fre/configs/ when ready to run experiments
+# Command: sudo cp track_l_unified_indices.yaml /srv/luminous-dynamics/kosmic-lab/fre/configs/
+
+experiment:
+  name: "track_l_unified_indices"
+  description: "Bridge study connecting K-Index and O/R Index frameworks"
+  output_dir: "logs/track_l/"
+  log_jsonl:
+    enabled: true
+    path: "logs/track_l/episodes/"
+
+# =============================================================================
+# TRACK L1: Correlation Study (200 episodes)
+# =============================================================================
+track_l1:
+  name: "k_or_correlation"
+  description: "Measure correlation between K-Index and O/R Index across agent population"
+  episodes: 200
+
+  # Agent generation: Create agents across K-Index spectrum
+  agent_generation:
+    # 50 random agents (expected K ~ 0.3-0.7)
+    random:
+      count: 50
+      type: "uniform_random"
+
+    # 50 gradient-trained agents (expected K ~ 0.8-1.2)
+    gradient_trained:
+      count: 50
+      type: "ppo_trained"
+      training_steps: 10000
+      learning_rate: 0.0003
+
+    # 50 CMA-ES agents (expected K ~ 1.0-1.5, from G8 methodology)
+    cma_es_trained:
+      count: 50
+      type: "cma_es"
+      population: 20
+      generations: 50
+
+    # 50 SAC agents (varied K)
+    sac_trained:
+      count: 50
+      type: "sac"
+      training_steps: 20000
+
+  environment:
+    observations: 20
+    actions: 10
+    episode_length: 200
+    type: "coordination_task"
+
+  measurements:
+    k_index:
+      window_size: 50
+      compute_variants: true  # Pearson, Spearman, z-scored
+
+    or_index:
+      action_bins: 10  # Discretize continuous actions if needed
+      observation_bins: 10
+      full_episode: true
+
+    coordination_score:
+      type: "target_matching"
+      targets_per_episode: 10
+
+  analysis:
+    correlation:
+      methods: ["pearson", "spearman", "kendall"]
+      bootstrap_ci: true
+      n_bootstrap: 1000
+      alpha: 0.05
+
+    expected_result: "r < -0.4 (moderate-strong negative)"
+
+# =============================================================================
+# TRACK L2: Unified Index Validation (300 episodes)
+# =============================================================================
+track_l2:
+  name: "unified_index_validation"
+  description: "Compare predictive power of K, O/R, and unified index"
+  episodes: 300
+
+  # Use agents from L1 + generate 100 more
+  agent_source: "track_l1"
+  additional_agents: 100
+
+  environment:
+    observations: 20
+    actions: 10
+    episode_length: 200
+    type: "coordination_task"
+    difficulty: "varied"  # Easy, medium, hard coordination tasks
+
+  unified_index:
+    formula: "coherence"  # K × (1 - tanh(O/R))
+    alternatives:
+      - "additive"        # K + (-O/R)
+      - "multiplicative"  # K × (-O/R + 2)
+      - "vector_magnitude"  # sqrt(K² + O/R²)
+
+  regression_models:
+    - name: "k_only"
+      formula: "performance ~ K"
+    - name: "or_only"
+      formula: "performance ~ O/R"
+    - name: "unified_coherence"
+      formula: "performance ~ Coherence(K, O/R)"
+    - name: "additive"
+      formula: "performance ~ K + O/R"
+    - name: "multiplicative"
+      formula: "performance ~ K * O/R"
+    - name: "full"
+      formula: "performance ~ K + O/R + K*O/R"
+
+  analysis:
+    compare_r_squared: true
+    aic_comparison: true
+    cross_validation:
+      folds: 5
+      metric: "mse"
+
+    expected_result: "Unified model R² > single-index R² + 0.05"
+
+# =============================================================================
+# TRACK L3: Causal Analysis (200 episodes)
+# =============================================================================
+track_l3:
+  name: "causal_analysis"
+  description: "Establish causal structure between K, O/R, and performance"
+  episodes: 200
+
+  interventions:
+    # Perturb K by scaling observation norms
+    k_perturbation:
+      type: "observation_noise"
+      scale_factors: [0.5, 0.75, 1.0, 1.25, 1.5]
+      episodes_per_level: 20
+
+    # Perturb O/R by adding action distribution noise
+    or_perturbation:
+      type: "action_noise"
+      noise_levels: [0.0, 0.1, 0.2, 0.3, 0.4]
+      episodes_per_level: 20
+
+  causal_models:
+    # K → O/R → Performance
+    - name: "k_upstream"
+      structure: "K -> O/R -> Performance"
+
+    # O/R → K → Performance
+    - name: "or_upstream"
+      structure: "O/R -> K -> Performance"
+
+    # K ← Latent → O/R, both → Performance
+    - name: "common_cause"
+      structure: "Latent -> K, Latent -> O/R, K -> Performance, O/R -> Performance"
+
+    # Independent paths
+    - name: "independent"
+      structure: "K -> Performance, O/R -> Performance"
+
+  analysis:
+    mediation_test: "sobel"
+    path_analysis: true
+    bootstrap_ci: true
+
+    expected_result: "K → O/R → Performance (K upstream, O/R mediates)"
+
+# =============================================================================
+# TRACK L4: Unified Optimization (200 episodes)
+# =============================================================================
+track_l4:
+  name: "unified_optimization"
+  description: "Optimize for unified coherence instead of K alone"
+  episodes: 200
+
+  algorithm:
+    type: "CMA-ES"
+    population: 20
+    generations: 100
+    elite_ratio: 0.2
+
+  fitness_function:
+    type: "unified_coherence"
+    formula: "K * (1 - tanh(O/R))"
+    weights:
+      k_component: 0.5
+      or_component: 0.5
+
+  comparison:
+    # Compare to K-only optimization (baseline from G8)
+    baseline: "track_g8_k_only"
+    metrics:
+      - "best_k_index"
+      - "best_or_index"
+      - "best_unified_coherence"
+      - "threshold_crossed"  # K > 1.5
+
+  environment:
+    observations: 20
+    actions: 10
+    episode_length: 200
+    type: "coordination_task"
+
+  success_criteria:
+    k_threshold: 1.5
+    coherence_threshold: 1.8  # K=1.5 × (1 - tanh(-0.5)) ≈ 1.81
+
+  expected_result: "Unified optimization crosses K > 1.5 threshold"
+
+# =============================================================================
+# TRACK L5: Cross-Environment Validation (100 episodes)
+# =============================================================================
+track_l5:
+  name: "cross_environment_validation"
+  description: "Validate K-O/R relationship across environments"
+  episodes: 100
+
+  environments:
+    - name: "corridor_task"
+      type: "custom"
+      observations: 20
+      actions: 10
+      episode_length: 200
+      episodes: 25
+
+    - name: "pettingzoo_mpe"
+      type: "simple_spread"
+      agents: 3
+      landmarks: 3
+      episode_length: 100
+      episodes: 25
+
+    - name: "overcooked"
+      type: "overcooked_ai"
+      layout: "cramped_room"
+      episode_length: 400
+      episodes: 25
+
+    - name: "starcraft_micro"
+      type: "smac"
+      map: "3m"
+      episode_length: 200
+      episodes: 25
+
+  analysis:
+    per_environment_correlation: true
+    meta_analysis:
+      fixed_effects: true
+      random_effects: true
+    heterogeneity_test: "I²"
+
+    expected_result: "Correlation robust across environments (r < -0.3 in all)"
+
+# =============================================================================
+# MEASUREMENT SPECIFICATION
+# =============================================================================
+measurement:
+  k_index:
+    formula: "2 * abs(pearsonr(obs_norms, act_norms))"
+    window_size: 50
+    robust_variants: true
+
+  or_index:
+    formula: "Var(P(a|o)) / Var(P(a)) - 1"
+    estimation_method: "histogram"
+    bins: 10
+
+  unified_coherence:
+    formula: "K * (1 - tanh(O/R))"
+    bounds: [0, 4]
+
+  performance:
+    type: "coordination_success"
+    normalization: "min_max"
+
+# =============================================================================
+# REPRODUCIBILITY
+# =============================================================================
+reproducibility:
+  random_seeds: [42, 123, 456, 789, 1011]
+  record_all_runs: true
+  checkpoint_frequency: 10  # Every 10 generations
+  save_agent_policies: true
+
+# =============================================================================
+# SUCCESS CRITERIA
+# =============================================================================
+success_criteria:
+  track_l1:
+    correlation_strength: "r < -0.4 or r > 0.4"
+    statistical_significance: "p < 0.001"
+
+  track_l2:
+    r_squared_improvement: "> 0.05"
+    cross_validation_improvement: "> 5%"
+
+  track_l3:
+    mediation_significance: "Sobel z > 2.0, p < 0.05"
+    causal_direction: "identified"
+
+  track_l4:
+    k_threshold_crossed: "K > 1.5"
+    unified_improvement: "> 10% over K-only"
+
+  track_l5:
+    cross_environment_robustness: "r < -0.3 in ≥3/4 environments"

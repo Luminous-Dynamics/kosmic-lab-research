@@ -1,0 +1,50 @@
+% Table 1: Checkpoint Statistics
+\begin{table}
+\caption{O/R Index statistics by training checkpoint.}
+\label{tab:or_index_checkpoint}
+\begin{tabular}{lrrr}
+\toprule
+Checkpoint & Mean O/R Index & Std Dev & N \\
+\midrule
+Random & 21989.22 & 14039.11 & 6 \\
+PPO 5K & 55721.73 & 21152.30 & 6 \\
+PPO 50K & 44923.48 & 16950.74 & 6 \\
+PPO 200K & 54663.91 & 26942.73 & 6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+% Table 2: Scenario Ranking
+\begin{table}
+\caption{O/R Index ranking by scenario.}
+\label{tab:or_index_scenario}
+\begin{tabular}{rlrr}
+\toprule
+Rank & Scenario & Mean O/R Index & Std Dev \\
+\midrule
+1 & cramped\_room\_h800\_stress\_temporal & 81079.72 & 24751.77 \\
+2 & cramped\_room\_h400\_baseline & 40305.11 & 15663.94 \\
+3 & cramped\_room\_h400\_multiagent\_sim & 38402.46 & 21006.15 \\
+4 & coordination\_ring\_h400\_stress\_spatial & 37204.36 & 19100.74 \\
+5 & asymmetric\_advantages\_h400\_baseline & 36750.93 & 12823.54 \\
+6 & forced\_coordination\_h400\_stress\_sequential & 32204.92 & 14033.54 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+% Table 3: Pairwise Checkpoint Comparisons
+\begin{table}
+\caption{Pairwise comparisons between consecutive training checkpoints. * indicates p < 0.05.}
+\label{tab:pairwise_checkpoints}
+\begin{tabular}{lrrll}
+\toprule
+Comparison & Mean Diff & Cohen's d & p-value & Effect Size \\
+\midrule
+0 vs 5000 & -1.879 & -33732.508 & large & 0.0087* \\
+5000 vs 50000 & 0.563 & 10798.257 & medium & 0.3522 \\
+50000 vs 200000 & -0.433 & -9740.434 & small & 0.4708 \\
+\bottomrule
+\end{tabular}
+\end{table}

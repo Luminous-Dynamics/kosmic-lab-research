@@ -29,7 +29,7 @@ class Args:
     exp_name: str = "ma_sac"
     seed: int = 42
     torch_deterministic: bool = True
-    cuda: bool = False
+    cuda: bool = True  # Use GPU by default (automatically falls back to CPU if unavailable)
 
     # Environment
     num_agents: int = 3
@@ -111,7 +111,7 @@ class ReplayBuffer:
     def push(self, agent_id, obs, action, reward, next_obs, done):
         self.buffer.append((agent_id, obs, action, reward, next_obs, done))
 
-    def sample(self, batch_size, agent_id=None):
+    def sample(self, batch_size, agent_id=None, device="cpu"):
         """Sample batch, optionally filtered by agent"""
         if agent_id is not None:
             agent_transitions = [t for t in self.buffer if t[0] == agent_id]
@@ -126,11 +126,11 @@ class ReplayBuffer:
         agents, obs, actions, rewards, next_obs, dones = zip(*batch)
         return (
             agents,
-            torch.FloatTensor(np.array(obs)),
-            torch.FloatTensor(np.array(actions)),
-            torch.FloatTensor(np.array(rewards)).unsqueeze(1),
-            torch.FloatTensor(np.array(next_obs)),
-            torch.FloatTensor(np.array(dones)).unsqueeze(1),
+            torch.FloatTensor(np.array(obs)).to(device),
+            torch.FloatTensor(np.array(actions)).to(device),
+            torch.FloatTensor(np.array(rewards)).unsqueeze(1).to(device),
+            torch.FloatTensor(np.array(next_obs)).to(device),
+            torch.FloatTensor(np.array(dones)).unsqueeze(1).to(device),
         )
 
     def __len__(self):
@@ -143,6 +143,14 @@ class MultiAgentSAC:
         self.env = env
         self.args = args
         self.agents = env.possible_agents
+
+        # Setup device (GPU if available and requested)
+        self.device = torch.device(
+            "cuda" if args.cuda and torch.cuda.is_available() else "cpu"
+        )
+        print(f"Using device: {self.device}")
+        if self.device.type == "cuda":
+            print(f"GPU: {torch.cuda.get_device_name(0)}")
 
         # Get dimensions (discrete actions, so we'll use a trick)
         sample_agent = self.agents[0]
@@ -169,16 +177,16 @@ class MultiAgentSAC:
 
         for agent in self.agents:
             # Actor
-            self.actors[agent] = Actor(self.obs_dim, self.action_dim)
+            self.actors[agent] = Actor(self.obs_dim, self.action_dim).to(self.device)
             self.actor_optimizers[agent] = optim.Adam(
                 self.actors[agent].parameters(), lr=args.learning_rate
             )
 
             # Critics (double Q-learning)
-            self.qf1s[agent] = SoftQNetwork(self.obs_dim, self.action_dim)
-            self.qf2s[agent] = SoftQNetwork(self.obs_dim, self.action_dim)
-            self.qf1_targets[agent] = SoftQNetwork(self.obs_dim, self.action_dim)
-            self.qf2_targets[agent] = SoftQNetwork(self.obs_dim, self.action_dim)
+            self.qf1s[agent] = SoftQNetwork(self.obs_dim, self.action_dim).to(self.device)
+            self.qf2s[agent] = SoftQNetwork(self.obs_dim, self.action_dim).to(self.device)
+            self.qf1_targets[agent] = SoftQNetwork(self.obs_dim, self.action_dim).to(self.device)
+            self.qf2_targets[agent] = SoftQNetwork(self.obs_dim, self.action_dim).to(self.device)
 
             self.qf1_targets[agent].load_state_dict(self.qf1s[agent].state_dict())
             self.qf2_targets[agent].load_state_dict(self.qf2s[agent].state_dict())
@@ -189,12 +197,12 @@ class MultiAgentSAC:
             # Temperature
             if args.autotune:
                 self.target_entropies[agent] = -args.target_entropy_scale * self.action_dim
-                self.log_alphas[agent] = torch.zeros(1, requires_grad=True)
+                self.log_alphas[agent] = torch.zeros(1, requires_grad=True, device=self.device)
                 self.alpha_optimizers[agent] = optim.Adam(
                     [self.log_alphas[agent]], lr=args.learning_rate
                 )
             else:
-                self.log_alphas[agent] = torch.tensor(np.log(args.alpha))
+                self.log_alphas[agent] = torch.tensor(np.log(args.alpha), device=self.device)
 
         # Shared replay buffer
         self.replay_buffer = ReplayBuffer(args.buffer_size)
@@ -203,7 +211,7 @@ class MultiAgentSAC:
     def get_action(self, agent, obs, deterministic=False):
         """Get action from policy"""
         with torch.no_grad():
-            obs_tensor = torch.FloatTensor(obs).unsqueeze(0)
+            obs_tensor = torch.FloatTensor(obs).unsqueeze(0).to(self.device)
             if deterministic:
                 action, _ = self.actors[agent](obs_tensor)
                 action = torch.tanh(action)
@@ -220,7 +228,7 @@ class MultiAgentSAC:
         if len(self.replay_buffer) < self.args.batch_size:
             return None, None, None
 
-        batch = self.replay_buffer.sample(self.args.batch_size, agent_id=agent)
+        batch = self.replay_buffer.sample(self.args.batch_size, agent_id=agent, device=self.device)
         if batch is None:
             return None, None, None
 
@@ -386,6 +394,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--exp-name", type=str, default="ma_sac")
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--cuda", action="store_true", default=True, help="Use GPU if available")
     parser.add_argument("--total-episodes", type=int, default=1000)
     parser.add_argument("--learning-rate", type=float, default=3e-4)
     parser.add_argument("--save-freq", type=int, default=100)

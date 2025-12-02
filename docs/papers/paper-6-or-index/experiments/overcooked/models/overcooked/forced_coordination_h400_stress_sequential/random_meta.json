@@ -1,0 +1,13 @@
+{
+  "scenario": "forced_coordination_h400_stress_sequential",
+  "layout": "forced_coordination",
+  "horizon": 400,
+  "randomize_positions": false,
+  "checkpoint": "random",
+  "n_episodes": 0,
+  "obs_dim": 2600,
+  "n_actions": 6,
+  "learning_rate": null,
+  "gamma": 0.99,
+  "entropy_beta": 0.01
+}

@@ -1,0 +1,10 @@
+{
+  "scenario_id": "cramped_room_h400_baseline_gpu",
+  "layout": "cramped_room",
+  "horizon": 400,
+  "policy_type": "ppo_50k",
+  "seed": 0,
+  "episode_return": 0.0,
+  "episode_length": 400,
+  "checkpoint_path": "../../models/overcooked/cramped_room_h400_baseline_gpu/ppo_50k.pth"
+}

@@ -1,0 +1,13 @@
+{
+  "scenario": "cramped_room_h400_baseline",
+  "layout": "cramped_room",
+  "horizon": 400,
+  "randomize_positions": false,
+  "checkpoint": "random",
+  "n_episodes": 0,
+  "obs_dim": 2080,
+  "n_actions": 6,
+  "learning_rate": null,
+  "gamma": 0.99,
+  "entropy_beta": 0.01
+}

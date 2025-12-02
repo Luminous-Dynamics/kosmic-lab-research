@@ -1,0 +1,13 @@
+{
+  "scenario": "cramped_room_h400_multiagent_sim",
+  "layout": "cramped_room",
+  "horizon": 400,
+  "randomize_positions": true,
+  "checkpoint": "ppo_50k",
+  "n_episodes": 1250,
+  "obs_dim": 2080,
+  "n_actions": 6,
+  "learning_rate": 0.0003,
+  "gamma": 0.99,
+  "entropy_beta": 0.01
+}

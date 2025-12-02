@@ -1,23 +1,39 @@
+#!/usr/bin/env python3
 """
-Compute O/R Index from DQN checkpoints
+Compute O/R Index for Cross-Algorithm Validation
+Extracts trajectories from trained DQN, SAC, and MAPPO agents and computes O/R metrics.
 
-O/R Index = Var[P(a|o)] / Var[P(a)] - 1
-
-This script:
-1. Loads trained Q-networks from checkpoints
-2. Evaluates policies on test episodes
-3. Computes O/R Index for each checkpoint
-4. Correlates O/R with performance
+This script handles all three algorithms and computes standardized O/R metrics
+based on observation and reward consistency rather than action variance.
 """
 
-import argparse
-import os
-from collections import defaultdict
-
-import numpy as np
 import torch
-import torch.nn as nn
+import numpy as np
+from pathlib import Path
+import json
+from dataclasses import dataclass, asdict
+from typing import Dict, List, Tuple
 from pettingzoo.mpe import simple_spread_v3
+import warnings
+warnings.filterwarnings('ignore')
+
+# Import trainer classes to load models
+from ma_dqn_trainer import MADQN, Args as DQNArgs
+from ma_sac_trainer import MASAC, Args as SACArgs
+from ma_mappo_trainer import MultiAgentPPO, Args as MAPPOArgs
+
+
+@dataclass
+class ORMetrics:
+    """O/R Index metrics for a trajectory"""
+    observation_consistency: float  # O: Consistency in observation patterns
+    reward_consistency: float       # R: Consistency in reward patterns
+    or_index: float                 # O/R ratio
+    mean_reward: float              # Average reward over trajectory
+    trajectory_length: int          # Number of steps
+    algorithm: str                  # Algorithm name
+    seed: int                       # Random seed
+    episode_checkpoint: int         # Which checkpoint (100, 500, 1000)
 
 
 class QNetwork(nn.Module):

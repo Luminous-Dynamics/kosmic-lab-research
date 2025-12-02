@@ -1,0 +1,72 @@
+% Decision Tree: When Should I Use O/R Index?
+% Practical flowchart for practitioners to decide when and how to apply O/R
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+    node distance=0.8cm and 1.2cm,
+    decision/.style={diamond, draw, fill=blue!20, text width=4cm, text centered, inner sep=2pt, font=\small},
+    action/.style={rectangle, draw, fill=green!20, text width=3.5cm, text centered, rounded corners, inner sep=4pt, font=\small},
+    outcome/.style={rectangle, draw, fill=yellow!20, text width=3cm, text centered, rounded corners, inner sep=4pt, font=\small},
+    line/.style={draw, -latex', thick}
+]
+
+% Root decision
+\node[decision] (root) at (0, 0) {Multi-agent task with coordination requirement?};
+
+% Branch: Not multi-agent
+\node[outcome, right=2.5cm of root] (not_ma) {O/R not applicable\\(single-agent task)};
+\draw[line] (root) -- node[above, font=\footnotesize] {No} (not_ma);
+
+% Branch: Multi-agent
+\node[decision, below=1.2cm of root] (goal) {What's your primary goal?};
+\draw[line] (root) -- node[left, font=\footnotesize] {Yes} (goal);
+
+% Goal 1: Debugging
+\node[action, below left=1.0cm and 0.5cm of goal] (debug) {\textbf{Debugging Failure}\\Compute O/R for failed teams};
+\node[outcome, below=0.6cm of debug] (debug_out) {High O/R indicates\\behavioral inconsistency};
+\draw[line] (goal) -| node[above, font=\footnotesize, pos=0.25] {Debug} (debug);
+\draw[line] (debug) -- (debug_out);
+
+% Goal 2: Early stopping
+\node[action, below=1.0cm of goal] (early) {\textbf{Early Stopping}\\Measure O/R at episode 10};
+\node[outcome, below=0.6cm of early] (early_out) {Predicts final performance\\($r = -0.69$***)};
+\draw[line] (goal) -- node[left, font=\footnotesize, align=center] {Early\\Predict} (early);
+\draw[line] (early) -- (early_out);
+
+% Goal 3: Algorithm selection
+\node[action, below right=1.0cm and 0.5cm of goal] (algo) {\textbf{Algorithm Selection}\\Compare O/R correlation\\across algorithms};
+\node[outcome, below=0.6cm of algo] (algo_out) {Choose algorithm with\\strong O/R correlation};
+\draw[line] (goal) -| node[above, font=\footnotesize, pos=0.25, align=center] {Compare\\Algos} (algo);
+\draw[line] (algo) -- (algo_out);
+
+% Goal 4: Improving coordination
+\node[action, right=0.8cm of algo] (improve) {\textbf{Improve Training}\\Use CR-REINFORCE\\or OR-PPO};
+\node[outcome, below=0.6cm of improve] (improve_out) {Direct coordination\\improvement\\(+6.9\%)};
+\draw[line] (goal) -- node[above, font=\footnotesize, pos=0.7] {Optimize} (improve);
+\draw[line] (improve) -- (improve_out);
+
+% Computation requirements box
+\node[draw, fill=cyan!10, text width=8cm, text centered, rounded corners, below=2.2cm of goal, font=\footnotesize] (req) {
+    \textbf{Computational Requirements}\\
+    \textbullet\ Complexity: $O(NT)$ (linear in trajectory length)\\
+    \textbullet\ Typical cost: $<$1s per 100 trajectories\\
+    \textbullet\ Memory: $\sim$1MB per 1000 timesteps\\
+    \textbullet\ Sample size: 30+ teams recommended
+};
+
+% Interpretation guide box
+\node[draw, fill=orange!10, text width=8cm, text centered, rounded corners, below=0.5cm of req, font=\footnotesize] (interp) {
+    \textbf{Quick Interpretation Guide}\\
+    O/R $< -0.5$: Strong coordination \quad
+    $-0.5 < $ O/R $< 0$: Moderate\\
+    O/R $\approx 0$: No coordination \quad
+    O/R $> 0$: Potential issues
+};
+
+\end{tikzpicture}
+
+\caption{\textbf{Decision Tree: When and How to Use O/R Index.}
+Practitioners should first determine if their task involves multi-agent coordination. If yes, the O/R Index can serve four primary use cases: \textbf{(1) Debugging:} Compute O/R for failed teams to identify behavioral inconsistency; high O/R indicates erratic behavior that hinders coordination. \textbf{(2) Early Stopping:} Measure O/R at episode 10 to predict final performance ($r = -0.69$***), enabling faster iteration. \textbf{(3) Algorithm Selection:} Compare O/R correlation across candidate algorithms (e.g., REINFORCE vs PPO); choose the algorithm with strongest O/R-performance correlation. \textbf{(4) Training Optimization:} Use CR-REINFORCE or OR-PPO to directly improve coordination by 6-9\%. Computational requirements are minimal ($<$1s per 100 trajectories), and 30+ team samples provide adequate statistical power. For interpretation, O/R values below -0.5 indicate strong coordination, while values near or above 0 suggest coordination failure.}
+\label{fig:decision_tree}
+\end{figure}

@@ -1,0 +1,108 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ABSTRACT AND INTRO UPDATES FOR PHASE 0 INTEGRATION
+% Copy-paste these snippets into your paper
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 1. ABSTRACT UPDATE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% OPTION A: Phase 0 only (use NOW before Overcooked)
+% Insert as second-to-last sentence of abstract:
+
+In addition to introducing the O/R Index, we provide a theoretical analysis
+characterizing its range and extremal cases, including monotonicity under
+noise mixing, and validate these properties in a simple 2$\times$2 coordination
+game alongside large-scale multi-agent navigation experiments.
+
+% OPTION B: Phase 0 + Overcooked (use AFTER Phase 1 complete)
+% Swap to this version once Overcooked results are integrated:
+
+% In addition to introducing the O/R Index, we provide a theoretical analysis
+% characterizing its range and extremal cases, including monotonicity under
+% noise mixing, and validate these properties empirically across a 2$\times$2
+% coordination game, large-scale multi-agent navigation, and Overcooked-AI
+% sequential cooperation tasks.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 2. INTRODUCTION: CONTRIBUTIONS BULLET
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% OPTION A: Standalone theory bullet (recommended)
+% Add to your "Our contributions are:" list:
+
+\item \textbf{Theoretical analysis and toy validation.}
+We characterize the O/R Index mathematically, showing that it takes values
+in $[-1,\infty)$ with $-1$ for deterministic observation-based policies and
+$0$ for observation-independent policies, and prove that adding private
+observation-independent noise monotonically increases O/R. We validate these
+properties in a 2$\times$2 coordination game, where O/R moves smoothly from
+$-1$ to $\approx 0$ as noise increases.
+
+% OPTION B: Merged with existing O/R introduction bullet
+% If you already have "we introduce the O/R Index," merge to:
+
+% \item \textbf{A theoretically grounded coordination metric.}
+% We formalize the O/R Index as a normalized residual variance of the
+% action distribution under partial observability, prove basic properties
+% (range, extremal cases, and monotonicity under noise mixing), and
+% illustrate these behaviors in a 2$\times$2 coordination game where
+% O/R increases smoothly from $-1$ (deterministic policies) to $0$
+% (observation-independent random policies).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 3. INTRODUCTION: CLOSING PARAGRAPH (END OF INTRO)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% OPTION A: Phase 0 + anticipating Overcooked (use NOW)
+% This version is valid now and anticipates Section 5.X for Overcooked:
+
+Taken together, these results suggest that the O/R Index is a simple yet
+informative diagnostic of coordination quality in multi-agent RL. In
+Section~\ref{sec:theory_or} we introduce the O/R Index and analyze its
+theoretical properties, including its range, extremal cases, and behavior
+under noise mixing, with a concrete 2$\times$2 coordination game as a
+running example. We then show in Section~\ref{sec:experiments_nav} that
+O/R strongly predicts coordination success in large-scale cooperative
+navigation, admits early prediction from partial training trajectories,
+and is robust to observation noise and communication dropout. Finally,
+we validate that the same pattern extends beyond spatial navigation by
+applying O/R to Overcooked-AI sequential coordination tasks
+(Section~\ref{sec:experiments_overcooked}), and discuss its practical use
+as a sample-efficient diagnostic for MARL pipelines.
+
+% OPTION B: Phase 0 only (conservative, no Overcooked mention)
+% Use this if you want to submit before Overcooked runs:
+
+% Taken together, these results suggest that the O/R Index is a simple yet
+% informative diagnostic of coordination quality in multi-agent RL. In
+% Section~\ref{sec:theory_or} we introduce the O/R Index and analyze its
+% theoretical properties, including its range, extremal cases, and behavior
+% under noise mixing, with a concrete 2$\times$2 coordination game as a
+% running example. We then show in Section~\ref{sec:experiments_nav} that
+% O/R strongly predicts coordination success in large-scale cooperative
+% navigation, admits early prediction from partial training trajectories,
+% and is robust to observation noise and communication dropout. Finally,
+% we discuss how these properties make O/R a practical, sample-efficient
+% diagnostic for MARL pipelines, and outline how the metric can be extended
+% to more complex settings beyond spatial navigation.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% NOTES ON INTEGRATION
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Abstract: Insert as second-to-last sentence (before "Broader impacts" etc.)
+% Contributions bullet: Add to list in Section 1 (Introduction)
+% Closing paragraph: Replace current ending of Introduction section
+
+% After pasting these:
+% 1. Update section references (\ref{sec:theory_or}, \ref{sec:experiments_nav}, etc.)
+% 2. Verify they compile without LaTeX errors
+% 3. Check that cross-references resolve correctly
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% END OF UPDATES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

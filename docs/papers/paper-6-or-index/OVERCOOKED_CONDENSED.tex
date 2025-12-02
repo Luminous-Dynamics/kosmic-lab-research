@@ -1,0 +1,19 @@
+% Overcooked Validation (Condensed for Main Body)
+% Full tables and analysis in Appendix
+
+\subsection{Overcooked-AI Validation}
+\label{sec:overcooked_validation}
+
+To validate O/R in task-based coordination (vs. spatial navigation), we evaluate on \textbf{Overcooked-AI}~\citep{carroll2019utility}—discrete sequential subtask coordination under time pressure.
+
+\textbf{Setup.} 6 scenarios $\times$ 4 training checkpoints (0, 5K, 50K, 200K episodes) = 24 policies, 30 trajectories each (720 total).
+
+\textbf{Results.}
+\begin{itemize}[nosep]
+    \item \textbf{Strong correlation}: $r = -0.714$, $p < 0.001$*** between O/R and coordination efficiency
+    \item \textbf{Significant checkpoint effect}: $F(3,20) = 3.55$, $p = 0.033$*, $\eta^2 = 0.35$
+    \item \textbf{Significant scenario effect}: $F(5,18) = 3.93$, $p = 0.014$*, $\eta^2 = 0.52$
+    \item \textbf{Non-monotonic learning}: Peak O/R at 5K (overfitting) $\to$ dip at 50K (generalization) $\to$ recovery at 200K (sophisticated coordination)
+\end{itemize}
+
+\textbf{Entropy comparison.} Action entropy ($r = -0.18$), conditional entropy ($r = -0.23$), and MI ($r = +0.11$) all non-significant—confirming O/R captures coordination dynamics that entropy measures miss. Full results in Appendix~\ref{app:overcooked}.

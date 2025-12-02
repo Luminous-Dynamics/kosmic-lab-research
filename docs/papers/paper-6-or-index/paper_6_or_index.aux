@@ -1,0 +1,308 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{jaques2019social}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\citation{jaques2019social}
+\citation{hu2020other}
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.1}Contributions}{2}{subsection.1.1}\protected@file@percent }
+\citation{rabinowitz2018machine}
+\citation{foerster2019bayesian}
+\citation{mordatch2018emergence,eccles2019biases}
+\citation{terry2021pettingzoo}
+\citation{papoudakis2021benchmarking}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Related Work}{3}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}The O/R Index}{3}{section.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Definition}{3}{subsection.3.1}\protected@file@percent }
+\newlabel{eq:or_definition}{{1}{3}{Definition}{equation.3.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Interpretation}{3}{subsection.3.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces \textbf  {Why O/R Beats Entropy for Coordination Measurement.} Two policies with identical action entropy ($H(A) = 1.5$ bits) but vastly different coordination potential. \textbf  {Left (Policy A):} Low O/R Index ($-0.8$) indicates strong conditional structure — actions are predictable given observations (diagonal pattern in $P(a|o)$ heatmap). Teammates can learn to anticipate this agent's behavior, enabling coordination. \textbf  {Right (Policy B):} High O/R Index ($+0.2$) indicates no conditional structure — actions are uniformly random regardless of observations (flat $P(a|o)$ heatmap). Teammates cannot predict behavior, preventing coordination. Entropy measures marginal diversity; O/R measures conditional consistency — the key to multi-agent coordination.}}{4}{figure.1}\protected@file@percent }
+\newlabel{fig:or_intuition}{{1}{4}{\textbf {Why O/R Beats Entropy for Coordination Measurement.} Two policies with identical action entropy ($H(A) = 1.5$ bits) but vastly different coordination potential. \textbf {Left (Policy A):} Low O/R Index ($-0.8$) indicates strong conditional structure — actions are predictable given observations (diagonal pattern in $P(a|o)$ heatmap). Teammates can learn to anticipate this agent's behavior, enabling coordination. \textbf {Right (Policy B):} High O/R Index ($+0.2$) indicates no conditional structure — actions are uniformly random regardless of observations (flat $P(a|o)$ heatmap). Teammates cannot predict behavior, preventing coordination. Entropy measures marginal diversity; O/R measures conditional consistency — the key to multi-agent coordination}{figure.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Metric Computation Details}{4}{subsection.3.3}\protected@file@percent }
+\newlabel{subsec:computation}{{3.3}{4}{Metric Computation Details}{subsection.3.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Theoretical Motivation}{5}{subsection.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Theoretical Properties}{5}{subsection.3.5}\protected@file@percent }
+\newlabel{subsec:theory_properties}{{3.5}{5}{Theoretical Properties}{subsection.3.5}{}}
+\newlabel{prop:range_extremes}{{1}{5}{Range and Extremes}{proposition.1}{}}
+\newlabel{prop:monotonicity_noise}{{2}{6}{Monotonicity under Noise Mixing}{proposition.2}{}}
+\newlabel{prop:mi_connection}{{3}{6}{Relationship to Mutual Information}{proposition.3}{}}
+\citation{ferns2004bisimulation}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}Theoretical Foundation: Quadratic Regret Bound}{7}{subsection.3.6}\protected@file@percent }
+\newlabel{subsec:quadratic_regret}{{3.6}{7}{Theoretical Foundation: Quadratic Regret Bound}{subsection.3.6}{}}
+\newlabel{prop:quadratic_regret}{{4}{7}{Quadratic Regret Bound}{proposition.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7}Sample Complexity}{7}{subsection.3.7}\protected@file@percent }
+\newlabel{subsec:sample_complexity}{{3.7}{7}{Sample Complexity}{subsection.3.7}{}}
+\newlabel{thm:sample_complexity}{{1}{7}{Sample Complexity for O/R Estimation}{theorem.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Coordination regret grows quadratically with O/R Index. Full analysis in Appendix~\ref {app:quadratic_proof}.}}{8}{figure.2}\protected@file@percent }
+\newlabel{fig:quadratic_bowl}{{2}{8}{Coordination regret grows quadratically with O/R Index. Full analysis in Appendix~\ref {app:quadratic_proof}}{figure.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Connection to State Abstraction.}{8}{section*.1}\protected@file@percent }
+\newlabel{prop:abstraction}{{5}{8}{Abstraction Consistency}{proposition.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Experimental Setup}{8}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Environment}{8}{subsection.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Baseline Metrics}{9}{subsection.4.2}\protected@file@percent }
+\newlabel{sec:baseline_metrics}{{4.2}{9}{Baseline Metrics}{subsection.4.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Training}{9}{subsection.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Results}{9}{section.5}\protected@file@percent }
+\newlabel{sec:main_results}{{5}{9}{Results}{section.5}{}}
+\@writefile{toc}{\contentsline {paragraph}{Distinguishing Confirmatory and Exploratory Analyses.}{9}{section*.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Main Finding: O/R Index Predicts Coordination}{9}{subsection.5.1}\protected@file@percent }
+\newlabel{subsec:main_finding}{{5.1}{9}{Main Finding: O/R Index Predicts Coordination}{subsection.5.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces \textbf  {Metric Comparison for Coordination Prediction.} O/R Index shows strong negative correlation with coordination success, while both information-theoretic and non-information-theoretic alternatives show weak or no predictive power ($n = 1,200$ teams).}}{10}{table.1}\protected@file@percent }
+\newlabel{tab:metric_comparison}{{1}{10}{\textbf {Metric Comparison for Coordination Prediction.} O/R Index shows strong negative correlation with coordination success, while both information-theoretic and non-information-theoretic alternatives show weak or no predictive power ($n = 1,200$ teams)}{table.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces \textbf  {O/R Index Outperforms Established Metrics.} Lower O/R Index strongly correlates with higher coordination success ($r = -0.70$***), while action diversity, entropy, and mutual information show no significant relationship. Error bars show 95\% CI. $n = 1200$ teams.}}{10}{figure.3}\protected@file@percent }
+\newlabel{fig:metric_comparison}{{3}{10}{\textbf {O/R Index Outperforms Established Metrics.} Lower O/R Index strongly correlates with higher coordination success ($r = -0.70$***), while action diversity, entropy, and mutual information show no significant relationship. Error bars show 95\% CI. $n = 1200$ teams}{figure.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Causal Validation via Observation Perturbation}{11}{subsection.5.2}\protected@file@percent }
+\newlabel{sec:causal_validation}{{5.2}{11}{Causal Validation via Observation Perturbation}{subsection.5.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Hypothesis.}{11}{section*.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Method.}{11}{section*.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Results.}{11}{section*.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Mediation Analysis.}{11}{section*.6}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces \textbf  {Causal Intervention Results: Observation Noise Effects.}}}{12}{table.2}\protected@file@percent }
+\newlabel{tab:causal_results}{{2}{12}{\textbf {Causal Intervention Results: Observation Noise Effects.}}{table.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces \textbf  {Causal Mediation Analysis.} Observation noise causally affects coordination performance \emph  {primarily through} the O/R Index ($a \times b = -0.81$, 73\% of total effect), with negligible direct effect ($c' = -0.01$, n.s.). This establishes that behavioral consistency, as measured by O/R, is the causal mechanism linking observation quality to coordination success.}}{12}{figure.4}\protected@file@percent }
+\newlabel{fig:causal_mediation}{{4}{12}{\textbf {Causal Mediation Analysis.} Observation noise causally affects coordination performance \emph {primarily through} the O/R Index ($a \times b = -0.81$, 73\% of total effect), with negligible direct effect ($c' = -0.01$, n.s.). This establishes that behavioral consistency, as measured by O/R, is the causal mechanism linking observation quality to coordination success}{figure.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Key Observations.}{12}{section*.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Theoretical Implications.}{13}{section*.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Comparison to Correlational Study.}{13}{section*.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Temporal Scaling Law}{13}{subsection.5.3}\protected@file@percent }
+\newlabel{subsec:temporal}{{5.3}{13}{Temporal Scaling Law}{subsection.5.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Consistency-Regularized REINFORCE (CR-REINFORCE)}{13}{subsection.5.4}\protected@file@percent }
+\newlabel{subsec:cr_reinforce}{{5.4}{13}{Consistency-Regularized REINFORCE (CR-REINFORCE)}{subsection.5.4}{}}
+\newlabel{eq:cr_reinforce}{{8}{13}{Consistency-Regularized REINFORCE (CR-REINFORCE)}{equation.5.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces \textbf  {Learning Phases Revealed by O/R Index Evolution.} The O/R Index captures distinct phases of multi-agent learning. \textbf  {Phase 1 (Episodes 1-10):} Random exploration produces high O/R ($\approx 0.1$) as agents act erratically, yielding poor coordination (performance $\approx 0.2$). \textbf  {Phase 2 (Episodes 11-25):} Policies become deterministic (very low O/R $\approx -0.8$) but overfit to specific observations, achieving moderate coordination (performance $\approx 0.6$). \textbf  {Phase 3 (Episodes 26-50):} Generalization produces stable mid-range O/R ($\approx -0.4$) with robust coordination (performance $\approx 0.9$). O/R serves as a training diagnostic: healthy teams progress from Phase 1 → Phase 2 → Phase 3, while stuck teams remain in Phase 1 or 2. The inverted scale shows that lower O/R (higher on plot) generally indicates better coordination, though Phase 2's extremely low O/R represents overfitting rather than optimal generalization.}}{14}{figure.5}\protected@file@percent }
+\newlabel{fig:learning_phases}{{5}{14}{\textbf {Learning Phases Revealed by O/R Index Evolution.} The O/R Index captures distinct phases of multi-agent learning. \textbf {Phase 1 (Episodes 1-10):} Random exploration produces high O/R ($\approx 0.1$) as agents act erratically, yielding poor coordination (performance $\approx 0.2$). \textbf {Phase 2 (Episodes 11-25):} Policies become deterministic (very low O/R $\approx -0.8$) but overfit to specific observations, achieving moderate coordination (performance $\approx 0.6$). \textbf {Phase 3 (Episodes 26-50):} Generalization produces stable mid-range O/R ($\approx -0.4$) with robust coordination (performance $\approx 0.9$). O/R serves as a training diagnostic: healthy teams progress from Phase 1 → Phase 2 → Phase 3, while stuck teams remain in Phase 1 or 2. The inverted scale shows that lower O/R (higher on plot) generally indicates better coordination, though Phase 2's extremely low O/R represents overfitting rather than optimal generalization}{figure.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces \textbf  {Consistency Regularization Improves Coordination.} Team performance as a function of regularization strength $\lambda $. Performance peaks at $\lambda = 0.2$ with $+6.9\%$ improvement over baseline. Error bands show $\pm 0.02$ standard error. Figure shows raw (negative) episode returns; text reports normalized coordination score in $[0, 1]$, computed as min-max normalization over random (0) and optimal-policy (1) baselines. $n = 300$ teams.}}{14}{figure.6}\protected@file@percent }
+\newlabel{fig:causal}{{6}{14}{\textbf {Consistency Regularization Improves Coordination.} Team performance as a function of regularization strength $\lambda $. Performance peaks at $\lambda = 0.2$ with $+6.9\%$ improvement over baseline. Error bands show $\pm 0.02$ standard error. Figure shows raw (negative) episode returns; text reports normalized coordination score in $[0, 1]$, computed as min-max normalization over random (0) and optimal-policy (1) baselines. $n = 300$ teams}{figure.6}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Consistency-Regularized REINFORCE (CR-REINFORCE)}}{15}{algorithm.1}\protected@file@percent }
+\newlabel{alg:cr_reinforce}{{1}{15}{Consistency-Regularized REINFORCE (CR-REINFORCE)}{algorithm.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Algorithm Generalization}{15}{subsection.5.5}\protected@file@percent }
+\newlabel{subsec:algorithm_gen}{{5.5}{15}{Algorithm Generalization}{subsection.5.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces \textbf  {O/R Index Generalizes Across Conditions.} O/R maintains strong negative correlation (lower O/R = higher success) across baseline, small teams (2 agents), large teams (8 agents), and high-dimensional observations (20D). Sparse rewards show weaker effect ($r = -0.35$), indicating consistency matters less when feedback is delayed. Error bars show 95\% CI.}}{15}{figure.7}\protected@file@percent }
+\newlabel{fig:generalization}{{7}{15}{\textbf {O/R Index Generalizes Across Conditions.} O/R maintains strong negative correlation (lower O/R = higher success) across baseline, small teams (2 agents), large teams (8 agents), and high-dimensional observations (20D). Sparse rewards show weaker effect ($r = -0.35$), indicating consistency matters less when feedback is delayed. Error bars show 95\% CI}{figure.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.6}Robustness Analysis}{15}{subsection.5.6}\protected@file@percent }
+\citation{carroll2019utility}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces \textbf  {O/R Index Robust Under Perturbation.} Correlation remains strong ($|r| > 0.55$***) under observation noise (5$\times $ baseline), communication dropout (50\%), and combined perturbations. Dashed line shows baseline $r = -0.70$. All conditions $p < 0.001$, $n = 300$ per condition.}}{16}{figure.8}\protected@file@percent }
+\newlabel{fig:robustness}{{8}{16}{\textbf {O/R Index Robust Under Perturbation.} Correlation remains strong ($|r| > 0.55$***) under observation noise (5$\times $ baseline), communication dropout (50\%), and combined perturbations. Dashed line shows baseline $r = -0.70$. All conditions $p < 0.001$, $n = 300$ per condition}{figure.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.7}Statistical Power}{16}{subsection.5.7}\protected@file@percent }
+\newlabel{subsec:power}{{5.7}{16}{Statistical Power}{subsection.5.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.8}Early Prediction}{16}{subsection.5.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.9}Cross-Algorithm Validation}{16}{subsection.5.9}\protected@file@percent }
+\newlabel{sec:cross_algorithm}{{5.9}{16}{Cross-Algorithm Validation}{subsection.5.9}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces \textbf  {Cross-Algorithm O/R Validation.} Strong O/R-performance correlation ($r = -0.79$, $p < 0.001$) across three independent learning algorithms. QMIX shows anomalous O=0 requiring further investigation.}}{17}{table.3}\protected@file@percent }
+\newlabel{tab:cross_algorithm_condensed}{{3}{17}{\textbf {Cross-Algorithm O/R Validation.} Strong O/R-performance correlation ($r = -0.79$, $p < 0.001$) across three independent learning algorithms. QMIX shows anomalous O=0 requiring further investigation}{table.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.10}Overcooked-AI Validation}{17}{subsection.5.10}\protected@file@percent }
+\newlabel{sec:overcooked_validation}{{5.10}{17}{Overcooked-AI Validation}{subsection.5.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.11}OR-PPO: Adaptive Hyperparameter Control}{17}{subsection.5.11}\protected@file@percent }
+\newlabel{sec:or_ppo}{{5.11}{17}{OR-PPO: Adaptive Hyperparameter Control}{subsection.5.11}{}}
+\citation{de2020deep}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.12}Continuous Action Spaces: MuJoCo Validation}{18}{subsection.5.12}\protected@file@percent }
+\newlabel{sec:mujoco_validation}{{5.12}{18}{Continuous Action Spaces: MuJoCo Validation}{subsection.5.12}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Discussion}{18}{section.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Why O/R Index Succeeds}{18}{subsection.6.1}\protected@file@percent }
+\newlabel{subsec:why_succeeds}{{6.1}{18}{Why O/R Index Succeeds}{subsection.6.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces \textbf  {Theoretical Framework: When O/R Index Applies.} O/R Index predicts success in discovery tasks with dense rewards (green, $|r| = 0.70$). Effect weakens in execution tasks where behavioral variance converges, and in sparse reward settings ($|r| = 0.35$). Lower O/R correlates with higher success in all applicable regimes. Examples: discovery = exploration environments; execution = fixed-target navigation.}}{19}{figure.9}\protected@file@percent }
+\newlabel{fig:framework}{{9}{19}{\textbf {Theoretical Framework: When O/R Index Applies.} O/R Index predicts success in discovery tasks with dense rewards (green, $|r| = 0.70$). Effect weakens in execution tasks where behavioral variance converges, and in sparse reward settings ($|r| = 0.35$). Lower O/R correlates with higher success in all applicable regimes. Examples: discovery = exploration environments; execution = fixed-target navigation}{figure.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Practitioner's Guide to O/R Index}{19}{subsection.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{When to Use O/R.}{19}{section*.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Interpretation Guidelines.}{19}{section*.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Computational Requirements.}{20}{section*.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Integration with Existing Pipelines.}{20}{section*.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Limitations}{20}{subsection.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Algorithm Sensitivity.}{20}{section*.14}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Sparse Reward Environments.}{20}{section*.15}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Task Structure Dependency.}{20}{section*.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Theory-Experiment Gap (Critical).}{20}{section*.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Environment Scope.}{20}{section*.18}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Cross-Environment Scaling.}{21}{section*.19}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{OR-PPO Generalization.}{21}{section*.20}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Computational Overhead.}{21}{section*.21}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Multiple Comparisons.}{21}{section*.22}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}Future Work}{21}{subsection.6.4}\protected@file@percent }
+\bibstyle{plainnat}
+\bibdata{references}
+\bibcite{carroll2019utility}{{1}{2019}{{Carroll et~al.}}{{Carroll, Shah, Ho, Griffiths, Seshia, Abbeel, and Dragan}}}
+\bibcite{de2020deep}{{2}{2020}{{de~Witt et~al.}}{{de~Witt, Gupta, Makoviychuk, Makoviichuk, Torr, Sun, and Whiteson}}}
+\bibcite{eccles2019biases}{{3}{2019}{{Eccles et~al.}}{{Eccles, Bachrach, Lever, Lazaridou, and Graepel}}}
+\bibcite{ferns2004bisimulation}{{4}{2004}{{Ferns et~al.}}{{Ferns, Panangaden, and Precup}}}
+\bibcite{foerster2019bayesian}{{5}{2019}{{Foerster et~al.}}{{Foerster, Song, Hughes, Badia, Mber, Duez{-}Guez, and Leibo}}}
+\bibcite{haarnoja2018soft}{{6}{2018}{{Haarnoja et~al.}}{{Haarnoja, Zhou, Abbeel, and Levine}}}
+\bibcite{henderson2018deep}{{7}{2018}{{Henderson et~al.}}{{Henderson, Islam, Bachman, Pineau, Precup, and Meger}}}
+\bibcite{hu2020other}{{8}{2020}{{Hu et~al.}}{{Hu, Lerer, Peysakhovich, and Foerster}}}
+\bibcite{jaques2019social}{{9}{2019}{{Jaques et~al.}}{{Jaques, Lazaridou, Hughes, Gulcehre, Ortega, Strouse, Leibo, and De~Freitas}}}
+\bibcite{mnih2015human}{{10}{2015}{{Mnih et~al.}}{{Mnih, Kavukcuoglu, Silver, Rusu, Veness, Bellemare, Graves, Riedmiller, Fidjeland, Ostrovski, et~al.}}}
+\bibcite{mordatch2018emergence}{{11}{2018}{{Mordatch and Abbeel}}{{}}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Conclusion}{22}{section.7}\protected@file@percent }
+\bibcite{papoudakis2021benchmarking}{{12}{2021}{{Papoudakis et~al.}}{{Papoudakis, Christianos, Sch{\"a}fer, and Albrecht}}}
+\bibcite{rabinowitz2018machine}{{13}{2018}{{Rabinowitz et~al.}}{{Rabinowitz, Perbet, Song, Zhang, Eslami, and Botvinick}}}
+\bibcite{rashid2018qmix}{{14}{2018}{{Rashid et~al.}}{{Rashid, Samvelyan, Schroeder, Farquhar, Foerster, and Whiteson}}}
+\bibcite{sunehag2017value}{{15}{2017}{{Sunehag et~al.}}{{Sunehag, Lever, Gruslys, Czarnecki, Zambaldi, Jaderberg, Lanctot, Sonnerat, Leibo, Tuyls, et~al.}}}
+\bibcite{terry2021pettingzoo}{{16}{2021}{{Terry et~al.}}{{Terry, Black, Grammel, Jayber, Santos, Dabney, Horgan, Heess, and Lillicrap}}}
+\bibcite{yu2022surprising}{{17}{2022}{{Yu et~al.}}{{Yu, Velu, Vinitsky, Gao, Wang, Bayen, and Wu}}}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Supplementary Results}{24}{appendix.A}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.1}Large Sample Validation (n=50)}{24}{subsection.A.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.2}Algorithm Comparison}{24}{subsection.A.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.3}Ablation Studies}{24}{subsection.A.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.4}Temporal Dynamics}{25}{subsection.A.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.5}Statistical Power Analysis}{25}{subsection.A.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.6}Computational Efficiency}{25}{subsection.A.6}\protected@file@percent }
+\newlabel{app:computational_efficiency}{{A.6}{25}{Computational Efficiency}{subsection.A.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.7}Complete Experiment List}{26}{subsection.A.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.8}PettingZoo MPE Benchmark Validation}{27}{subsection.A.8}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces \textbf  {MPE Benchmark Validation.} Left: O/R Index vs coordination success across policy types. Right: Success distribution by policy. Coordinated policies achieve highest success (50--67\%) with lowest O/R (4--7), while random policies show high O/R (10--225) and near-zero success. $r = -0.240$***, $n = 450$.}}{28}{figure.10}\protected@file@percent }
+\newlabel{fig:mpe_validation}{{10}{28}{\textbf {MPE Benchmark Validation.} Left: O/R Index vs coordination success across policy types. Right: Success distribution by policy. Coordinated policies achieve highest success (50--67\%) with lowest O/R (4--7), while random policies show high O/R (10--225) and near-zero success. $r = -0.240$***, $n = 450$}{figure.10}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B}Theoretical Details and Proofs}{28}{appendix.B}\protected@file@percent }
+\newlabel{app:theory_details}{{B}{28}{Theoretical Details and Proofs}{appendix.B}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.1}Proofs for Discrete O/R Index}{28}{subsection.B.1}\protected@file@percent }
+\newlabel{app:proofs_discrete}{{B.1}{28}{Proofs for Discrete O/R Index}{subsection.B.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.2}Extension to Continuous Action Spaces}{30}{subsection.B.2}\protected@file@percent }
+\newlabel{app:continuous_or}{{B.2}{30}{Extension to Continuous Action Spaces}{subsection.B.2}{}}
+\newlabel{eq:cont_var_marginal}{{27}{30}{Continuous O/R Index}{equation.B.27}{}}
+\newlabel{eq:cont_var_conditional}{{28}{30}{Continuous O/R Index}{equation.B.28}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {2}{\ignorespaces Empirical Continuous-Action O/R Estimator}}{30}{algorithm.2}\protected@file@percent }
+\newlabel{alg:cont_or}{{2}{30}{Extension to Continuous Action Spaces}{algorithm.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.3}Rigorous Proof of the Quadratic Regret Bound}{31}{subsection.B.3}\protected@file@percent }
+\newlabel{app:quadratic_proof}{{B.3}{31}{Rigorous Proof of the Quadratic Regret Bound}{subsection.B.3}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {B.3.1}Formal Assumptions}{32}{subsubsection.B.3.1}\protected@file@percent }
+\newlabel{ass:discrete_actions}{{1}{32}{Bounded Discrete Action Space}{assumption.1}{}}
+\newlabel{ass:observation_coverage}{{2}{32}{Observation Space with Sufficient Coverage}{assumption.2}{}}
+\newlabel{ass:coordination_task}{{3}{32}{Action-Matching Coordination}{assumption.3}{}}
+\newlabel{rem:partial_coordination}{{1}{32}{Partial Coordination}{remark.1}{}}
+\newlabel{ass:bounded_variance}{{4}{32}{Non-Degenerate Marginal Variance}{assumption.4}{}}
+\newlabel{ass:stationary}{{5}{32}{Stationary Policies}{assumption.5}{}}
+\newlabel{ass:symmetric_or}{{6}{32}{Symmetric O/R Index}{assumption.6}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {B.3.2}Preliminary Lemmas}{32}{subsubsection.B.3.2}\protected@file@percent }
+\newlabel{lem:variance_decomp}{{1}{32}{Variance Decomposition}{lemma.1}{}}
+\newlabel{lem:mismatch_two}{{2}{32}{Action Mismatch Probability for Two Agents}{lemma.2}{}}
+\newlabel{lem:perturbation}{{3}{32}{Perturbation of Match Probability}{lemma.3}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {B.3.3}Main Proof: Two-Agent Case}{33}{subsubsection.B.3.3}\protected@file@percent }
+\newlabel{thm:quadratic_two}{{2}{33}{Quadratic Regret Bound, $m=2$}{theorem.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {B.3.4}Extension to $m > 2$ Agents}{34}{subsubsection.B.3.4}\protected@file@percent }
+\newlabel{thm:quadratic_general}{{3}{34}{Quadratic Regret Bound, General $m$}{theorem.3}{}}
+\newlabel{rem:tightness}{{3}{35}{Tightness for $m > 2$}{remark.3}{}}
+\newlabel{rem:inclusion_exclusion}{{4}{35}{Alternative: Inclusion-Exclusion}{remark.4}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {B.3.5}Characterizing the Constant $C$}{35}{subsubsection.B.3.5}\protected@file@percent }
+\newlabel{prop:constant_c}{{6}{35}{Bounds on Task-Dependent Constant}{proposition.6}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {B.3.6}Verification of CLT Conditions}{35}{subsubsection.B.3.6}\protected@file@percent }
+\newlabel{lem:clt_conditions}{{4}{35}{CLT Applicability}{lemma.4}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {B.3.7}Summary}{36}{subsubsection.B.3.7}\protected@file@percent }
+\newlabel{cor:partial_coordination}{{1}{36}{Partial Coordination Extension}{corollary.1}{}}
+\newlabel{rem:general_rewards}{{6}{36}{General Reward Functions}{remark.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C}Sample Complexity Analysis}{36}{appendix.C}\protected@file@percent }
+\newlabel{app:sample_complexity}{{C}{36}{Sample Complexity Analysis}{appendix.C}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.1}Sample Complexity of O/R Index Estimation}{36}{subsection.C.1}\protected@file@percent }
+\newlabel{subsec:sample_complexity_full}{{C.1}{36}{Sample Complexity of O/R Index Estimation}{subsection.C.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {C.1.1}Theoretical Framework}{37}{subsubsection.C.1.1}\protected@file@percent }
+\newlabel{thm:sample_complexity_full}{{4}{37}{Sample Complexity for O/R Estimation}{theorem.4}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {C.1.2}Proof Sketch}{37}{subsubsection.C.1.2}\protected@file@percent }
+\newlabel{rem:variance_bound}{{7}{38}{Handling Near-Deterministic Policies}{remark.7}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {C.1.3}Practical Implications}{38}{subsubsection.C.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {C.1.4}Extensions and Open Questions}{39}{subsubsection.C.1.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {C.1.5}Empirical Validation}{39}{subsubsection.C.1.5}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces  \textbf  {Convergence of O/R Index estimation.} Empirical estimation error (red dots) decreases as $O(1/\sqrt  {n})$, consistent with theoretical bound (blue curve). Shaded region shows 99\% confidence interval from Theorem~\ref {thm:sample_complexity}. With $n=30$ trajectories, estimation error is $\approx 0.26$; with $n=1{,}200$, error drops to $\approx 0.10$. }}{39}{figure.11}\protected@file@percent }
+\newlabel{fig:convergence}{{11}{39}{\textbf {Convergence of O/R Index estimation.} Empirical estimation error (red dots) decreases as $O(1/\sqrt {n})$, consistent with theoretical bound (blue curve). Shaded region shows 99\% confidence interval from Theorem~\ref {thm:sample_complexity}. With $n=30$ trajectories, estimation error is $\approx 0.26$; with $n=1{,}200$, error drops to $\approx 0.10$}{figure.11}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {C.1.6}Summary}{39}{subsubsection.C.1.6}\protected@file@percent }
+\citation{ferns2004bisimulation}
+\@writefile{toc}{\contentsline {section}{\numberline {D}State Abstraction Connection}{40}{appendix.D}\protected@file@percent }
+\newlabel{app:abstraction_proof}{{D}{40}{State Abstraction Connection}{appendix.D}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.1}Background: Bisimulation and State Aggregation}{40}{subsection.D.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.2}Formal Statement}{40}{subsection.D.2}\protected@file@percent }
+\newlabel{prop:abstraction_full}{{7}{40}{Abstraction Consistency, Restated}{proposition.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.3}Proof}{40}{subsection.D.3}\protected@file@percent }
+\citation{carroll2019utility}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.4}Discussion}{41}{subsection.D.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Interpretation as Representation Quality.}{41}{section*.25}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Connection to Deep RL.}{41}{section*.26}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Practical Use.}{41}{section*.27}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {E}Overcooked-AI Full Results}{41}{appendix.E}\protected@file@percent }
+\newlabel{app:overcooked}{{E}{41}{Overcooked-AI Full Results}{appendix.E}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {E.1}Empirical Validation: Overcooked-AI}{41}{subsection.E.1}\protected@file@percent }
+\newlabel{sec:overcooked_validation_full}{{E.1}{41}{Empirical Validation: Overcooked-AI}{subsection.E.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Experimental Design.}{41}{section*.28}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces O/R Index statistics by training checkpoint.}}{42}{table.4}\protected@file@percent }
+\newlabel{tab:or_index_checkpoint}{{4}{42}{O/R Index statistics by training checkpoint}{table.4}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces O/R Index ranking by scenario.}}{42}{table.5}\protected@file@percent }
+\newlabel{tab:or_index_scenario}{{5}{42}{O/R Index ranking by scenario}{table.5}{}}
+\@writefile{toc}{\contentsline {paragraph}{Statistical Analysis.}{42}{section*.29}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Non-Monotonic Learning Curve.}{42}{section*.30}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Pairwise comparisons between consecutive training checkpoints. * indicates p < 0.05.}}{42}{table.6}\protected@file@percent }
+\newlabel{tab:pairwise_checkpoints}{{6}{42}{Pairwise comparisons between consecutive training checkpoints. * indicates p < 0.05}{table.6}{}}
+\citation{henderson2018deep}
+\@writefile{toc}{\contentsline {paragraph}{Scenario Effects.}{43}{section*.31}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Visualization and Interpretation.}{43}{section*.32}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Predictive Validity: O/R Index vs. Task Performance.}{43}{section*.33}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Comparison with Entropy Baselines.}{43}{section*.34}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces \textbf  {Empirical validation of O/R Index in Overcooked-AI.} (A) Training progression shows non-monotonic curve: peak at 5K (overfitting) $\to $ dip at 50K (generalization) $\to $ recovery at 200K (sophisticated coordination). (B) Scenario comparison: temporal stress H800 yields highest O/R (81,080), double H400 baseline. (C) Heatmap reveals scenario $\times $ checkpoint interactions: temporal stress maintains high O/R across all checkpoints, while many-agent simulation shows strongest non-monotonic pattern. (D) Per-scenario learning curves demonstrate divergent dynamics: H800 gradual increase, Cramped Room smooth progression, multiagent extreme peak at 5K. F(3,20)=3.552, $p=0.033^*$ (checkpoint); F(5,18)=3.927, $p=0.014^*$ (scenario). Error bars show SD across 30 trajectories per policy. }}{44}{figure.12}\protected@file@percent }
+\newlabel{fig:overcooked_publication}{{12}{44}{\textbf {Empirical validation of O/R Index in Overcooked-AI.} (A) Training progression shows non-monotonic curve: peak at 5K (overfitting) $\to $ dip at 50K (generalization) $\to $ recovery at 200K (sophisticated coordination). (B) Scenario comparison: temporal stress H800 yields highest O/R (81,080), double H400 baseline. (C) Heatmap reveals scenario $\times $ checkpoint interactions: temporal stress maintains high O/R across all checkpoints, while many-agent simulation shows strongest non-monotonic pattern. (D) Per-scenario learning curves demonstrate divergent dynamics: H800 gradual increase, Cramped Room smooth progression, multiagent extreme peak at 5K. F(3,20)=3.552, $p=0.033^*$ (checkpoint); F(5,18)=3.927, $p=0.014^*$ (scenario). Error bars show SD across 30 trajectories per policy}{figure.12}{}}
+\@writefile{toc}{\contentsline {paragraph}{Validation of O/R Index Properties.}{44}{section*.35}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Discussion.}{44}{section*.36}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces \textbf  {O/R Index predicts task performance in Overcooked-AI.} Strong negative correlation (r = -0.714, p < 0.001***) between O/R Index and coordination efficiency (measured as inverse episode length). Higher O/R Index values predict longer episodes (worse coordination). Colors indicate training checkpoint: blue (random), orange (5K), green (50K), red (200K). Dashed line shows linear regression fit. Error bars represent SD across 30 trajectories. }}{45}{figure.13}\protected@file@percent }
+\newlabel{fig:overcooked_correlation}{{13}{45}{\textbf {O/R Index predicts task performance in Overcooked-AI.} Strong negative correlation (r = -0.714, p < 0.001***) between O/R Index and coordination efficiency (measured as inverse episode length). Higher O/R Index values predict longer episodes (worse coordination). Colors indicate training checkpoint: blue (random), orange (5K), green (50K), red (200K). Dashed line shows linear regression fit. Error bars represent SD across 30 trajectories}{figure.13}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {F}OR-PPO Algorithm Details}{45}{appendix.F}\protected@file@percent }
+\newlabel{app:or_ppo}{{F}{45}{OR-PPO Algorithm Details}{appendix.F}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {F.1}OR-PPO: O/R Index-Guided Adaptive Control}{45}{subsection.F.1}\protected@file@percent }
+\newlabel{sec:or_ppo_full}{{F.1}{45}{OR-PPO: O/R Index-Guided Adaptive Control}{subsection.F.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Motivation: The PPO Paradox.}{45}{section*.37}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Algorithm.}{45}{section*.38}\protected@file@percent }
+\citation{carroll2019utility}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {3}{\ignorespaces OR-PPO: O/R Index-Guided Proximal Policy Optimization}}{46}{algorithm.3}\protected@file@percent }
+\newlabel{alg:or_ppo}{{3}{46}{Algorithm}{algorithm.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Experimental Setup.}{46}{section*.39}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Results.}{46}{section*.40}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces OR-PPO vs vanilla PPO on Overcooked-AI cramped\_room (3 seeds, 2000 episodes). Ceiling effect: neither algorithm completed actual dish deliveries.}}{47}{table.7}\protected@file@percent }
+\newlabel{tab:or_ppo_comparison}{{7}{47}{OR-PPO vs vanilla PPO on Overcooked-AI cramped\_room (3 seeds, 2000 episodes). Ceiling effect: neither algorithm completed actual dish deliveries}{table.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces \textbf  {OR-PPO Learning Dynamics (Sparse Reward).} Comparison of vanilla PPO (blue) vs OR-PPO (red) on Overcooked-AI cramped\_room across 3 seeds. Left: Total reward curves showing identical 0.40 shaped reward (zero actual task completions). Right: O/R Index evolution converging to $\approx -0.045$ for both algorithms (PPO: $-0.0447 \pm 0.0098$, OR-PPO: $-0.0447 \pm 0.0004$). Note the substantially narrower confidence interval for OR-PPO, indicating 24$\times $ more stable learning dynamics. Shaded regions show standard deviation across seeds. }}{47}{figure.14}\protected@file@percent }
+\newlabel{fig:or_ppo_comparison}{{14}{47}{\textbf {OR-PPO Learning Dynamics (Sparse Reward).} Comparison of vanilla PPO (blue) vs OR-PPO (red) on Overcooked-AI cramped\_room across 3 seeds. Left: Total reward curves showing identical 0.40 shaped reward (zero actual task completions). Right: O/R Index evolution converging to $\approx -0.045$ for both algorithms (PPO: $-0.0447 \pm 0.0098$, OR-PPO: $-0.0447 \pm 0.0004$). Note the substantially narrower confidence interval for OR-PPO, indicating 24$\times $ more stable learning dynamics. Shaded regions show standard deviation across seeds}{figure.14}{}}
+\@writefile{toc}{\contentsline {paragraph}{Interpretation.}{47}{section*.41}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces \textbf  {OR-PPO Hyperparameter Adaptation Trajectories.} Evolution of clip range $\epsilon _t$ (left) and learning rate $\alpha _t$ (right) across training episodes for 3 seeds. Dashed horizontal lines show base values ($\epsilon _0 = 0.2$, $\alpha _0 = 3 \times 10^{-4}$). OR-PPO automatically adjusts both hyperparameters based on coordination quality measured by O/R Index, leading to more stable and organized behavioral policies. }}{48}{figure.15}\protected@file@percent }
+\newlabel{fig:or_ppo_hyperparams}{{15}{48}{\textbf {OR-PPO Hyperparameter Adaptation Trajectories.} Evolution of clip range $\epsilon _t$ (left) and learning rate $\alpha _t$ (right) across training episodes for 3 seeds. Dashed horizontal lines show base values ($\epsilon _0 = 0.2$, $\alpha _0 = 3 \times 10^{-4}$). OR-PPO automatically adjusts both hyperparameters based on coordination quality measured by O/R Index, leading to more stable and organized behavioral policies}{figure.15}{}}
+\@writefile{toc}{\contentsline {paragraph}{Algorithmic Contribution.}{48}{section*.42}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Limitations.}{48}{section*.43}\protected@file@percent }
+\citation{mnih2015human}
+\citation{haarnoja2018soft}
+\citation{yu2022surprising}
+\citation{rashid2018qmix}
+\@writefile{toc}{\contentsline {section}{\numberline {G}Cross-Algorithm Validation: Full Details}{49}{appendix.G}\protected@file@percent }
+\newlabel{app:cross_algorithm}{{G}{49}{Cross-Algorithm Validation: Full Details}{appendix.G}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {G.1}Cross-Algorithm Validation}{49}{subsection.G.1}\protected@file@percent }
+\newlabel{sec:cross_algorithm}{{G.1}{49}{Cross-Algorithm Validation}{subsection.G.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Experimental Setup.}{49}{section*.44}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Results.}{49}{section*.45}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces \textbf  {Cross-Algorithm O/R Validation Results.} Four diverse algorithms tested on cooperative navigation. QMIX's O=0 demonstrates qualitatively different coordination patterns compared to other algorithms. Lower (more negative) rewards indicate worse performance in this environment. Algorithms show distinct O/R signatures correlated with performance.}}{49}{table.8}\protected@file@percent }
+\newlabel{tab:cross_algorithm}{{8}{49}{\textbf {Cross-Algorithm O/R Validation Results.} Four diverse algorithms tested on cooperative navigation. QMIX's O=0 demonstrates qualitatively different coordination patterns compared to other algorithms. Lower (more negative) rewards indicate worse performance in this environment. Algorithms show distinct O/R signatures correlated with performance}{table.8}{}}
+\@writefile{toc}{\contentsline {paragraph}{Interpreting QMIX's O=0 (Hypothesis).}{49}{section*.46}\protected@file@percent }
+\citation{sunehag2017value}
+\citation{rashid2018qmix}
+\@writefile{toc}{\contentsline {paragraph}{Discussion.}{50}{section*.47}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Limitations and Preliminary Status.}{50}{section*.48}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Implications.}{51}{section*.49}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {H}Practitioner's Decision Tree}{51}{appendix.H}\protected@file@percent }
+\newlabel{app:decision_tree}{{H}{51}{Practitioner's Decision Tree}{appendix.H}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {I}Exploratory Analysis: StarCraft II}{51}{appendix.I}\protected@file@percent }
+\newlabel{app:sc2_exploratory}{{I}{51}{Exploratory Analysis: StarCraft II}{appendix.I}{}}
+\@writefile{toc}{\contentsline {paragraph}{Dataset and Methodology.}{51}{section*.50}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Results.}{51}{section*.51}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces \textbf  {SC2 Exploratory Analysis Results.} Human players in competitive StarCraft II exhibit moderate O/R Index values. Direct comparison with cooperative MARL algorithms is limited due to fundamental domain differences (competitive vs.\ cooperative, different observation spaces). Results based on 1,000 successfully parsed ladder replays; included for exploration only.}}{52}{table.9}\protected@file@percent }
+\newlabel{tab:sc2_validation}{{9}{52}{\textbf {SC2 Exploratory Analysis Results.} Human players in competitive StarCraft II exhibit moderate O/R Index values. Direct comparison with cooperative MARL algorithms is limited due to fundamental domain differences (competitive vs.\ cooperative, different observation spaces). Results based on 1,000 successfully parsed ladder replays; included for exploration only}{table.9}{}}
+\@writefile{toc}{\contentsline {paragraph}{Discussion.}{52}{section*.52}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Limitations.}{52}{section*.53}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Tentative Implications.}{52}{section*.54}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {J}Supplementary Figures}{53}{appendix.J}\protected@file@percent }
+\newlabel{app:supplementary_figures}{{J}{53}{Supplementary Figures}{appendix.J}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {17}{\ignorespaces \textbf  {Algorithm Comparison.} O/R Index correlation with coordination success across three policy gradient algorithms. REINFORCE and A2C show strong correlations ($r = -0.71$*** and $r = -0.88$*** respectively), while PPO shows weaker correlation ($r = -0.34$, n.s.), motivating the OR-PPO adaptive control approach.}}{53}{figure.17}\protected@file@percent }
+\newlabel{fig:s1_algorithms}{{17}{53}{\textbf {Algorithm Comparison.} O/R Index correlation with coordination success across three policy gradient algorithms. REINFORCE and A2C show strong correlations ($r = -0.71$*** and $r = -0.88$*** respectively), while PPO shows weaker correlation ($r = -0.34$, n.s.), motivating the OR-PPO adaptive control approach}{figure.17}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {18}{\ignorespaces \textbf  {O/R Index Evolution During Training.} O/R values \textit  {decrease} as training progresses, indicating policies become more consistent. The magnitude of correlation with final performance grows over training ($|r| = 0.52$ at ep5, $0.69$ at ep10, $0.85$ at ep30). Early O/R predicts eventual success; lower O/R at any timepoint correlates with higher final coordination.}}{53}{figure.18}\protected@file@percent }
+\newlabel{fig:s2_temporal}{{18}{53}{\textbf {O/R Index Evolution During Training.} O/R values \textit {decrease} as training progresses, indicating policies become more consistent. The magnitude of correlation with final performance grows over training ($|r| = 0.52$ at ep5, $0.69$ at ep10, $0.85$ at ep30). Early O/R predicts eventual success; lower O/R at any timepoint correlates with higher final coordination}{figure.18}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {19}{\ignorespaces \textbf  {Hyperparameter Robustness.} O/R Index maintains strong predictive power across variations in history window length (25--100 timesteps), message dimensions (3--10), and observation noise levels (0.05--0.5). All configurations achieve $|r| > 0.55$, demonstrating robustness to implementation choices.}}{54}{figure.19}\protected@file@percent }
+\newlabel{fig:s3_ablations}{{19}{54}{\textbf {Hyperparameter Robustness.} O/R Index maintains strong predictive power across variations in history window length (25--100 timesteps), message dimensions (3--10), and observation noise levels (0.05--0.5). All configurations achieve $|r| > 0.55$, demonstrating robustness to implementation choices}{figure.19}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {20}{\ignorespaces \textbf  {Statistical Power Analysis.} Power curves for detecting O/R-coordination correlation at various sample sizes. At $n = 30$ teams, power exceeds 99\% for our observed effect size ($r = -0.70$). Even $n = 11$ achieves 80\% power, enabling rapid early-stage diagnostics with minimal computational cost.}}{54}{figure.20}\protected@file@percent }
+\newlabel{fig:s4_power}{{20}{54}{\textbf {Statistical Power Analysis.} Power curves for detecting O/R-coordination correlation at various sample sizes. At $n = 30$ teams, power exceeds 99\% for our observed effect size ($r = -0.70$). Even $n = 11$ achieves 80\% power, enabling rapid early-stage diagnostics with minimal computational cost}{figure.20}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {21}{\ignorespaces \textbf  {Summary Dashboard.} Six-panel overview of main results: (A) O/R vs.\ coordination scatter, (B) metric comparison, (C) temporal evolution, (D) robustness conditions, (E) algorithm comparison, (F) power analysis. This dashboard provides a comprehensive view of O/R Index performance across all experimental conditions.}}{55}{figure.21}\protected@file@percent }
+\newlabel{fig:s5_summary}{{21}{55}{\textbf {Summary Dashboard.} Six-panel overview of main results: (A) O/R vs.\ coordination scatter, (B) metric comparison, (C) temporal evolution, (D) robustness conditions, (E) algorithm comparison, (F) power analysis. This dashboard provides a comprehensive view of O/R Index performance across all experimental conditions}{figure.21}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {22}{\ignorespaces \textbf  {Discovery vs.\ Execution Phases.} O/R Index is most predictive during the ``discovery'' phase when agents are learning coordination strategies. In ``execution'' tasks where optimal behavior is known, behavioral variance naturally converges, reducing O/R's discriminative power. This explains the theoretical framework's task-dependency predictions (Section~\ref {subsec:why_succeeds}).}}{56}{figure.22}\protected@file@percent }
+\newlabel{fig:s6_discovery}{{22}{56}{\textbf {Discovery vs.\ Execution Phases.} O/R Index is most predictive during the ``discovery'' phase when agents are learning coordination strategies. In ``execution'' tasks where optimal behavior is known, behavioral variance naturally converges, reducing O/R's discriminative power. This explains the theoretical framework's task-dependency predictions (Section~\ref {subsec:why_succeeds})}{figure.22}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {K}Code Availability}{56}{appendix.K}\protected@file@percent }
+\citation{terry2021pettingzoo}
+\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces \textbf  {Decision Tree: When and How to Use O/R Index.} Practitioners should first determine if their task involves multi-agent coordination. If yes, the O/R Index can serve four primary use cases: \textbf  {(1) Debugging:} Compute O/R for failed teams to identify behavioral inconsistency; high O/R indicates erratic behavior that hinders coordination. \textbf  {(2) Early Stopping:} Measure O/R at episode 10 to predict final performance ($r = -0.69$***), enabling faster iteration. \textbf  {(3) Algorithm Selection:} Compare O/R correlation across candidate algorithms (e.g., REINFORCE vs PPO); choose the algorithm with strongest O/R-performance correlation. \textbf  {(4) Training Optimization:} Use CR-REINFORCE or OR-PPO to directly improve coordination by 6-9\%. Computational requirements are minimal ($<$1s per 100 trajectories), and 30+ team samples provide adequate statistical power. For interpretation, O/R values below -0.5 indicate strong coordination, while values near or above 0 suggest coordination failure.}}{60}{figure.16}\protected@file@percent }
+\newlabel{fig:decision_tree}{{16}{60}{\textbf {Decision Tree: When and How to Use O/R Index.} Practitioners should first determine if their task involves multi-agent coordination. If yes, the O/R Index can serve four primary use cases: \textbf {(1) Debugging:} Compute O/R for failed teams to identify behavioral inconsistency; high O/R indicates erratic behavior that hinders coordination. \textbf {(2) Early Stopping:} Measure O/R at episode 10 to predict final performance ($r = -0.69$***), enabling faster iteration. \textbf {(3) Algorithm Selection:} Compare O/R correlation across candidate algorithms (e.g., REINFORCE vs PPO); choose the algorithm with strongest O/R-performance correlation. \textbf {(4) Training Optimization:} Use CR-REINFORCE or OR-PPO to directly improve coordination by 6-9\%. Computational requirements are minimal ($<$1s per 100 trajectories), and 30+ team samples provide adequate statistical power. For interpretation, O/R values below -0.5 indicate strong coordination, while values near or above 0 suggest coordination failure}{figure.16}{}}
+\gdef \@abspage@last{60}

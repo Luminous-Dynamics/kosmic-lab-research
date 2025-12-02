@@ -1,0 +1,13 @@
+{
+  "scenario": "coordination_ring_h400_stress_spatial",
+  "layout": "coordination_ring",
+  "horizon": 400,
+  "randomize_positions": false,
+  "checkpoint": "ppo_5k",
+  "n_episodes": 125,
+  "obs_dim": 2600,
+  "n_actions": 6,
+  "learning_rate": 0.0003,
+  "gamma": 0.99,
+  "entropy_beta": 0.01
+}
