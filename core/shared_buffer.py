@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from threading import Lock
-from typing import Iterable, Tuple
+from typing import Tuple
 
 import numpy as np
 
@@ -47,11 +47,15 @@ class SharedReplayBuffer:
             action = exp.action.astype(np.float32, copy=False)
             if self.state_dim is None:
                 self.state_dim = state.size
-                self.states = np.zeros((self.capacity, self.state_dim), dtype=np.float32)
+                self.states = np.zeros(
+                    (self.capacity, self.state_dim), dtype=np.float32
+                )
                 self.next_states = np.zeros_like(self.states)
             if self.action_dim is None:
                 self.action_dim = action.size
-                self.actions = np.zeros((self.capacity, self.action_dim), dtype=np.float32)
+                self.actions = np.zeros(
+                    (self.capacity, self.action_dim), dtype=np.float32
+                )
 
             idx = self.position
             self.states[idx] = state
@@ -65,7 +69,9 @@ class SharedReplayBuffer:
             if self.position == 0:
                 self.full = True
 
-    def sample(self, batch_size: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    def sample(
+        self, batch_size: int
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         with self.lock:
             current_size = len(self)
             if batch_size > current_size:

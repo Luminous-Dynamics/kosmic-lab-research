@@ -8,7 +8,6 @@ import numpy as np
 from scipy.special import digamma
 from sklearn.neighbors import BallTree
 
-
 _EPS = 1e-10
 
 
@@ -98,6 +97,40 @@ def _ksg_mutual_information(X: np.ndarray, Y: np.ndarray, k: int = 5) -> float:
     return float(max(0.0, mi))
 
 
+def _ksg_mutual_information_with_y_tree(
+    X: np.ndarray, Y: np.ndarray, k: int, tree_y: BallTree
+) -> float:
+    """KSG mutual information I(X; Y) reusing a prebuilt BallTree for Y.
+
+    This avoids rebuilding the Y BallTree when computing multiple MI terms
+    that share the same Y (e.g., conditional TE calculations).
+    """
+    X = _ensure_2d(X)
+    Y = _ensure_2d(Y)
+    n = X.shape[0]
+    if Y.shape[0] != n:
+        raise ValueError("X and Y must share the same number of samples")
+    if n <= k:
+        raise ValueError("Number of samples must exceed k")
+
+    XY = np.hstack([X, Y])
+    tree_xy = BallTree(XY, metric="chebyshev")
+    distances, _ = tree_xy.query(XY, k=k + 1)
+    eps = distances[:, k]
+    eps = np.maximum(eps - _EPS, 0.0)
+
+    tree_x = BallTree(X, metric="chebyshev")
+
+    nx = tree_x.query_radius(X, eps, count_only=True) - 1
+    ny = tree_y.query_radius(Y, eps, count_only=True) - 1
+
+    nx = np.maximum(nx, 0)
+    ny = np.maximum(ny, 0)
+
+    mi = digamma(k) - np.mean(digamma(nx + 1) + digamma(ny + 1)) + digamma(n)
+    return float(max(0.0, mi))
+
+
 def knn_transfer_entropy(
     x_past: np.ndarray,
     y_past: np.ndarray,
@@ -123,7 +156,9 @@ def knn_transfer_entropy(
         y_present = _standardize(y_present)
 
     combined = np.hstack([y_past, x_past])
-    mi_joint = _ksg_mutual_information(combined, y_present, k=k)
-    mi_cond = _ksg_mutual_information(y_past, y_present, k=k)
+    # Reuse BallTree for Y to avoid duplicate construction
+    y_tree = BallTree(y_present, metric="chebyshev")
+    mi_joint = _ksg_mutual_information_with_y_tree(combined, y_present, k=k, tree_y=y_tree)
+    mi_cond = _ksg_mutual_information_with_y_tree(y_past, y_present, k=k, tree_y=y_tree)
     te = max(0.0, mi_joint - mi_cond)
     return float(te)

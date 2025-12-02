@@ -21,14 +21,18 @@ class Phase4Actor:
         self.cfg = config
         rng = np.random.default_rng(seed)
         limit = 1.0 / np.sqrt(config.state_dim)
-        self.weights = rng.uniform(-limit, limit, size=(config.state_dim, config.action_dim)).astype(np.float32)
+        self.weights = rng.uniform(
+            -limit, limit, size=(config.state_dim, config.action_dim)
+        ).astype(np.float32)
         self.bias = np.zeros(config.action_dim, dtype=np.float32)
 
     def predict(self, state: np.ndarray) -> np.ndarray:
         z = state @ self.weights + self.bias
         return np.tanh(z)
 
-    def update(self, states: np.ndarray, actions: np.ndarray, advantages: np.ndarray) -> None:
+    def update(
+        self, states: np.ndarray, actions: np.ndarray, advantages: np.ndarray
+    ) -> None:
         if len(states) == 0:
             return
         preds = self.predict(states)

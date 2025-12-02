@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections import deque
 from dataclasses import dataclass
-from typing import Any, Deque, Dict, Iterable, List, Tuple
+from typing import Any, Deque, Dict, Iterable, List
 
 import numpy as np
 
@@ -87,7 +87,9 @@ class ReciprocityCoupler:
             for j, uid_j in enumerate(uids):
                 if i == j:
                     continue
-                reciprocity_sym[i, j] = (1 - symmetry_lambda) * reciprocity[i, j] + symmetry_lambda * reciprocity[j, i]
+                reciprocity_sym[i, j] = (1 - symmetry_lambda) * reciprocity[
+                    i, j
+                ] + symmetry_lambda * reciprocity[j, i]
 
         for j, uid_j in enumerate(uids):
             snap_j = self.snapshots[uid_j]
@@ -106,7 +108,9 @@ class ReciprocityCoupler:
 
                 snap_i = self.snapshots[uid_i]
                 for group in self._parameter_groups(snap_i, snap_j):
-                    diff = self._projected_diff(group, snap_i.grads[group], snap_j.grads[group])
+                    diff = self._projected_diff(
+                        group, snap_i.grads[group], snap_j.grads[group]
+                    )
                     deltas[uid_j][group] += eta * diff
                     self.trace.append(
                         {
@@ -192,15 +196,21 @@ class ReciprocityCoupler:
         den = float(np.linalg.norm(a) * np.linalg.norm(b) + eps)
         return num / den
 
-    def _parameter_groups(self, snap_i: PolicySnapshot, snap_j: PolicySnapshot) -> List[str]:
+    def _parameter_groups(
+        self, snap_i: PolicySnapshot, snap_j: PolicySnapshot
+    ) -> List[str]:
         groups = set(snap_i.grads.keys()) & set(snap_j.grads.keys())
         if self.cfg.projection == "actor_only":
             groups = {g for g in groups if "actor" in g}
         return sorted(groups)
 
-    def _projected_diff(self, group: str, grad_i: np.ndarray, grad_j: np.ndarray) -> np.ndarray:
+    def _projected_diff(
+        self, group: str, grad_i: np.ndarray, grad_j: np.ndarray
+    ) -> np.ndarray:
         if grad_i.shape != grad_j.shape:
-            raise ValueError(f"Gradient shapes differ for group '{group}' ({grad_i.shape} vs {grad_j.shape})")
+            raise ValueError(
+                f"Gradient shapes differ for group '{group}' ({grad_i.shape} vs {grad_j.shape})"
+            )
         # Future extensions (attention, low rank) hook here.
         return grad_i - grad_j
 
