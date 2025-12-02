@@ -24,7 +24,9 @@ def validate_registry(path: Path) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--path", type=Path, default=Path("configs/config_registry.json"))
+    parser.add_argument(
+        "--path", type=Path, default=Path("configs/config_registry.json")
+    )
     args = parser.parse_args()
     validate_registry(args.path)
 

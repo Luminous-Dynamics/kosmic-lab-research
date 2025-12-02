@@ -35,7 +35,9 @@ try:
     from scripts.config_registry import lookup as registry_lookup  # type: ignore
 except Exception:  # pragma: no cover
     registry_lookup = None
-SCHEMA = Draft7Validator(json.loads(Path("schemas/archive_metadata.schema.json").read_text(encoding="utf-8")))
+SCHEMA = Draft7Validator(
+    json.loads(Path("schemas/archive_metadata.schema.json").read_text(encoding="utf-8"))
+)
 
 
 def compute_hash(path: Path) -> str:
@@ -47,7 +49,9 @@ def compute_hash(path: Path) -> str:
 def snapshot_config(config_path: Path, bundle_dir: Path) -> Path:
     snapshot = bundle_dir / "config_snapshot.yaml"
     snapshot.write_bytes(config_path.read_bytes())
-    (bundle_dir / "config_hash.txt").write_text(compute_hash(config_path), encoding="utf-8")
+    (bundle_dir / "config_hash.txt").write_text(
+        compute_hash(config_path), encoding="utf-8"
+    )
     return snapshot
 
 
@@ -64,7 +68,9 @@ def _extract_checkpoint_snapshot(checkpoint: Path, dest: Path) -> Optional[Path]
     return None
 
 
-def create_archive(checkpoint: Path, config: Path, log: Optional[Path], output: Optional[Path]) -> Path:
+def create_archive(
+    checkpoint: Path, config: Path, log: Optional[Path], output: Optional[Path]
+) -> Path:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     # If output is provided and is in a temp directory, use that directory
     if output and output.parent != Path("."):
@@ -80,7 +86,10 @@ def create_archive(checkpoint: Path, config: Path, log: Optional[Path], output: 
         "timestamp": timestamp,
         "bundle": bundle_dir.name,
         "files": {
-            "checkpoint": {"name": checkpoint_dest.name, "hash": compute_hash(checkpoint)},
+            "checkpoint": {
+                "name": checkpoint_dest.name,
+                "hash": compute_hash(checkpoint),
+            },
         },
     }
 
@@ -131,14 +140,18 @@ def _hash_tar_member(tar: tarfile.TarFile, member_name: str) -> str:
 
 def load_metadata(archive_path: Path) -> Dict[str, Any]:
     with tarfile.open(archive_path, "r:gz") as tar:
-        metadata_member = next((m for m in tar.getmembers() if m.name.endswith("metadata.json")), None)
+        metadata_member = next(
+            (m for m in tar.getmembers() if m.name.endswith("metadata.json")), None
+        )
         if not metadata_member:
             raise SystemExit("❌ metadata.json not found in archive")
         metadata_data = tar.extractfile(metadata_member).read().decode("utf-8")  # type: ignore[union-attr]
         metadata = json.loads(metadata_data)
         errors = sorted(SCHEMA.iter_errors(metadata), key=lambda e: e.path)
         if errors:
-            msgs = "\n".join(f"- {'/'.join(map(str, err.path))}: {err.message}" for err in errors)
+            msgs = "\n".join(
+                f"- {'/'.join(map(str, err.path))}: {err.message}" for err in errors
+            )
             raise SystemExit(f"❌ metadata schema validation failed:\n{msgs}")
         return metadata
 
@@ -156,7 +169,9 @@ def metadata_to_markdown(metadata: Dict[str, Any]) -> str:
     lines.append(f"| Config Notes | {metadata.get('config_notes','')} |")
     files = metadata.get("files", {})
     for key, info in files.items():
-        lines.append(f"| File: {key} | `{info.get('name','')}` (`{info.get('hash','')}`) |")
+        lines.append(
+            f"| File: {key} | `{info.get('name','')}` (`{info.get('hash','')}`) |"
+        )
     lines.append("")
     lines.append(f"`metadata json sha256: {metadata_json_hash(metadata)}`")
     return "\n".join(lines)
@@ -180,17 +195,22 @@ def verify_archive(archive_path: Path) -> None:
                 raise SystemExit(f"❌ member {member_name} missing from archive")
             actual_hash = _hash_tar_member(re_tar, member_name)
             if actual_hash != expected_hash:
-                raise SystemExit(f"❌ Hash mismatch for {key}: expected {expected_hash}, got {actual_hash}")
+                raise SystemExit(
+                    f"❌ Hash mismatch for {key}: expected {expected_hash}, got {actual_hash}"
+                )
     print(f"✅ Archive verification passed: {archive_path}")
 
 
-def diff_archive_configs(archive_path: Path, compare_config: Optional[Path] = None) -> str:
+def diff_archive_configs(
+    archive_path: Path, compare_config: Optional[Path] = None
+) -> str:
     metadata = load_metadata(archive_path)
     root = metadata.get("bundle")
     if not root:
         raise SystemExit("❌ metadata missing bundle name")
     with tarfile.open(archive_path, "r:gz") as tar:
         members = {m.name: m for m in tar.getmembers()}
+
         def read_member(name: str) -> str | None:
             full = f"{root}/{name}"
             if full not in members:
@@ -213,6 +233,7 @@ def diff_archive_configs(archive_path: Path, compare_config: Optional[Path] = No
     if target_yaml is None:
         raise SystemExit("❌ No target snapshot available for diff.")
     import difflib
+
     diff = difflib.unified_diff(
         config_yaml.splitlines(),
         target_yaml.splitlines(),
@@ -231,20 +252,36 @@ def main() -> None:
     create_parser.add_argument("--checkpoint", type=Path, required=True)
     create_parser.add_argument("--log", type=Path, required=False)
     create_parser.add_argument("--config", type=Path, required=True)
-    create_parser.add_argument("--output", type=Path, default=None, help="Output .tar.gz path")
+    create_parser.add_argument(
+        "--output", type=Path, default=None, help="Output .tar.gz path"
+    )
 
     verify_parser = subparsers.add_parser("verify", help="Verify an existing archive")
     verify_parser.add_argument("--archive", type=Path, required=True)
 
-    summary_parser = subparsers.add_parser("summary", help="Print archive metadata summary")
+    summary_parser = subparsers.add_parser(
+        "summary", help="Print archive metadata summary"
+    )
     summary_parser.add_argument("--archive", type=Path, required=True)
-    summary_parser.add_argument("--markdown", action="store_true", help="Emit summary as Markdown table")
-    summary_parser.add_argument("--markdown-path", type=Path, help="Write Markdown summary to this path")
-    summary_parser.add_argument("--check-markdown", action="store_true", help="Compare Markdown summary with existing file")
+    summary_parser.add_argument(
+        "--markdown", action="store_true", help="Emit summary as Markdown table"
+    )
+    summary_parser.add_argument(
+        "--markdown-path", type=Path, help="Write Markdown summary to this path"
+    )
+    summary_parser.add_argument(
+        "--check-markdown",
+        action="store_true",
+        help="Compare Markdown summary with existing file",
+    )
 
-    diff_parser = subparsers.add_parser("diff", help="Diff config snapshots inside an archive")
+    diff_parser = subparsers.add_parser(
+        "diff", help="Diff config snapshots inside an archive"
+    )
     diff_parser.add_argument("--archive", type=Path, required=True)
-    diff_parser.add_argument("--config", type=Path, help="Compare archive snapshot against this config file")
+    diff_parser.add_argument(
+        "--config", type=Path, help="Compare archive snapshot against this config file"
+    )
 
     args = parser.parse_args()
     if args.command == "create":

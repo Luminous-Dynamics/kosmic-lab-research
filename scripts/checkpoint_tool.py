@@ -18,7 +18,6 @@ from __future__ import annotations
 import argparse
 import json
 import shutil
-import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict
@@ -62,7 +61,9 @@ def cmd_info(path: Path) -> None:
         if config_meta and registry_lookup:
             entry = registry_lookup(hash_value=config_meta.get("sha256"))
             if entry:
-                print(f"\n🗂  Config Registry: {entry.get('label')} ({entry.get('notes')})")
+                print(
+                    f"\n🗂  Config Registry: {entry.get('label')} ({entry.get('notes')})"
+                )
 
 
 def cmd_list(directory: Path) -> None:
@@ -101,7 +102,17 @@ def main(argv: list[str] | None = None) -> None:
     copy_parser = subparsers.add_parser("copy", help="Copy a checkpoint to a new file")
     copy_parser.add_argument("--src", type=Path, required=True)
     copy_parser.add_argument("--dest", type=Path, required=True)
-    copy_parser.add_argument("--overwrite", action="store_true", help="Allow overwriting existing destination")
+    copy_parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Allow overwriting existing destination",
+    )
+
+    extract_parser = subparsers.add_parser(
+        "extract-config", help="Write embedded config snapshot"
+    )
+    extract_parser.add_argument("--path", type=Path, required=True)
+    extract_parser.add_argument("--output", type=Path, required=True)
 
     args = parser.parse_args(argv)
     if args.command == "info":
@@ -123,6 +134,3 @@ def main(argv: list[str] | None = None) -> None:
 
 if __name__ == "__main__":
     main()
-    extract_parser = subparsers.add_parser("extract-config", help="Write embedded config snapshot")
-    extract_parser.add_argument("--path", type=Path, required=True)
-    extract_parser.add_argument("--output", type=Path, required=True)

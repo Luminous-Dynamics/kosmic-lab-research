@@ -12,14 +12,14 @@ Usage:
 """
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 from typing import Any, Dict, List
-import argparse
 
 try:
     import nbformat
-    from nbformat.v4 import new_notebook, new_code_cell, new_markdown_cell
+    from nbformat.v4 import new_code_cell, new_markdown_cell, new_notebook
 except ImportError:
     print("Error: nbformat not installed. Run: poetry add nbformat")
     exit(1)
@@ -67,7 +67,9 @@ class NotebookGenerator:
         print(f"✅ Notebook: {self.output}")
 
     def _title_cell(self):
-        return new_markdown_cell(f"# Analysis: {self.logdir.name}\\n\\n**Auto-generated**")
+        return new_markdown_cell(
+            f"# Analysis: {self.logdir.name}\\n\\n**Auto-generated**"
+        )
 
     def _setup_cell(self):
         return new_code_cell("import json\\nimport numpy as np\\nimport pandas as pd")

@@ -17,13 +17,12 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import difflib
 import hashlib
 import json
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Optional
-
-import difflib
 
 REGISTRY_PATH = Path("configs/config_registry.json")
 
@@ -40,11 +39,16 @@ def load_registry() -> Dict[str, Dict[str, str]]:
 
 
 def save_registry(data: Dict[str, Dict[str, str]]) -> None:
+    """Persist registry in canonical JSON (sorted keys, trailing newline)."""
     REGISTRY_PATH.parent.mkdir(parents=True, exist_ok=True)
-    REGISTRY_PATH.write_text(json.dumps(data, indent=2), encoding="utf-8")
+    REGISTRY_PATH.write_text(
+        json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
 
-def register_config(config_path: Path, label: str, notes: Optional[str]) -> Dict[str, str]:
+def register_config(
+    config_path: Path, label: str, notes: Optional[str]
+) -> Dict[str, str]:
     config_path = config_path.resolve()
     digest = compute_hash(config_path)
     registry = load_registry()
@@ -59,7 +63,9 @@ def register_config(config_path: Path, label: str, notes: Optional[str]) -> Dict
     return registry[digest]
 
 
-def lookup(hash_value: Optional[str] = None, config_path: Optional[Path] = None) -> Optional[Dict[str, str]]:
+def lookup(
+    hash_value: Optional[str] = None, config_path: Optional[Path] = None
+) -> Optional[Dict[str, str]]:
     registry = load_registry()
     if hash_value:
         return registry.get(hash_value)
@@ -67,6 +73,7 @@ def lookup(hash_value: Optional[str] = None, config_path: Optional[Path] = None)
         digest = compute_hash(config_path.resolve())
         return registry.get(digest)
     return None
+
 
 def diff_configs(config_a: Path, config_b: Path) -> str:
     text_a = config_a.read_text(encoding="utf-8").splitlines()
@@ -85,7 +92,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Config registry helper")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    reg_parser = subparsers.add_parser("register", help="Register/update a config entry")
+    reg_parser = subparsers.add_parser(
+        "register", help="Register/update a config entry"
+    )
     reg_parser.add_argument("--config", type=Path, required=True)
     reg_parser.add_argument("--label", type=str, required=True)
     reg_parser.add_argument("--notes", type=str, default=None)

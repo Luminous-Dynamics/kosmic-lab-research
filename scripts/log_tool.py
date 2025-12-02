@@ -62,7 +62,9 @@ def validate_file(path: Path) -> None:
             epi = payload.get("episode_index") or payload.get("episode_global_index")
             if epi is not None:
                 if episode_index is not None and epi < episode_index:
-                    raise SystemExit(f"❌ Episode index decreased at line {lineno} ({episode_index} -> {epi})")
+                    raise SystemExit(
+                        f"❌ Episode index decreased at line {lineno} ({episode_index} -> {epi})"
+                    )
                 episode_index = epi
     print(f"✅ Log validation passed for {path}")
 

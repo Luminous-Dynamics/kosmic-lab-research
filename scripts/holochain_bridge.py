@@ -21,12 +21,12 @@ Requirements:
 """
 from __future__ import annotations
 
+import argparse
 import json
 import subprocess
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Any, List, Optional
-from dataclasses import dataclass, asdict
-import argparse
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -69,13 +69,12 @@ class HolochainBridge:
         """Check if Holochain conductor is running."""
         try:
             result = subprocess.run(
-                ["hc", "--version"],
-                capture_output=True,
-                text=True,
-                timeout=5
+                ["hc", "--version"], capture_output=True, text=True, timeout=5
             )
             if result.returncode != 0:
-                raise RuntimeError("Holochain CLI not found. Install with: nix-shell -p holochain")
+                raise RuntimeError(
+                    "Holochain CLI not found. Install with: nix-shell -p holochain"
+                )
         except FileNotFoundError:
             print("⚠️  Holochain not installed. Running in mock mode.")
             print("   Install: nix-shell -p holochain")
@@ -100,7 +99,7 @@ class HolochainBridge:
             passport = json.load(f)
 
         # Validate required fields
-        required = ['run_id', 'commit', 'config_hash', 'seed', 'experiment', 'metrics']
+        required = ["run_id", "commit", "config_hash", "seed", "experiment", "metrics"]
         missing = [field for field in required if field not in passport]
         if missing:
             raise ValueError(f"Missing required fields: {missing}")
@@ -110,11 +109,8 @@ class HolochainBridge:
 
         # Call Holochain zome
         try:
-            result = self._call_zome(
-                "create_passport",
-                holochain_passport
-            )
-            header_hash = result.get('header_hash')
+            result = self._call_zome("create_passport", holochain_passport)
+            header_hash = result.get("header_hash")
 
             print(f"✅ Published: {header_hash}")
             return header_hash
@@ -125,9 +121,7 @@ class HolochainBridge:
             return f"mock_hash_{passport['run_id']}"
 
     def query_corridor(
-        self,
-        min_k: float = 1.0,
-        max_k: float = 2.5
+        self, min_k: float = 1.0, max_k: float = 2.5
     ) -> List[Dict[str, Any]]:
         """
         Query K-passports within K-index corridor.
@@ -143,11 +137,10 @@ class HolochainBridge:
 
         try:
             result = self._call_zome(
-                "get_corridor_passports",
-                {"min_k": min_k, "max_k": max_k}
+                "get_corridor_passports", {"min_k": min_k, "max_k": max_k}
             )
 
-            passports = result.get('passports', [])
+            passports = result.get("passports", [])
             print(f"📊 Found {len(passports)} passports in corridor")
 
             return passports
@@ -174,17 +167,14 @@ class HolochainBridge:
         print(f"🔐 Verifying passport: {header_hash[:16]}...")
 
         try:
-            result = self._call_zome(
-                "verify_passport",
-                {"passport_hash": header_hash}
-            )
+            result = self._call_zome("verify_passport", {"passport_hash": header_hash})
 
             verification = VerificationResult(
-                valid=result.get('valid', False),
-                commit_verified=result.get('commit_verified', False),
-                config_verified=result.get('config_verified', False),
-                timestamp=result.get('timestamp', ''),
-                errors=result.get('errors', [])
+                valid=result.get("valid", False),
+                commit_verified=result.get("commit_verified", False),
+                config_verified=result.get("config_verified", False),
+                timestamp=result.get("timestamp", ""),
+                errors=result.get("errors", []),
             )
 
             if verification.valid:
@@ -200,8 +190,8 @@ class HolochainBridge:
                 valid=False,
                 commit_verified=False,
                 config_verified=False,
-                timestamp='',
-                errors=[str(e)]
+                timestamp="",
+                errors=[str(e)],
             )
 
     def publish_directory(self, log_dir: Path) -> Dict[str, str]:
@@ -267,9 +257,7 @@ class HolochainBridge:
         return self.publish_passport(codex_path)
 
     def query_corridor_codices(
-        self,
-        min_k: float = 1.0,
-        max_k: float = 2.5
+        self, min_k: float = 1.0, max_k: float = 2.5
     ) -> List[Dict[str, Any]]:
         """
         Query K-Codices within K-index corridor.
@@ -331,25 +319,25 @@ class HolochainBridge:
     def _transform_passport(self, passport: Dict[str, Any]) -> Dict[str, Any]:
         """Transform K-passport to Holochain format."""
         # Extract metrics
-        metrics = passport.get('metrics', {})
+        metrics = passport.get("metrics", {})
 
         return {
-            "run_id": passport['run_id'],
-            "commit": passport['commit'],
-            "config_hash": passport['config_hash'],
-            "seed": passport['seed'],
-            "experiment": passport['experiment'],
-            "params": passport.get('params', {}),
-            "estimators": passport.get('estimators', {}),
+            "run_id": passport["run_id"],
+            "commit": passport["commit"],
+            "config_hash": passport["config_hash"],
+            "seed": passport["seed"],
+            "experiment": passport["experiment"],
+            "params": passport.get("params", {}),
+            "estimators": passport.get("estimators", {}),
             "metrics": {
-                "k_index": metrics.get('K', 0.0),
-                "tat": metrics.get('TAT', 0.0),
-                "recovery": metrics.get('Recovery', 0.0),
-                "phi": metrics.get('phi'),
-                "te_mutual": metrics.get('te_mutual'),
-                "te_symmetry": metrics.get('TE_symmetry'),
+                "k_index": metrics.get("K", 0.0),
+                "tat": metrics.get("TAT", 0.0),
+                "recovery": metrics.get("Recovery", 0.0),
+                "phi": metrics.get("phi"),
+                "te_mutual": metrics.get("te_mutual"),
+                "te_symmetry": metrics.get("TE_symmetry"),
             },
-            "timestamp": passport.get('timestamp', ''),
+            "timestamp": passport.get("timestamp", ""),
             "researcher_agent": self._get_agent_pubkey(),
         }
 
@@ -357,15 +345,11 @@ class HolochainBridge:
         """Get current agent's public key from Holochain."""
         try:
             result = self._call_zome("agent_info", {})
-            return result.get('agent_pubkey', 'unknown')
-        except:
+            return result.get("agent_pubkey", "unknown")
+        except Exception:
             return "mock_agent_pubkey"
 
-    def _call_zome(
-        self,
-        fn_name: str,
-        payload: Any
-    ) -> Dict[str, Any]:
+    def _call_zome(self, fn_name: str, payload: Any) -> Dict[str, Any]:
         """
         Call Holochain zome function via conductor API.
 
@@ -382,18 +366,16 @@ class HolochainBridge:
         cmd = [
             "hc",
             "call",
-            "--url", self.config.conductor_url,
+            "--url",
+            self.config.conductor_url,
             self.config.zome_name,
             fn_name,
-            json.dumps(payload)
+            json.dumps(payload),
         ]
 
         try:
             result = subprocess.run(
-                cmd,
-                capture_output=True,
-                text=True,
-                timeout=self.config.timeout
+                cmd, capture_output=True, text=True, timeout=self.config.timeout
             )
 
             if result.returncode != 0:
@@ -414,28 +396,21 @@ def main():
     )
 
     parser.add_argument(
-        "--publish", type=Path,
-        help="Publish K-passports from directory"
+        "--publish", type=Path, help="Publish K-passports from directory"
+    )
+    parser.add_argument("--query", action="store_true", help="Query corridor passports")
+    parser.add_argument(
+        "--min-k", type=float, default=1.0, help="Minimum K-index for corridor query"
     )
     parser.add_argument(
-        "--query", action="store_true",
-        help="Query corridor passports"
+        "--max-k", type=float, default=2.5, help="Maximum K-index for corridor query"
     )
+    parser.add_argument("--verify", type=str, help="Verify passport by header hash")
     parser.add_argument(
-        "--min-k", type=float, default=1.0,
-        help="Minimum K-index for corridor query"
-    )
-    parser.add_argument(
-        "--max-k", type=float, default=2.5,
-        help="Maximum K-index for corridor query"
-    )
-    parser.add_argument(
-        "--verify", type=str,
-        help="Verify passport by header hash"
-    )
-    parser.add_argument(
-        "--conductor-url", type=str, default="http://localhost:8888",
-        help="Holochain conductor URL"
+        "--conductor-url",
+        type=str,
+        default="http://localhost:8888",
+        help="Holochain conductor URL",
     )
 
     args = parser.parse_args()
@@ -447,20 +422,22 @@ def main():
     # Execute command
     if args.publish:
         published = bridge.publish_directory(args.publish)
-        print(f"\\n📊 Summary:")
+        print("\n📊 Summary:")
         print(f"   Total published: {len(published)}")
 
     elif args.query:
         passports = bridge.query_corridor(args.min_k, args.max_k)
 
-        print(f"\\n📊 Corridor Results:")
+        print("\n📊 Corridor Results:")
         for p in passports:
-            print(f"   K={p['metrics']['k_index']:.3f} | {p['experiment']} | {p['run_id']}")
+            print(
+                f"   K={p['metrics']['k_index']:.3f} | {p['experiment']} | {p['run_id']}"
+            )
 
     elif args.verify:
         verification = bridge.verify_passport(args.verify)
 
-        print(f"\\n🔐 Verification Result:")
+        print("\n🔐 Verification Result:")
         print(f"   Valid: {verification.valid}")
         print(f"   Commit verified: {verification.commit_verified}")
         print(f"   Config verified: {verification.config_verified}")

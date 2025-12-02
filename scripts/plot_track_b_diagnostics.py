@@ -4,7 +4,6 @@ import argparse
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 
 
@@ -59,7 +58,9 @@ def plot_training_metrics(df: pd.DataFrame, output_dir: Path) -> None:
     axes[0].set_ylabel("Actor loss")
     axes[0].grid(alpha=0.2)
 
-    axes[1].plot(df["global_step"], df["critic_loss"], color="tab:orange", label="critic loss")
+    axes[1].plot(
+        df["global_step"], df["critic_loss"], color="tab:orange", label="critic loss"
+    )
     axes[1].set_ylabel("Critic loss")
     axes[1].grid(alpha=0.2)
 
@@ -99,7 +100,9 @@ def plot_metrics_by_mode(df: pd.DataFrame, output_dir: Path) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Plot Track B diagnostics and training logs.")
+    parser = argparse.ArgumentParser(
+        description="Plot Track B diagnostics and training logs."
+    )
     parser.add_argument(
         "--diagnostics",
         type=Path,
