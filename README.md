@@ -4,6 +4,10 @@
 
 [![Status](https://img.shields.io/badge/status-alpha-yellow)](https://github.com/Luminous-Dynamics/kosmic-lab)
 [![CI](https://github.com/Luminous-Dynamics/kosmic-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/Luminous-Dynamics/kosmic-lab/actions)
+[![Nox](https://github.com/Luminous-Dynamics/kosmic-lab/actions/workflows/nox.yml/badge.svg)](https://github.com/Luminous-Dynamics/kosmic-lab/actions/workflows/nox.yml)
+[![API Tests](https://github.com/Luminous-Dynamics/kosmic-lab/actions/workflows/api-tests.yml/badge.svg)](https://github.com/Luminous-Dynamics/kosmic-lab/actions/workflows/api-tests.yml)
+[![API Smoke](https://github.com/Luminous-Dynamics/kosmic-lab/actions/workflows/api-smoke.yml/badge.svg)](https://github.com/Luminous-Dynamics/kosmic-lab/actions/workflows/api-smoke.yml)
+[![Nix Check](https://github.com/Luminous-Dynamics/kosmic-lab/actions/workflows/nix-check.yml/badge.svg)](https://github.com/Luminous-Dynamics/kosmic-lab/actions/workflows/nix-check.yml)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Integration](https://img.shields.io/badge/Mycelix-planned-purple)](docs/MYCELIX_INTEGRATION_ARCHITECTURE.md)
@@ -18,7 +22,7 @@ Unified research workspace for the **Kosmic Simulation & Coherence Framework**. 
 - ✅ **Track B (SAC Controller)**: 63% improvement in corridor navigation with K-index feedback
 - ✅ **Track C (Bioelectric Rescue)**: 20% success rate with novel attractor-based mechanism
 - ✅ **Complete Journey**: Systematic iteration from failures to validated breakthroughs
-- 📄 **Full Story**: [Complete Session Summary](KOSMIC_LAB_SESSION_2025_11_09_COMPLETE.md)
+- 📄 **Full Story**: See session notes under `docs/session-notes/`
 
 ---
 
@@ -97,12 +101,31 @@ poetry run python scripts/checkpoint_tool.py extract-config --path logs/track_g/
 # (Each checkpoint embeds config path/hash + git commit automatically.)
 
 # Launch Track G / Track H runs (override PHASE/CONFIG as needed)
-make track-g PHASE=g2 CONFIG=fre/configs/track_g_phase_g2.yaml
+make track-g PHASE=g2 CONFIG=fre/configs/track_g_phase_g2.yaml SEED=42
 make track-h CONFIG=fre/configs/track_h_memory.yaml
+
+Track G now prints reproducibility metadata (seed, config hash, git commit) at start and stores it in results/checkpoints; set `SEED` (or `--seed`) for deterministic runs. Warm-start overrides (`WARM_LOAD`/`WARM_SAVE`) are applied even outside dry-run mode.
+Track H inherits the same reproducibility controls: set `SEED` (or `--seed`) and optionally allow cross-config warm-starts with `ALLOW_MISMATCH=1` (or `--warm-start-allow-mismatch`), with seed/config/git metadata embedded in checkpoints and results.
 
 # Override warm-start paths on the fly
 make track-g PHASE=g2 WARM_LOAD=/tmp/phase_g2_best.json WARM_SAVE=/tmp/g2_continuation.json
 make track-h WARM_LOAD=/tmp/phase_g2_best.json
+
+### Train SAC Controller (Track B/Track C helper)
+
+```bash
+# Train Track B SAC with seed for reproducibility
+poetry run python fre/sac_train.py \
+  --config fre/configs/track_b_control.yaml \
+  --timesteps 50000 \
+  --seed 123
+
+# Makefile helper for Track C SAC script
+make sac-track-c CONFIG=configs/track_c_sac.yaml TIMESTEPS=100000 SEED=123
+
+# Monitor training
+tensorboard --logdir logs/sac_training/
+```
 
 # Validate a setup without running episodes
 make track-g PHASE=g2 DRY_RUN=1
@@ -157,10 +180,127 @@ Prefer raw CLI? Pass `--warm-start-load` / `--warm-start-save` directly to `fre/
 make help
 ```
 
+### Code Formatting
+
+```bash
+# Check formatting + lint on code dirs (core, fre, historical_k, scripts, tests)
+make format-code
+
+# Auto-format + apply safe Ruff fixes
+make format-fix
+```
+
+CI runs a non-blocking format check on PRs (Format-Check workflow). Once the codebase is fully formatted, we can make these checks required and enable strict linting in CI.
+
+### Run the Historical K API
+
+```bash
+# Quickly create sample artifacts for the API
+make api-fixtures
+
+poetry run kosmic-api  # Serves on http://localhost:8052
+# Or directly
+uvicorn historical_k.api:app --reload --port 8052
+
+# Interactive docs
+#   - Swagger UI: http://localhost:8052/docs
+#   - ReDoc:      http://localhost:8052/redoc
+
+Tip: You can import `logs/openapi.json` into Postman/Insomnia for interactive testing. Generate it with `make openapi-spec`.
+
+# Point API at a custom logs directory (optional)
+KOSMIC_LOGS_DIR=/path/to/logs poetry run kosmic-api
+
+# Convenience Make targets
+make api           # uvicorn 0.0.0.0:8052
+make api-weak      # weak ETag + longer cache TTL
+make api-protected # require a token (use TOKEN=...)
+
+# Or with Docker Compose
+cp -n .env.example .env   # customize API_PORT or CORS, etc.
+docker-compose up -d api
+curl http://localhost:8052/meta | jq
+
+# Generate minimal Historical K artifacts quickly
+make hk-smoke
+
+# Or generate a tiny real-proxy dataset
+make hk-mini
+
+# Run the full mini pipeline (dataset → regimes → forecast → validate)
+make hk-all
+
+### Python Client (ETag-ready)
+
+```python
+from historical_k.client import KApiClient
+
+api = KApiClient("http://localhost:8052")
+
+# Fetch series as JSON
+resp = api.get_series(as_json=True)
+print(resp.status_code, resp.etag, len(resp.json_data or []))
+
+# Conditional GET with ETag (may return 304)
+resp2 = api.get_series(as_json=True, etag=resp.etag)
+print(resp2.status_code)  # 304 if unchanged
+
+# CSV via Accept header
+csv_resp = api.get_series(as_json=False)
+print(csv_resp.text.splitlines()[:2])
+
+# Enable retries with backoff (network transient handling)
+api_retry = KApiClient("http://localhost:8052", retries=3, backoff_factor=0.5)
+```
+
+### Authentication (optional)
+
+- Enable protection with a shared token:
+  - `KOSMIC_API_TOKEN=secret make api` (or `make api-protected TOKEN=secret`)
+- Call with either of the following headers:
+  - `Authorization: Bearer secret`
+  - `X-API-Key: secret`
+- Swagger UI “Authorize” will also work (Bearer).
+```
+
+- Endpoint overview:
+  - `/health` – service status
+  - `/ready` – readiness with artifact presence (does not fail on missing)
+  - `/info` – alias of `/meta` for convenience
+  - `/k/series` – historical K(t) CSV as JSON (or CSV via as_json=false)
+    - Honors `Accept: text/csv` to return CSV when `as_json` is not set
+  - `/k/summary` – summary JSON (with optional CIs)
+  - `/k/plot` – PNG plot of K(t)
+  - `/regimes` – CSV of regime segments
+  - `/forecast` – forecast JSON or PNG plot (whichever exists)
+    - Query parameter `format`: `auto` (default) | `json` | `plot`
+  - `/meta` – version and artifact availability (ETag, last-modified)
+  - Caching: `/health` and `/ready` set `Cache-Control: no-store`.
+  - `/metrics` – Prometheus-style HTTP request counters (plain text)
+  - Download: CSV/PNG endpoints accept `download=true` to include a `Content-Disposition` attachment.
+
+- CORS for integrations:
+  - Set `KOSMIC_API_CORS_ORIGINS="http://localhost:8050,https://your.domain"` to enable CORS
+
+- API behavior tuning via env vars:
+  - `KOSMIC_LOGS_DIR` – base directory for artifacts (default: `logs`)
+  - `KOSMIC_API_CACHE_SECONDS` – Cache-Control max-age (default: `60`)
+  - `KOSMIC_API_ETAG` – `strong` (sha256) or `weak` (mtime/size) (default: `strong`)
+  - `KOSMIC_API_ETAG_CACHE_LIMIT` – strong ETag LRU cache size (default: `256`)
+  - `KOSMIC_API_STRICT_READY` – when `1`/`true`, `/ready` returns 503 if required artifacts (series, summary) are missing
+  - `X-Request-ID` – if provided in request, echoed back in response header (else autogenerated)
+  - `KOSMIC_API_LOG_JSON` – when `1`/`true`, access logs are JSON (default: `1`)
+  - Error responses have a consistent JSON shape: `{ "error": { "status_code", "detail", "request_id" } }`.
+  - Conditional requests supported: `If-None-Match` (ETag) and `If-Modified-Since`.
+  - Server-Timing header included for each response: `Server-Timing: app;dur=<ms>`.
+  - `KOSMIC_API_TOKEN` – optional shared secret. Protects all non-public endpoints. Accepts `Authorization: Bearer <token>` or `X-API-Key: <token>`.
+  - `KOSMIC_API_PUBLIC_PATHS` – comma-separated list of unauthenticated paths (default: `/health,/ready,/meta,/info`).
+  - `KOSMIC_API_RATE_LIMIT` / `KOSMIC_API_RATE_WINDOW` – optional per-client rate limit (requests per window in seconds). Adds `X-RateLimit-*` and `Retry-After` headers.
+
 ### Nix Workflow (Repro Recommended)
 
 ```bash
-# Drop into dev shell with all tools (python, poetry, LaTeX)
+# Drop into dev shell with all tools (python, poetry, full LaTeX, SDL2)
 nix develop
 
 # Run pytest via flake app (works from anywhere)
@@ -174,6 +314,10 @@ nix flake check
 
 # Verify archive hashes without leaving Nix
 nix run .#run-archive-verify archives/track_g_bundle_20251113_143313.tar.gz
+
+# API helpers via Nix apps
+nix run .#run-api-fixtures
+PORT=8052 nix run .#run-api
 ```
 
 ---
@@ -212,6 +356,11 @@ nix run .#run-archive-verify archives/track_g_bundle_20251113_143313.tar.gz
 - **[NEXT_STEPS.md](NEXT_STEPS.md)** - Phase 1 integration roadmap
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** - How to contribute
 - **[ETHICS.md](ETHICS.md)** - Ethical framework & data stewardship
+- **[K‑Codex Migration Guide](docs/guides/K_CODEX_V2_MIGRATION_GUIDE.md)** - Move from K‑Passports to K‑Codices
+- **[API Operations](docs/ops/API_OPERATIONS.md)** - Running, testing, and integrating the Historical K API
+- **[API Client Cookbook](docs/ops/API_CLIENT_COOKBOOK.md)** - Python + JS examples with ETag caching
+- **[API JS Helper](docs/ops/API_JS_HELPER.md)** - Minimal fetch wrapper with ETag + CSV helpers
+- **[Plotly Dashboard Example](docs/ops/DASHBOARD_PLOTLY.md)** - Tiny HTML to visualize K(t)
 
 ---
 
@@ -459,6 +608,12 @@ make notebook
 # 5. Join the mycelium
 make mycelix-demo
 ```
+
+### Housekeeping
+- Dry-run prune generated artifacts (logs/results/etc.): `make prune`
+- Delete artifacts older than 14 days: `make prune APPLY=1 KEEP_DAYS=14`
+- Target specific paths: `make prune TARGETS="logs results"`
+- Safety: tracked files/dirs are skipped; use with care and verify before `APPLY=1`.
 
 **Welcome to the future of consciousness research!** 🌊
 

@@ -107,7 +107,10 @@ poetry run python historical_k/compute_k.py \
 # Train a Soft Actor-Critic controller for coherence optimization
 poetry run python fre/sac_train.py \
   --config fre/configs/track_b_control.yaml \
-  --timesteps 50000
+  --timesteps 50000 \
+  --seed 123
+
+# Makefile helper (Track C SAC script): make sac-track-c CONFIG=configs/track_c_sac.yaml TIMESTEPS=100000 SEED=123
 
 # Monitor training
 tensorboard --logdir logs/sac_training/
@@ -125,6 +128,33 @@ poetry run pytest --cov=core --cov=fre --cov=historical_k \
 
 # Open coverage report
 firefox htmlcov/index.html
+
+### Reproducible Track G Run
+
+```bash
+# Deterministic Track G Phase G2 (records seed, config hash, git commit)
+make track-g PHASE=g2 CONFIG=fre/configs/track_g_phase_g2.yaml SEED=123
+```
+
+Each run prints the seed, config SHA256, and git commit for provenance, and checkpoints/results also embed these fields.
+
+### Reproducible Track H Run
+
+```bash
+# Deterministic Track H memory integration (records seed/config/git; warm-start overrides honored)
+make track-h CONFIG=fre/configs/track_h_memory.yaml SEED=123
+# Allow cross-config warm-start if needed (use sparingly)
+make track-h CONFIG=fre/configs/track_h_memory.yaml SEED=123 ALLOW_MISMATCH=1
+```
+
+Track H checkpoints/results embed seed/config/git metadata, and warm-start paths/overrides apply even outside dry-run mode.
+
+### Housekeeping (Artifacts)
+
+- Dry-run prune generated artifacts (logs/results/etc.): `make prune`
+- Delete artifacts older than 14 days: `make prune APPLY=1 KEEP_DAYS=14`
+- Target specific paths: `make prune TARGETS="logs results"`
+- Safety: tracked files/dirs are skipped; review before using `APPLY=1`.
 ```
 
 ## Validation

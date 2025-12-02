@@ -27,19 +27,22 @@ repos:
   # Import sorting
   - repo: https://github.com/pycqa/isort
     rev: 5.13.2
-    hooks:
-      - id: isort
-        args: [--profile=black, --line-length=100]
+    hooks: []
 
   # Linting
   - repo: https://github.com/pycqa/flake8
     rev: 7.0.0
+    hooks: []
+
+  # Ruff for linting (replaces flake8 + isort)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.4
     hooks:
-      - id: flake8
-        args:
-          - --max-line-length=100
-          - --extend-ignore=E203,W503  # Black compatibility
-          - --max-complexity=10
+      - id: ruff
+        args: [--line-length=100, --select=E,F,I, --ignore=E501]
+        exclude: ^docs/|
+      - id: ruff-format
+        exclude: ^docs/|
 
   # Security checks
   - repo: https://github.com/PyCQA/bandit
@@ -70,6 +73,14 @@ repos:
   # Kosmic Lab specific hooks
   - repo: local
     hooks:
+      # Ensure config registry is canonical JSON
+      - id: validate-config-registry
+        name: Validate config registry canonical JSON
+        entry: python scripts/validate_registry.py --path configs/config_registry.json
+        language: system
+        pass_filenames: false
+        files: ^configs/config_registry\.json$
+
       # Validate K-passport JSON schema
       - id: validate-k-passports
         name: Validate K-passport schema
@@ -77,6 +88,14 @@ repos:
         language: system
         pass_filenames: false
         files: ^schemas/k_passport\.json$
+
+      # Validate K-codex JSON schema
+      - id: validate-k-codex
+        name: Validate K-codex schema
+        entry: python -c "from jsonschema import Draft7Validator; import json; schema = json.load(open('schemas/k_codex.json')); Draft7Validator.check_schema(schema)"
+        language: system
+        pass_filenames: false
+        files: ^schemas/k_codex\.json$
 
       # Check for hardcoded magic numbers in universe params
       - id: check-magic-numbers

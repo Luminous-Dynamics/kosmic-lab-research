@@ -1,41 +1,68 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-
-# Virtual environments
-.venv/
+# Python virtual environments
 venv/
+.venv/
+.venv-*/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
 
-# Data & outputs
-data/
-*.parquet
-*.feather
-*.h5
-*.csv
-*.npz
+# Poetry
+poetry.lock
 
-# Logs
+# Training artifacts (too large for git)
+checkpoints/
+logs/*.log
+logs/*.pid
 logs/
-*.log
+results/
+tmp_logs_test/
+track_b_analyses/results/
+data/
+data_sources/
+notebooks/
+artifacts/
+archives/
+figures/
+figs/
+htmlcov/
 
-# LaTeX auxiliary files
-*.aux
-*.bbl
-*.blg
-*.out
-*.toc
-*.synctex.gz
+# CleanRL (external git repo)
+cleanrl/
 
-# Jupyter & analysis artefacts
-.ipynb_checkpoints/
-*.ipynb
-
-# Build artifacts
-target/
-*.lock
-incremental/
-
-# OS-specific
+# Temporary files
+*.swp
+*.swo
+*~
 .DS_Store
-Thumbs.db
+.cache/
+*.npz
+*.log
+.pytest_cache/
+.ruff_cache/
 .hypothesis/
+.postgres/
+.venv.python313.bak/
+**/target/
+
+# Local environments and caches
+.venv.python313.bak/
+.hypothesis/
+.postgres/
+
+# Heavy run artifacts
+artifacts/
+logs/
+results/
+tmp_logs_test/
+track_b_analyses/results/
+
+# Data dumps
+data/
+data_sources/
+
+# Notebook scratch space
+notebooks/
+
+# Generated experiment bundles
+experiments/llm_k_index/results/

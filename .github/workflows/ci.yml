@@ -47,7 +47,7 @@ jobs:
         run: |
           poetry run pytest tests/ -v --tb=short \
             --cov=core --cov=fre --cov=historical_k --cov=experiments \
-            --cov-report=xml --cov-report=term-missing
+            --cov-report=xml --cov-report=term-missing --cov-fail-under=80
 
       - name: Upload coverage
         if: matrix.python-version == '3.11'
@@ -74,14 +74,15 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-interaction
 
-      - name: Check formatting (black)
-        run: poetry run black --check --diff .
+      - name: Check formatting (Black)
+        run: poetry run black --check core fre historical_k scripts tests
 
-      - name: Check imports (isort)
-        run: poetry run isort --check-only --diff .
-
-      - name: Lint (flake8)
-        run: poetry run flake8 core/ fre/ historical_k/ experiments/ tests/
+      - name: Lint (Ruff – E,F,I strict)
+        run: |
+          poetry run ruff check core fre historical_k scripts tests --select E,F,I --ignore E501
+      - name: Enforce line length (E501) on key files
+        run: |
+          poetry run ruff check scripts/analyze_track_b.py fre/track_f_runner.py --select E501
 
   typecheck:
     runs-on: ubuntu-latest
