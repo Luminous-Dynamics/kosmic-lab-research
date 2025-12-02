@@ -358,7 +358,8 @@ def run_track_m6_experiment(
         conversation_types = ["recursive", "drift"]
 
     # Initialize clients
-    client = OllamaClient()
+    # Use 300s timeout for CPU-bound operations (default 120s can timeout)
+    client = OllamaClient(timeout=300)
     embedding_client = EmbeddingClient(model="embeddinggemma:300m")
 
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -498,7 +499,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.quick:
-        models = ["gemma3:1b-it-qat", "mistral:latest"]
+        models = ["gemma3:1b-it-qat", "mistral:7b"]
         n_turns = 20
     else:
         models = args.models
