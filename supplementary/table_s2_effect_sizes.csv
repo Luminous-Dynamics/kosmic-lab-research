@@ -1,0 +1,7 @@
+Comparison,N₁,N₂,Mean₁,Mean₂,Δ (pp),U,p (raw),p (Holm),Cliff's δ,95% BCa CI,Effect Size
+v1 vs v3,10,10,0.765,0.52,−24.5,86.5,0.006,0.006,0.73,"[0.160, 0.980]",**Large**
+v1 vs v2,10,10,—,—,—,—,—,—,—,—,*Pending*
+v1 vs v4,10,10,—,—,—,—,—,—,—,—,*Pending*
+v2 vs v3,10,10,—,—,—,—,—,—,—,—,*Pending*
+v2 vs v4,10,10,—,—,—,—,—,—,—,—,*Pending*
+v3 vs v4,10,10,—,—,—,—,—,—,—,—,*Pending*

@@ -1,0 +1,5 @@
+Experiment,Condition,N_trials,Episodes_per_trial,Seed_range,Sampling,Complete_seed_list
+Track B (Corridor Discovery),SAC (K-guided),48,1,225–9766,Stepped (203),"225, 428, 631, 834, 1037, ..., 9360, 9563, 9766"
+Track B (Corridor Discovery),Baseline (random),8,1,44–8913,Stepped (1267),"44, 1311, 2578, 3845, 5112, 6379, 7646, 8913"
+Track C (Morphological Rescue),v1 (no-rescue),10,1,1000–1009,Sequential,"1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009"
+Track C (Morphological Rescue),v3 (rescue),10,1,2000–2009,Sequential,"2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009"

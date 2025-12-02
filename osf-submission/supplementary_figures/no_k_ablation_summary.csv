@@ -1,0 +1,4 @@
+method,mean,ci_low,ci_high,n,status
+SAC (K-guided),0.5003472222222222,0.4608796296296296,0.5437150082406632,48,verified
+"SAC (No-K)
+[estimated]",0.125,0.08,0.17,48,estimated
