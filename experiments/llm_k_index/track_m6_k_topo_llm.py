@@ -37,7 +37,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from core.k_topo import compute_k_topo, compute_k_spectral
 from core.k_topo_viz import generate_all_plots
 from experiments.llm_k_index.embedding_client import EmbeddingClient
-from experiments.llm_k_index.ollama_client import OllamaClient
+from experiments.llm_k_index.ollama_client import OllamaClient, ConversationManager
 
 
 # =============================================================================
@@ -170,7 +170,8 @@ def collect_conversation_trajectory(
     actions = []
     conversation_log = []
 
-    conversation_context = []  # Maintain context for multi-turn
+    # Use ConversationManager for multi-turn context
+    manager = ConversationManager(client, model)
 
     iterator = tqdm(conversation_plan) if verbose else conversation_plan
 
@@ -179,23 +180,20 @@ def collect_conversation_trajectory(
             iterator.set_description(f"Turn {turn_idx + 1}/{len(conversation_plan)}")
 
         try:
+            # Add user message
+            manager.add_user_message(prompt)
+
             # Generate response with conversation context
-            response = client.generate(
-                model=model,
-                prompt=prompt,
-                context=conversation_context,
-                options={"temperature": 0.7, "num_predict": 100}
+            result = manager.generate_response(
+                temperature=0.7,
+                max_tokens=100
             )
 
-            # Update context
-            if "context" in response:
-                conversation_context = response["context"]
-
-            response_text = response.get("response", "")
+            response_text = result.response
 
             # Compute embeddings
-            prompt_embedding = embedding_client.get_embedding(prompt)
-            response_embedding = embedding_client.get_embedding(response_text)
+            prompt_embedding = embedding_client.embed(prompt).embedding
+            response_embedding = embedding_client.embed(response_text).embedding
 
             # Store trajectory points
             observations.append(prompt_embedding)
@@ -214,7 +212,7 @@ def collect_conversation_trajectory(
         except Exception as e:
             print(f"Error on turn {turn_idx + 1}: {e}")
             # Continue with zero embeddings
-            dim = len(embedding_client.get_embedding("test"))
+            dim = 768  # EmbeddingGemma dimension
             observations.append(np.zeros(dim))
             actions.append(np.zeros(dim))
             conversation_log.append({
