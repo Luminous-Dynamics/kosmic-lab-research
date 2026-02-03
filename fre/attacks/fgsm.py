@@ -57,7 +57,6 @@ def fgsm_observation(
     return adv_obs.detach()
 
 
-@torch.no_grad()
 def sanity_check_loss_increases(
     model: nn.Module,
     obs: torch.Tensor,
@@ -87,20 +86,22 @@ def sanity_check_loss_increases(
     """
     model.eval()
 
-    # Base loss (clean)
-    logits_clean = model(obs)
-    base_loss = loss_fn(logits_clean, target).item()
+    # Base loss (clean) - computed without gradients
+    with torch.no_grad():
+        logits_clean = model(obs)
+        base_loss = loss_fn(logits_clean, target).item()
 
-    # Adversarial loss (perturbed)
-    # Need to re-enable gradients for perturbation
+    # Adversarial loss (perturbed) - needs gradients for FGSM
     obs_for_attack = obs.clone().detach().requires_grad_(True)
     logits = model(obs_for_attack)
     loss = loss_fn(logits, target)
     loss.backward()
 
-    adv_obs = obs_for_attack + eps * torch.sign(obs_for_attack.grad)
-    logits_adv = model(adv_obs.detach())
-    adv_loss = loss_fn(logits_adv, target).item()
+    # Compute adversarial examples and evaluate loss without gradients
+    with torch.no_grad():
+        adv_obs = obs_for_attack + eps * torch.sign(obs_for_attack.grad)
+        logits_adv = model(adv_obs.detach())
+        adv_loss = loss_fn(logits_adv, target).item()
 
     return base_loss, adv_loss
 

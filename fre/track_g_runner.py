@@ -123,7 +123,7 @@ def _to_serializable(obj: Any) -> Any:
 
     if isinstance(obj, dict):
         return {k: _to_serializable(v) for k, v in obj.items()}
-    if isinstance(obj, list):
+    if isinstance(obj, (list, tuple)):
         return [_to_serializable(v) for v in obj]
     if isinstance(obj, (str, int, float, bool)) or obj is None:
         return obj

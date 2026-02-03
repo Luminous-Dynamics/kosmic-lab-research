@@ -31,34 +31,25 @@ if TYPE_CHECKING:
 def fep_to_bioelectric(agent, timestep: int) -> None:
     """Trigger bioelectric response when sensory prediction error is high.
 
-    ARCHITECTURAL FIX V2 (2025-11-09):
-    1. Pull voltage TOWARD target (-70mV), not away from it
-    2. Stronger correction factor (0.5 instead of 0.15)
-    3. Momentum accumulation for sustained hyperpolarization
+    When prediction error exceeds threshold (0.5), depolarize the membrane
+    proportionally to error magnitude. This increases neural excitability
+    for adaptive learning and error correction.
 
-    This ensures rescue can overcome grid diffusion dynamics.
+    Depolarization formula: voltage += error * 10 mV
+    Example: error=0.8 -> voltage changes from -70mV to -62mV (+8mV)
     """
     error = agent.prediction_errors.get("sensory", 0.0)
     if error <= 0.5:
         return
 
-    # Initialize momentum if first time
-    if not hasattr(agent, "_voltage_momentum"):
-        agent._voltage_momentum = 0.0
+    # Depolarize proportionally to prediction error
+    # Higher error -> stronger depolarization toward action potential threshold
+    agent.voltage += error * 10.0
 
-    # Pull voltage toward resting potential (-70mV) with stronger correction
-    target_voltage = -70.0
-    # Increased from 0.15 to 0.5 for stronger effect
-    correction = (target_voltage - agent.voltage) * error * 0.5
-
-    # Add momentum: 90% previous momentum + 10% new correction
-    # This accumulates corrections over time instead of single-step changes
-    agent._voltage_momentum = 0.9 * agent._voltage_momentum + 0.1 * correction
-    agent.voltage += agent._voltage_momentum
-
-    # Clamp to reasonable range (allow hyperpolarization)
+    # Clamp to reasonable physiological range
     agent.voltage = np.clip(agent.voltage, -100.0, -10.0)
 
+    # Strengthen gap junctions to propagate signal to neighbors
     for neighbor_id in list(agent.gap_junctions.keys()):
         agent.gap_junctions[neighbor_id] *= 1.1
 
